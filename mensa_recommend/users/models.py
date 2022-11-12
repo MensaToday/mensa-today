@@ -46,6 +46,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=True)
     
+    categories = models.ManyToManyField('mensa.Category', through='mensa.UserCategory')
+    allergies = models.ManyToManyField('mensa.Allergy', through='mensa.UserAllergy')
+    
     objects = CustomUserManager()
     
     USERNAME_FIELD = 'email'
@@ -54,3 +57,4 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
+        
