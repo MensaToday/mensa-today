@@ -82,11 +82,11 @@ WSGI_APPLICATION = 'mensa_recommend.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "db",  # set in docker-compose.yml
-        "PORT": 5432,  # default postgres port
+        "NAME": os.environ['POSTGRES_DB'],
+        "USER": os.environ['POSTGRES_USER'],
+        "PASSWORD": os.environ['POSTGRES_PASSWORD'],
+        "HOST": os.environ['POSTGRES_HOST'],
+        "PORT": os.environ['POSTGRES_PORT'],
     }
 }
 
