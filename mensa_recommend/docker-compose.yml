@@ -31,7 +31,7 @@ services:
       env_file:
       - database-variables.env
       ports:
-        - "5051:80"
+        - "8888:80"
       volumes:
         - pgadmin_data:/var/lib/pgadmin
       restart: always
