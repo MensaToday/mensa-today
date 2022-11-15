@@ -1,68 +1,30 @@
-from bs4 import BeautifulSoup
-import requests
 import re
+from abc import ABC, abstractmethod
+from typing import List
+import json
 
-non_digit = re.compile('[^0-9,.]')
+import requests
+from bs4 import BeautifulSoup
 
-attribute_replacement = {
-    "vegan": "Vegan",
-    "vegetarisch": "Vegetarian",
-    "schwein": "Pork",
-    "rind": "Beef",
-    "geflügel": "Poultry",
+__non_digit__ = re.compile('[^0-9,.]')
 
-    "farbstoff": "Dyed",
-    "konservierungsstoffe": "Preservatives",
-    "antioxidationsmittel": "Antioxidants",
-    "geschmacksverstärker": "Flavor enhancers",
-    "geschwefelt": "sulphurated",
-    "geschwärzt": "blackened",
-    "gewachst": "waxed",
-    "phosphat": "Phosphate",
-    "süßungsmittel": "Sweeteners",
-    "phenylalaninquelle": "Phenylalanine source",
-
-    "gluten": "Gluten",
-    "dinkel": "Spelt",
-    "gerste": "Barley",
-    "hafer": "Oats",
-    "kamut": "Kamut",
-    "roggen": "Rye",
-    "weizen": "Wheat",
-
-    "krebstiere": "Crustaceans",
-    "ei": "Egg",
-    "fisch": "Fish",
-    "erdnüsse": "Peanuts",
-    "soja": "Soy",
-    "milch": "Milk",
-
-    "schalenfrüchte": "Nuts",
-    "mandeln": "Almonds",
-    "haselnüsse": "Hazelnuts",
-    "walnüsse": "Walnuts",
-    "cashewkerne": "Cashews",
-    "pecannüsse": "Pecans",
-    "paranüsse": "Brazil nuts",
-    "pistazien": "Pistachios",
-    "macadamianüsse": "Macadamias",
-
-    "sellerie": "Celery",
-    "senf": "Mustard",
-    "sesam": "Sesame",
-    "lupinen": "Lupines",
-    "weichtiere": "Molluscs",
-    "schwefeldioxid": "Sulfur dioxide",
-}
+with open("translate.json", "r") as file:
+    __translations__ = json.load(file)
 
 
-def get_soup(url: str) -> BeautifulSoup:
-    document: str = requests.get(url).text
-    return BeautifulSoup(document, "lxml")
+def translate(key: str) -> str:
+    """
+        Translates the given key or, if unknown, returns the key itself.
+    """
+    key = key.lower()
+    if key in __translations__:
+        return __translations__[key]
+    else:
+        return key
 
 
 def __remove_non_digit__(s: str) -> str:
-    return non_digit.sub("", s)
+    return __non_digit__.sub("", s)
 
 
 def to_float(s: str) -> float:
@@ -70,12 +32,34 @@ def to_float(s: str) -> float:
 
 
 def to_int(s: str) -> float:
-    return int(__remove_non_digit__(s))
+    return int(to_float(s))
 
 
-class Collector:
-    def __init__(self):
+def response_to_soup(res: requests.Response) -> BeautifulSoup:
+    document: str = res.text
+    return BeautifulSoup(document, "lxml")
+
+
+def url_to_soup(url: str) -> BeautifulSoup:
+    return response_to_soup(requests.get(url))
+
+
+class Collector(ABC):
+    @abstractmethod
+    def run(self) -> None:
         pass
 
-    def run(self):
-        raise Exception("Run method is not overwritten.")
+
+class NoAuthCollector(Collector):
+    def run(self) -> None:
+        for url in self.build_urls():
+            soup = url_to_soup(url)
+            self.scrape(soup)
+
+    @abstractmethod
+    def build_urls(self) -> List[str]:
+        pass
+
+    @abstractmethod
+    def scrape(self, document: BeautifulSoup) -> None:
+        pass
