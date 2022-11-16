@@ -4,6 +4,7 @@ class Course(models.Model):
     publishId = models.BigIntegerField(primary_key=True, unique=True)
     name = models.CharField(max_length=100)
     learnweb_abbr = models.CharField(max_length=20)
+    users = models.ManyToManyField("users.User")
     
 class Timeslot(models.Model):
     weekDay = models.CharField(max_length=50)
@@ -16,3 +17,13 @@ class Timeslot(models.Model):
         models.UniqueConstraint(fields=['weekDay', 'startTime', 'endTime', 'rythm'], name='unique timeslot')
         ]
     
+class Room(models.Model):
+    id = models.BigIntegerField(primary_key=True, unique=True)
+    name = models.CharField(max_length=50)
+    address = models.CharField(max_length=80)
+    seats = models.IntegerField()
+    
+class Reservation(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    timeslot = models.ForeignKey(Timeslot, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
