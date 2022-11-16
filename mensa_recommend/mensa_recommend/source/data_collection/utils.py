@@ -41,7 +41,7 @@ def response_to_soup(res: requests.Response) -> BeautifulSoup:
 
 
 def url_to_soup(url: str, headers: dict = None) -> BeautifulSoup:
-    return response_to_soup(requests.get(url, headers))
+    return response_to_soup(requests.get(url, headers=headers))
 
 
 class Collector(ABC):

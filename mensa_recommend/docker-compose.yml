@@ -9,7 +9,7 @@ services:
       - 9999:9999
     command: python manage.py runserver 0.0.0.0:9999
     env_file:
-    - database-variables.env
+      - database-variables.env
     depends_on:
       - db
   db:
@@ -17,24 +17,24 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-    - database-variables.env
+      - database-variables.env
     expose:
-    - "5433"
+      - '5433'
     ports:
-      - "5433:5432"
+      - '5433:5432'
     command: -p 5433
   pgadmin:
-      image: dpage/pgadmin4
-      container_name: pgadmin
-      depends_on:
-        - db
-      env_file:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    depends_on:
+      - db
+    env_file:
       - database-variables.env
-      ports:
-        - "8888:80"
-      volumes:
-        - pgadmin_data:/var/lib/pgadmin
-      restart: always
+    ports:
+      - '8888:80'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: always
 
 volumes:
   postgres_data:
