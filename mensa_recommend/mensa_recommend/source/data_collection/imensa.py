@@ -2,8 +2,26 @@ from typing import List
 
 from bs4 import BeautifulSoup
 
+from mensa_recommend.mensa.models import Category, Allergy, Additive
 from utils import NoAuthCollector
 import utils
+
+static_categories = ["Vegan", "Vegetarian", "Pork", "Beef", "Poultry"]
+static_additives = ["Dyed", "Preservatives", "Antioxidants", "Flavor enhancers", "Sulphurated", "Blackened", "Waxed",
+                    "Phosphate", "Sweeteners", "Phenylalanine source"]
+static_allergies = ["Gluten", "Spelt", "Barley", "Oats", "Kamut", "Rye", "Wheat", "Crustaceans", "Egg", "Fish",
+                    "Peanuts", "Soy", "Milk", "Nuts", "Almonds", "Hazelnuts", "Walnuts", "Cashews", "Pecans",
+                    "Brazil nuts", "Pistachios", "Macadamias", "Celery", "Mustard", "Sesame", "Lupines", "Molluscs",
+                    "Sulfur dioxide"]
+
+
+def insert_static():
+    for c in static_categories:
+        Category(name=c).save()
+    for a in static_additives:
+        Additive(name=a).save()
+    for a in static_allergies:
+        Allergy(name=a).save()
 
 
 class IMensaCollector(NoAuthCollector):
