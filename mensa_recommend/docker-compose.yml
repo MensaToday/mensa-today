@@ -10,8 +10,12 @@ services:
     command: python manage.py runserver 0.0.0.0:9999
     env_file:
       - database-variables.env
+    environment:
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
     depends_on:
       - db
+      - redis
   db:
     image: postgres:15
     volumes:
@@ -35,6 +39,21 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     restart: always
+  celery:
+    build: .
+    command: celery -A mensa_recommend worker -l INFO
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - database-variables.env
+    environment:
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+    depends_on:
+      - app
+      - redis
+  redis:
+    image: 'redis:alpine'
 
 volumes:
   postgres_data:

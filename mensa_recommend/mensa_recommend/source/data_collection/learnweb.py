@@ -1,7 +1,7 @@
 """
   Collect course data
 """
-
+from __future__ import absolute_import, unicode_literals
 from typing import List, Tuple
 from urllib.parse import urlparse, parse_qs
 import re
@@ -10,11 +10,18 @@ from bs4 import BeautifulSoup
 import requests
 from courses.models import Room, Course, Timeslot
 from users.models import User
+from celery import shared_task
+
+
+@shared_task
+def run(ziv_id: str, ziv_password: str, current_user: int):
+    lw_collector = LearnWebCollector(ziv_id, ziv_password, current_user)
+    lw_collector.run()
 
 
 class LearnWebCollector(Collector):
 
-    def __init__(self, ziv_id: str, ziv_password: str, current_user: User):
+    def __init__(self, ziv_id: str, ziv_password: str, current_user: int):
         self.ziv_id = ziv_id
         self.ziv_password = ziv_password
         self.current_user = current_user
