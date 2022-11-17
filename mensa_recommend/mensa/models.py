@@ -13,8 +13,7 @@ class Dish(models.Model):
 
 
 class Category(models.Model):
-    id = models.CharField(primary_key=True, max_length=10, unique=True)
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
     dishes = models.ManyToManyField('Dish', through='DishCategory')
     users = models.ManyToManyField('users.User', through='UserCategory')
 
@@ -24,8 +23,7 @@ class Category(models.Model):
 
 
 class Allergy(models.Model):
-    id = models.CharField(primary_key=True, max_length=10, unique=True)
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
     allergies = models.ManyToManyField('Dish', through='DishAllergy')
     users = models.ManyToManyField('users.User', through='UserAllergy')
 
@@ -35,8 +33,7 @@ class Allergy(models.Model):
 
 
 class Additive(models.Model):
-    id = models.CharField(primary_key=True, max_length=10, unique=True)
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
     additives = models.ManyToManyField('Dish', through='DishAdditive')
 
     class Meta:

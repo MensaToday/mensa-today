@@ -49,6 +49,9 @@ class Collector(ABC):
     def run(self) -> None:
         pass
 
+    def prepare(self) -> None:
+        pass
+
 
 class NoAuthCollector(Collector):
     def run(self) -> None:

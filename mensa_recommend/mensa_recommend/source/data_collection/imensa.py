@@ -2,9 +2,9 @@ from typing import List
 
 from bs4 import BeautifulSoup
 
-from mensa_recommend.mensa.models import Category, Allergy, Additive
-from utils import NoAuthCollector
-import utils
+from mensa.models import Category, Allergy, Additive
+from .utils import NoAuthCollector
+from . import utils
 
 static_categories = ["Vegan", "Vegetarian", "Pork", "Beef", "Poultry"]
 static_additives = ["Dyed", "Preservatives", "Antioxidants", "Flavor enhancers", "Sulphurated", "Blackened", "Waxed",
@@ -15,7 +15,7 @@ static_allergies = ["Gluten", "Spelt", "Barley", "Oats", "Kamut", "Rye", "Wheat"
                     "Sulfur dioxide"]
 
 
-def insert_static():
+def __insert_static__():
     for c in static_categories:
         Category(name=c).save()
     for a in static_additives:
@@ -37,6 +37,9 @@ class IMensaCollector(NoAuthCollector):
             ]
         }
         self.days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"]
+
+    def prepare(self) -> None:
+        __insert_static__()
 
     def scrape(self, document: BeautifulSoup) -> None:
         main_meal = True
