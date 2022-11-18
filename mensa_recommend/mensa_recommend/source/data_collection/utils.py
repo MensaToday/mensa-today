@@ -1,12 +1,16 @@
 import re
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Tuple
 import json
 
 import requests
 from bs4 import BeautifulSoup
 
 __non_digit__ = re.compile('[^0-9,.]')
+
+from django.db import IntegrityError
+
+from django.db.models import Model
 
 with open("translate.json", "r") as file:
     __translations__ = json.load(file)
@@ -23,12 +27,12 @@ def translate(key: str) -> str:
         return key
 
 
-def __remove_non_digit__(s: str) -> str:
+def _remove_non_digit(s: str) -> str:
     return __non_digit__.sub("", s)
 
 
 def to_float(s: str) -> float:
-    return float(__remove_non_digit__(s).replace(",", "."))
+    return float(_remove_non_digit(s).replace(",", "."))
 
 
 def to_int(s: str) -> float:
@@ -44,22 +48,33 @@ def url_to_soup(url: str) -> BeautifulSoup:
     return response_to_soup(requests.get(url))
 
 
+def save_integrity_free(model_instance: Model) -> None:
+    try:
+        model_instance.save()
+    except IntegrityError:
+        pass
+
+
 class Collector(ABC):
     @abstractmethod
     def run(self) -> None:
         pass
 
+    def prepare(self) -> None:
+        pass
+
 
 class NoAuthCollector(Collector):
     def run(self) -> None:
-        for url in self.build_urls():
+        for url, options in self._build_urls():
+            # TODO: Run calls in parallel
             soup = url_to_soup(url)
-            self.scrape(soup)
+            self._scrape(soup, **options)
 
     @abstractmethod
-    def build_urls(self) -> List[str]:
+    def _build_urls(self) -> List[Tuple[str, dict]]:
         pass
 
     @abstractmethod
-    def scrape(self, document: BeautifulSoup) -> None:
+    def _scrape(self, document: BeautifulSoup, **options) -> None:
         pass
