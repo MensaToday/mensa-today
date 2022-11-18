@@ -1,6 +1,6 @@
 import re
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Tuple
 import json
 
 import requests
@@ -55,14 +55,14 @@ class Collector(ABC):
 
 class NoAuthCollector(Collector):
     def run(self) -> None:
-        for url in self._build_urls():
+        for url, options in self._build_urls():
             soup = url_to_soup(url)
-            self._scrape(soup)
+            self._scrape(soup, **options)
 
     @abstractmethod
-    def _build_urls(self) -> List[str]:
+    def _build_urls(self) -> List[Tuple[str, dict]]:
         pass
 
     @abstractmethod
-    def _scrape(self, document: BeautifulSoup) -> None:
+    def _scrape(self, document: BeautifulSoup, **options) -> None:
         pass

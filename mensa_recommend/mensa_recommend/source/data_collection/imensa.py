@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from bs4 import BeautifulSoup
 
@@ -41,7 +41,7 @@ class IMensaCollector(NoAuthCollector):
     def prepare(self) -> None:
         _insert_static()
 
-    def _scrape(self, document: BeautifulSoup) -> None:
+    def _scrape(self, document: BeautifulSoup, **options) -> None:
         main_meal = True
         for div in document.find_all(class_="aw-meal-category"):
             for meal in div.find_all(class_="aw-meal row no-margin-xs"):
@@ -90,12 +90,12 @@ class IMensaCollector(NoAuthCollector):
 
             main_meal = False
 
-    def _build_urls(self) -> List[str]:
+    def _build_urls(self) -> List[Tuple[str, dict]]:
         urls = []
 
         for city in self.cities.keys():
             m = self.cities[city]
             for mensa in m:
                 for day in self.days:
-                    urls.append(self.url.format(city=city, mensa=mensa, day=day))
+                    urls.append((self.url.format(city=city, mensa=mensa, day=day), {"mensa": mensa}))
         return urls
