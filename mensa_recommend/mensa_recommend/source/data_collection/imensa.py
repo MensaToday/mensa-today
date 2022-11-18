@@ -72,7 +72,7 @@ class IMensaCollector(NoAuthCollector):
                   startTime="07:30", endTime="18:00"))
         utils.save_integrity_free(
             Mensa(name_id="hier-und-jetzt", name="Hier und Jetzt", street="Bismarckallee", houseNumber="11", zipCode=48151, city="Münster",
-                  startTime="11:30", endTime="14:30"))  # ALSO 17:00-21:00 ._.
+                  startTime="11:30", endTime="14:30"))  # ALSO 17:00-21:00 ._. ; we'll ignore that for now
         utils.save_integrity_free(
             Mensa(name_id="mensa-am-aasee", name="Mensa am Aasee", street="Bismarckallee", houseNumber="11", zipCode=48151, city="Münster",
                   startTime="11:45", endTime="14:30"))
@@ -86,10 +86,10 @@ class IMensaCollector(NoAuthCollector):
     def _scrape(self, document: BeautifulSoup, **options) -> None:
         mensa: Mensa = options["mensa"]
         dish_plan_date = options["date"]
-        print(mensa.name, options["day"])
 
         main_meal = True
         for div in document.find_all(class_="aw-meal-category"):
+            no_meal = False
             for meal in div.find_all(class_="aw-meal row no-margin-xs"):
                 no_meal = meal.find(title="Preis für Studierende") is None
                 if no_meal:
@@ -119,11 +119,6 @@ class IMensaCollector(NoAuthCollector):
                         additives.append(replacement)
                     elif att_type == 2:
                         allergies.append(replacement)
-
-                # TODO: Do we want that?
-                # last_occurrence = meal.find(title="Zuletzt angeboten")
-                # if last_occurrence:
-                #     last_occurrence = last_occurrence.text
 
                 ratings_count_tag = meal.find(class_="aw-meal-histogram-count")
                 ratings_count = 0
@@ -156,7 +151,8 @@ class IMensaCollector(NoAuthCollector):
                     ExtDishRating(mensa=mensa, dish=d, date=dish_plan_date, rating_avg=ratings_avg,
                                   rating_count=ratings_count))
 
-            main_meal = False
+            if not no_meal:
+                main_meal = False
             break  # Do not save side meals
 
     def _build_urls(self) -> List[Tuple[str, dict]]:
@@ -165,7 +161,6 @@ class IMensaCollector(NoAuthCollector):
         for city in self.cities.keys():
             m = self.cities[city]
             for mensa in m:
-                print(mensa)
                 mensa_db = Mensa.objects.get(name_id=mensa)
 
                 for day in self.days:
