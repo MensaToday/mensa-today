@@ -66,15 +66,15 @@ class Collector(ABC):
 
 class NoAuthCollector(Collector):
     def run(self) -> None:
-        for url, options in self._build_urls():
+        for url, options in self.__build_urls():
             # TODO: Run calls in parallel
             soup = url_to_soup(url)
-            self._scrape(soup, **options)
+            self.__scrape(soup, **options)
 
     @abstractmethod
-    def _build_urls(self) -> List[Tuple[str, dict]]:
+    def __build_urls(self) -> List[Tuple[str, dict]]:
         pass
 
     @abstractmethod
-    def _scrape(self, document: BeautifulSoup, **options) -> None:
+    def __scrape(self, document: BeautifulSoup, **options) -> None:
         pass

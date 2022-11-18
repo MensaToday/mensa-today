@@ -2,7 +2,6 @@ from datetime import datetime, date
 from typing import List, Tuple
 
 from bs4 import BeautifulSoup
-from django.db import IntegrityError
 
 from mensa.models import Category, Allergy, Additive, Dish, DishCategory, DishAllergy, DishAdditive, DishPlan, Mensa, \
     ExtDishRating
@@ -83,7 +82,7 @@ class IMensaCollector(NoAuthCollector):
             Mensa(name_id="mensa-bispinghof", name="Mensa Bispinghof", street="Bispinghof", houseNumber="9-14", zipCode=48149, city="Münster",
                   startTime="11:00", endTime="14:30"))
 
-    def _scrape(self, document: BeautifulSoup, **options) -> None:
+    def __scrape(self, document: BeautifulSoup, **options) -> None:
         mensa: Mensa = options["mensa"]
         dish_plan_date = options["date"]
 
@@ -155,7 +154,7 @@ class IMensaCollector(NoAuthCollector):
                 main_meal = False
             break  # Do not save side meals
 
-    def _build_urls(self) -> List[Tuple[str, dict]]:
+    def __build_urls(self) -> List[Tuple[str, dict]]:
         urls = []
 
         for city in self.cities.keys():
@@ -165,10 +164,10 @@ class IMensaCollector(NoAuthCollector):
 
                 for day in self.days:
                     urls.append((self.url.format(city=city, mensa=mensa, day=day),
-                                 {"mensa": mensa_db, "date": self._day_to_date(day), "day": day}))
+                                 {"mensa": mensa_db, "date": self.__day_to_date(day), "day": day}))
         return urls
 
-    def _day_to_date(self, day: str) -> date:
+    def __day_to_date(self, day: str) -> date:
         weekday = self.days.index(day)
         now = datetime.now().date()
         diff = weekday - now.weekday()
