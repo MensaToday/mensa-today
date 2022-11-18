@@ -8,6 +8,10 @@ from bs4 import BeautifulSoup
 
 __non_digit__ = re.compile('[^0-9,.]')
 
+from django.db import IntegrityError
+
+from django.db.models import Model
+
 with open("translate.json", "r") as file:
     __translations__ = json.load(file)
 
@@ -44,6 +48,13 @@ def url_to_soup(url: str) -> BeautifulSoup:
     return response_to_soup(requests.get(url))
 
 
+def save_integrity_free(model_instance: Model) -> None:
+    try:
+        model_instance.save()
+    except IntegrityError:
+        pass
+
+
 class Collector(ABC):
     @abstractmethod
     def run(self) -> None:
@@ -56,6 +67,7 @@ class Collector(ABC):
 class NoAuthCollector(Collector):
     def run(self) -> None:
         for url, options in self._build_urls():
+            # TODO: Run calls in parallel
             soup = url_to_soup(url)
             self._scrape(soup, **options)
 
