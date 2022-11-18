@@ -16,6 +16,7 @@ from courses.models import Room, Course, Timeslot, Reservation
 from users.models import User
 from celery import shared_task
 import datetime
+from tqdm import tqdm
 
 
 @shared_task
@@ -381,6 +382,7 @@ class RoomCollector(NoAuthCollector):
 
     def __init__(self):
         self.room_url_pattern = 'https://studium.uni-muenster.de/qisserver/rds?state=wsearchv&search=3&alias_einrichtung.eid=einrichtung.dtxt&alias_k_raumart.raumartid=k_raumart.dtxt&raum.rgid={room_id}&P_start=0&P_anzahl=10&_form=display&language=en'
+        self.open_street_map_pattern = 'https://nominatim.openstreetmap.org/search?q={query}&format=json&polygon=1&addressdetails=1'
 
     def build_urls(self) -> List[str]:
         return ['https://studium.uni-muenster.de/qisserver/rds?state=change&type=6&moduleParameter=raumSelect&nextdir=change&next=SearchSelect.vm&target=raumSearch&subdir=raum&source=state%3Dchange%26type%3D5%26moduleParameter%3DraumSearch%26nextdir%3Dchange%26next%3Dsearch.vm%26subdir%3Draum%26_form%3Ddisplay%26topitem%3Dfacilities%26subitem%3DsearchFacilities%26function%3Dnologgedin%26field%3Ddtxt&targetfield=dtxt&_form=display&noDBAction=y&init=y']
@@ -399,14 +401,19 @@ class RoomCollector(NoAuthCollector):
         room_ids = self.__get_room_ids(document)
 
         # Iterate over each room to get more details
-        for room_id in room_ids:
+        for room_id in tqdm(room_ids):
 
             # Get more room details
             room_name, room_address, room_seats = self.__get_room_info(room_id)
 
+            # Get the lon and lat of the address
+            if room_address is not None:
+                lon, lat = self.__get_room_location_details(room_address)
+
             # If the room is not None, save it to the database
             if room_name is not None:
-                Room(room_id, room_name, room_address, room_seats).save()
+                Room(room_id, room_name, room_address,
+                     room_seats, lon, lat).save()
 
     def __get_room_ids(self, document: BeautifulSoup) -> List[int]:
         """private method to get all the room ids
@@ -509,3 +516,60 @@ class RoomCollector(NoAuthCollector):
                         room_seats = None
 
         return room_name, room_address, room_seats
+
+    def __get_room_location_details(self, room_address: str) -> Tuple(float, float):
+        """private method to get the longitude and latitude of the room address to calculate the
+        distance between the room and the mensa in a later step
+
+            Parameters
+            ----------
+            room_address : int
+                Adress of the room
+
+            Return
+            ------
+            lon : float
+                longitude of the address
+            lat : float
+                latitude of the address
+
+        """
+
+        # Insert the address into open street map search url
+        open_street_map_url = self.open_street_map_pattern.format(
+            query=room_address)
+
+        # Get the open street map json response
+        try:
+            location_data = requests.get(open_street_map_url).json()
+
+        except requests.exceptions.RequestException as error:
+            raise SystemError(error) from error
+
+        # Loop over each resulting entry
+        lon: str = None
+        lat: str = None
+        for data in location_data:
+
+            # Check if key address is available
+            if 'address' in data:
+                address = data['address']
+
+                # Check if key city is available
+                if 'city' in address:
+                    city = address['city']
+
+                    # Check if entry belongs to the city münster
+                    if city.casefold() == 'münster':
+
+                        # Get the lon and lat
+                        if 'lat' in data:
+                            lat = data['lat']
+                            lat = round(float(lat), 8)
+                        if 'lon' in data:
+                            lon = data['lon']
+                            lon = round(float(lon), 8)
+
+                        break
+
+        return lon, lat

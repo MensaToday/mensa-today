@@ -28,6 +28,8 @@ class Room(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=80)
     seats = models.IntegerField(null=True)
+    lon = models.DecimalField(max_digits=13, decimal_places=8, null=True)
+    lat = models.DecimalField(max_digits=13, decimal_places=8, null=True)
 
 
 class Reservation(models.Model):
