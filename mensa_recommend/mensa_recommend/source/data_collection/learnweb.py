@@ -12,9 +12,10 @@ import re
 from .utils import Collector, NoAuthCollector, url_to_soup
 from bs4 import BeautifulSoup
 import requests
-from courses.models import Room, Course, Timeslot
+from courses.models import Room, Course, Timeslot, Reservation
 from users.models import User
 from celery import shared_task
+import datetime
 
 
 @shared_task
@@ -173,6 +174,27 @@ class LearnWebCollector(Collector):
             course = Course(course_id, course_name, course)
             course.save()
             course.users.add(self.current_user)
+
+            for data in table_data:
+                room = Room.objects.get(pk=data['room_id'])
+
+                # Check if room exists otherwise do not save the timeslot
+                if room is not None:
+
+                    # Get or create timeslot
+                    try:
+                        timeslot = Timeslot.objects.get(weekDay=data['weekday'], startTime=data['start_time'],
+                                                        endTime=data['end_time'], startDate=data['start_date'],
+                                                        endDate=data['end_date'],  rythm=data['rythm'])
+                    except Timeslot.DoesNotExist:
+                        timeslot = Timeslot(weekDay=data['weekday'], startTime=data['start_time'],
+                                            endTime=data['end_time'], startDate=data['start_date'],
+                                            endDate=data['end_date'],  rythm=data['rythm'])
+
+                        timeslot.save()
+
+                    Reservation(course=course, timeslot=timeslot,
+                                room=room).save()
 
     def __get_quis_url_name(self, search_url: str, headers: dict) -> Tuple[str, str]:
         """Private method to get the quispos url from the learnweb search result
@@ -333,6 +355,12 @@ class LearnWebCollector(Collector):
 
             start_end_date = entry[4].replace(u'\xa0', u' ')
             start_date, end_date = start_end_date.split(' to ')
+
+            # Reformat time
+            start_date = datetime.datetime.strptime(
+                start_date, '%d.%m.%Y').strftime('%Y-%m-%d')
+            end_date = datetime.datetime.strptime(
+                end_date, '%d.%m.%Y').strftime('%Y-%m-%d')
 
             room_id = entry[5]
 

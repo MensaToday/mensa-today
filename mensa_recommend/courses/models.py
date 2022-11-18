@@ -19,7 +19,7 @@ class Timeslot(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['weekDay', 'startTime', 'endTime', 'rythm'], name='unique timeslot')
+                fields=['weekDay', 'startTime', 'endTime', 'rythm', 'startDate', 'endDate'], name='unique timeslot')
         ]
 
 
