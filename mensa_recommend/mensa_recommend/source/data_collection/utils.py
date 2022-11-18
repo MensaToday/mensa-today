@@ -23,12 +23,12 @@ def translate(key: str) -> str:
         return key
 
 
-def __remove_non_digit__(s: str) -> str:
+def _remove_non_digit(s: str) -> str:
     return __non_digit__.sub("", s)
 
 
 def to_float(s: str) -> float:
-    return float(__remove_non_digit__(s).replace(",", "."))
+    return float(_remove_non_digit(s).replace(",", "."))
 
 
 def to_int(s: str) -> float:
@@ -55,14 +55,14 @@ class Collector(ABC):
 
 class NoAuthCollector(Collector):
     def run(self) -> None:
-        for url in self.build_urls():
+        for url in self._build_urls():
             soup = url_to_soup(url)
-            self.scrape(soup)
+            self._scrape(soup)
 
     @abstractmethod
-    def build_urls(self) -> List[str]:
+    def _build_urls(self) -> List[str]:
         pass
 
     @abstractmethod
-    def scrape(self, document: BeautifulSoup) -> None:
+    def _scrape(self, document: BeautifulSoup) -> None:
         pass

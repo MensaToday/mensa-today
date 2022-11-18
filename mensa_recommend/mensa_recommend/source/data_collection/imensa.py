@@ -15,7 +15,7 @@ static_allergies = ["Gluten", "Spelt", "Barley", "Oats", "Kamut", "Rye", "Wheat"
                     "Sulfur dioxide"]
 
 
-def __insert_static__():
+def _insert_static():
     for c in static_categories:
         Category(name=c).save()
     for a in static_additives:
@@ -39,9 +39,9 @@ class IMensaCollector(NoAuthCollector):
         self.days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"]
 
     def prepare(self) -> None:
-        __insert_static__()
+        _insert_static()
 
-    def scrape(self, document: BeautifulSoup) -> None:
+    def _scrape(self, document: BeautifulSoup) -> None:
         main_meal = True
         for div in document.find_all(class_="aw-meal-category"):
             for meal in div.find_all(class_="aw-meal row no-margin-xs"):
@@ -90,7 +90,7 @@ class IMensaCollector(NoAuthCollector):
 
             main_meal = False
 
-    def build_urls(self) -> List[str]:
+    def _build_urls(self) -> List[str]:
         urls = []
 
         for city in self.cities.keys():
