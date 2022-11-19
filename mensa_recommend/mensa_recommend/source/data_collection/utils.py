@@ -16,7 +16,7 @@ with open("translate.json", "r") as file:
     __translations__ = json.load(file)
 
 
-def translate(key: str) -> str:
+def translate(key: str, **context) -> str:
     """
         Translates the given key or, if unknown, raises an exception.
     """
@@ -24,12 +24,12 @@ def translate(key: str) -> str:
     if key in __translations__:
         return __translations__[key]
     else:
-        raise TranslationKeyNotFound(key)
+        raise TranslationKeyNotFound(key, **context)
 
 
 class TranslationKeyNotFound(Exception):
-    def __init__(self, key: str) -> None:
-        super().__init__(f"Could not find '{key}' in translate.json!")
+    def __init__(self, key: str, **context) -> None:
+        super().__init__(f"Could not find '{key}' in translate.json! Context: {context}")
 
 
 def _remove_non_digit(s: str) -> str:

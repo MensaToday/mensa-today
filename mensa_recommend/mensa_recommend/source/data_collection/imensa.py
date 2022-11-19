@@ -113,6 +113,7 @@ class IMensaCollector(NoAuthURLCollector):
     def _scrape(self, document: BeautifulSoup, **options) -> None:
         mensa: Mensa = options["mensa"]
         dish_plan_date: date = options["date"]
+        day: str = options["day"]
 
         # find every meal category on the page
         for div in document.find_all(class_="aw-meal-category"):
@@ -129,7 +130,7 @@ class IMensaCollector(NoAuthURLCollector):
                     break
 
                 # get meal information
-                name, price, groups, rating = self.__scrape_meal(meal)
+                name, price, groups, rating = self.__scrape_meal(meal, mensa, day)
 
                 # either gets an existing dish or creates one
                 d = _get_dish(name, not side_meal)
@@ -163,7 +164,8 @@ class IMensaCollector(NoAuthURLCollector):
             ExtDishRating(mensa=mensa, dish=dish, date=dish_plan_date, rating_avg=ratings_avg,
                           rating_count=ratings_count))
 
-    def __scrape_meal(self, meal: Tag) -> Tuple[str, Tuple[float, float], Tuple[list, list, list], Tuple[int, float]]:
+    def __scrape_meal(self, meal: Tag, mensa: Mensa, day: str) -> Tuple[
+            str, Tuple[float, float], Tuple[list, list, list], Tuple[int, float]]:
         # load data of actual meal
         name = meal.find(class_="aw-meal-description").text
 
@@ -181,15 +183,17 @@ class IMensaCollector(NoAuthURLCollector):
         allergies = []
 
         # Attributes of a meal are displayed in German and must be translated.
-        for att in attributes[1:]:
+        for att in attributes:
             # check attribute type first
             if att == "ZUSATZ":
                 att_type = 1
             elif att == "ALLERGEN":
                 att_type = 2
-            else:
+            elif att == "ZULETZT":
+                att_type = -1
+            elif att_type >= 0:
                 # translate attribute and add it to its corresponding list
-                replacement = utils.translate(att)
+                replacement = utils.translate(att, mensa=mensa.name, day=day)
                 if att_type == 0:
                     categories.append(replacement)
                 elif att_type == 1:

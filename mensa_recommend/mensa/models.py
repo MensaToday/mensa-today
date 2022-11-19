@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Dish(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     main = models.BooleanField()
     categories = models.ManyToManyField('Category', through='DishCategory')
     allergies = models.ManyToManyField('Allergy', through='DishAllergy')
