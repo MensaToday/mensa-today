@@ -1,5 +1,5 @@
 """
-    Define classes to crawl coure data (including Date/Time and location) 
+    Define classes to crawl course data (including Date/Time and location) 
     from the learnweb and quispos system of the university Münster
   
     Copyright: Copyright 2022
