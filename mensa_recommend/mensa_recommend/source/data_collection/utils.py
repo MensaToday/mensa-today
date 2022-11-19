@@ -11,7 +11,7 @@ from django.db.models import Model
 
 __non_digit__ = re.compile('[^0-9,.]')
 
-# load translation dictonary
+# load translation dictionary
 with open("translate.json", "r") as file:
     __translations__ = json.load(file)
 
