@@ -24,7 +24,12 @@ def translate(key: str) -> str:
     if key in __translations__:
         return __translations__[key]
     else:
-        raise Exception(f"Could not find '{key}' in translate.json!")
+        raise TranslationKeyNotFound(key)
+
+
+class TranslationKeyNotFound(Exception):
+    def __init__(self, key: str) -> None:
+        super().__init__(f"Could not find '{key}' in translate.json!")
 
 
 def _remove_non_digit(s: str) -> str:
