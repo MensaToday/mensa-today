@@ -6,7 +6,7 @@
         h2 MensaToday
       v-spacer
         //- something on the right side
-    TheNavigation
+    //- TheNavigation
     v-main
       router-view
 </template>
@@ -15,9 +15,7 @@
 
 export default {
   name: 'App',
-
   data: () => ({
-    //
   }),
 };
 </script>
