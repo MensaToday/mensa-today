@@ -20,7 +20,7 @@ PGADMIN_DEFAULT_PASSWORD = YOUR_PGADMIN_PASSWORD
 After creating the file start docker:
 
 1. `docker-compose up`
-2. In a seccond terminal connect to app container `docker exec -it mensa_recommend_app_1 bash`
+2. In a seccond terminal connect to app container `docker exec -it mensa_recommend-app-1 bash`
 3. `python manage.py makemigrations`
 4. `python manage.py migrate`
 5. `python manage.py createsuperuser`

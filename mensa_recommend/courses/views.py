@@ -26,7 +26,7 @@ def learnweb_login(request):
                 print("Daten falsch...")
             else:
 
-                # Id data is correct than crawling can be started
+                # Id data is correct then crawling can be started
                 run.delay(ziv_id, ziv_password, current_user.id)
 
     return render(request, 'learnweb_login.html', {})
