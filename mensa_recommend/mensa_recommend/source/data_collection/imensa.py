@@ -2,7 +2,7 @@ from typing import List
 
 from bs4 import BeautifulSoup
 
-from mensa_recommend.mensa.models import Category, Allergy, Additive
+from mensa.models import Category, Allergy, Additive
 from utils import NoAuthCollector
 import utils
 
@@ -43,10 +43,12 @@ class IMensaCollector(NoAuthCollector):
         for div in document.find_all(class_="aw-meal-category"):
             for meal in div.find_all(class_="aw-meal row no-margin-xs"):
                 name = meal.find(class_="aw-meal-description").text
-                price_for_students = utils.to_float(meal.find(title="Preis für Studierende").text[:-2])
+                price_for_students = utils.to_float(
+                    meal.find(title="Preis für Studierende").text[:-2])
                 price_for_non_students = price_for_students * 1.5
 
-                attributes = meal.find(class_="small aw-meal-attributes").span.text.replace("\xa0", "").split(" ")
+                attributes = meal.find(
+                    class_="small aw-meal-attributes").span.text.replace("\xa0", "").split(" ")
 
                 att_type = 0
                 categories = []
@@ -94,5 +96,6 @@ class IMensaCollector(NoAuthCollector):
             m = self.cities[city]
             for mensa in m:
                 for day in self.days:
-                    urls.append(self.url.format(city=city, mensa=mensa, day=day))
+                    urls.append(self.url.format(
+                        city=city, mensa=mensa, day=day))
         return urls

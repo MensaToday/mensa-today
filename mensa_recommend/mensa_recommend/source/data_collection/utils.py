@@ -40,8 +40,8 @@ def response_to_soup(res: requests.Response) -> BeautifulSoup:
     return BeautifulSoup(document, "lxml")
 
 
-def url_to_soup(url: str) -> BeautifulSoup:
-    return response_to_soup(requests.get(url))
+def url_to_soup(url: str, headers: dict = None) -> BeautifulSoup:
+    return response_to_soup(requests.get(url, headers=headers))
 
 
 class Collector(ABC):
