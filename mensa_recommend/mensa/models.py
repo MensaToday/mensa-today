@@ -51,6 +51,8 @@ class Mensa(models.Model):
     startTime = models.TimeField()
     endtime = models.TimeField()
     dishes = models.ManyToManyField("Dish", through="DishPlan")
+    rooms = models.ManyToManyField(
+        "courses.Room", through="courses.RoomMensaDistance")
 
     class Meta:
         verbose_name = 'Mensa'

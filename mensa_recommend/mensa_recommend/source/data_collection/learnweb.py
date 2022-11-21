@@ -517,7 +517,7 @@ class RoomCollector(NoAuthCollector):
 
         return room_name, room_address, room_seats
 
-    def __get_room_location_details(self, room_address: str) -> Tuple(float, float):
+    def __get_room_location_details(self, room_address: str) -> Tuple[float, float]:
         """private method to get the longitude and latitude of the room address to calculate the
         distance between the room and the mensa in a later step
 
