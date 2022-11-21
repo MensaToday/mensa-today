@@ -20,13 +20,13 @@
                     v-img(:alt="dish.name" 
                         :src="require('@/assets/quiz_dishes/' + dish.img)")
                     div.justify-center
-                        v-btn.my-2(@click="dish.would_eat = false" large width="50%" 
+                        v-btn.my-2(@click="dish.would_eat = false" large width="50%" elevation="1"
                             :color="(dish.would_eat != false) ? 'gray' : 'primary'")
                             v-icon {{(dish.would_eat != false) ? 'mdi-thumb-down-outline' : 'mdi-thumb-down'}} 
-                        v-btn.my-2(@click="dish.would_eat = true" large width="50%" 
+                        v-btn.my-2(@click="dish.would_eat = true" large width="50%" elevation="1"
                             :color="dish.would_eat ? 'green' : 'gray'")
                             v-icon {{(dish.would_eat && dish.would_eat != null) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
-            v-btn.ma-2.px-12.float-right 
+            v-btn.ma-2.px-12.float-right(to="/")
                 v-icon mdi-chevron-right
                 | continue
 </template>
@@ -40,7 +40,9 @@ export default {
             {food_preference: "vegetarian",   value: false},
             {food_preference: "fish",         value: false},
             {food_preference: "pork",         value: false},
-            {food_preference: "beef",         value: false}
+            {food_preference: "chicken",      value: false},
+            {food_preference: "beef",         value: false},
+            {food_preference: "alcohol",      value: false},
             ],
         dishes: [
             {name: "Burger with Salad", img: "dish_preview.png", would_eat: null,
