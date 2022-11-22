@@ -2,20 +2,12 @@ from datetime import datetime, date
 from typing import List, Tuple
 
 from bs4 import BeautifulSoup
-from django.db import IntegrityError
 
 from mensa.models import Category, Allergy, Additive, Dish, DishCategory, DishAllergy, DishAdditive, DishPlan, Mensa, \
     ExtDishRating
 from .utils import NoAuthCollector
 from . import utils
-
-static_categories = ["Vegan", "Vegetarian", "Pork", "Beef", "Poultry", "Alcohol", "Fish"]
-static_additives = ["Dyed", "Preservatives", "Antioxidants", "Flavor enhancers", "Sulphurated", "Blackened", "Waxed",
-                    "Phosphate", "Sweeteners", "Phenylalanine source"]
-static_allergies = ["Gluten", "Spelt", "Barley", "Oats", "Kamut", "Rye", "Wheat", "Crustaceans", "Egg", "Fish",
-                    "Peanuts", "Soy", "Milk", "Nuts", "Almonds", "Hazelnuts", "Walnuts", "Cashews", "Pecans",
-                    "Brazil nuts", "Pistachios", "Macadamias", "Celery", "Mustard", "Sesame", "Lupines", "Molluscs",
-                    "Sulfur dioxide"]
+from . import static_data
 
 
 def _get_dish(name: str) -> Dish:
@@ -42,46 +34,15 @@ class IMensaCollector(NoAuthCollector):
         self.days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"]
 
     def prepare(self) -> None:
-        for c in static_categories:
+        for c in static_data.categories:
             utils.save_integrity_free(Category(name=c))
-        for a in static_additives:
+        for a in static_data.additives:
             utils.save_integrity_free(Additive(name=a))
-        for a in static_allergies:
+        for a in static_data.allergies:
             utils.save_integrity_free(Allergy(name=a))
 
-        utils.save_integrity_free(
-            Mensa(name_id="bistro-denkpause", name="Bistro Denkpause", street="Corrensstr.", houseNumber="25", zipCode=48149, city="Münster",
-                  startTime="11:30", endTime="14:15"))
-        utils.save_integrity_free(
-            Mensa(name_id="mensa-da-vinci", name="Mensa Da Vinci", street="Leonardo-Campus", houseNumber="8", zipCode=48149, city="Münster",
-                  startTime="11:30", endTime="14:00"))
-        utils.save_integrity_free(
-            Mensa(name_id="bistro-katholische-hochschule", name="Bistro Katholische Hochschule", street="Piusallee", houseNumber="89", zipCode=48147,
-                  city="Münster", startTime="11:30", endTime="13:45"))
-        utils.save_integrity_free(
-            Mensa(name_id="bistro-durchblick", name="Bistro Durchblick", street="Fliednerstr.", houseNumber="21", zipCode=48149, city="Münster",
-                  startTime="11:30", endTime="13:30"))
-        utils.save_integrity_free(
-            Mensa(name_id="bistro-frieden", name="Bistro Frieden", street="Scharnhorststr.", houseNumber="100", zipCode=48151, city="Münster",
-                  startTime="08:00", endTime="13:45"))
-        utils.save_integrity_free(
-            Mensa(name_id="bistro-kabu", name="Bistro KaBu", street="Domplatz", houseNumber="21", zipCode=48143, city="Münster",
-                  startTime="11:00", endTime="14:00"))
-        utils.save_integrity_free(
-            Mensa(name_id="bistro-oeconomicum", name="Bistro Oeconomicum", street="Universitätsstr.", houseNumber="14", zipCode=48143, city="Münster",
-                  startTime="07:30", endTime="18:00"))
-        utils.save_integrity_free(
-            Mensa(name_id="hier-und-jetzt", name="Hier und Jetzt", street="Bismarckallee", houseNumber="11", zipCode=48151, city="Münster",
-                  startTime="11:30", endTime="14:30"))  # ALSO 17:00-21:00 ._. ; we'll ignore that for now
-        utils.save_integrity_free(
-            Mensa(name_id="mensa-am-aasee", name="Mensa am Aasee", street="Bismarckallee", houseNumber="11", zipCode=48151, city="Münster",
-                  startTime="11:45", endTime="14:30"))
-        utils.save_integrity_free(
-            Mensa(name_id="mensa-am-ring", name="Mensa am Ring", street="Domagkstr.", houseNumber="61", zipCode=48149, city="Münster",
-                  startTime="11:30", endTime="14:00"))
-        utils.save_integrity_free(
-            Mensa(name_id="mensa-bispinghof", name="Mensa Bispinghof", street="Bispinghof", houseNumber="9-14", zipCode=48149, city="Münster",
-                  startTime="11:00", endTime="14:30"))
+        for m in static_data.canteens:
+            utils.save_integrity_free(m)
 
     def _scrape(self, document: BeautifulSoup, **options) -> None:
         mensa: Mensa = options["mensa"]

@@ -51,6 +51,8 @@ class Mensa(models.Model):
     startTime = models.TimeField()
     endTime = models.TimeField()
     dishes = models.ManyToManyField("Dish", through="DishPlan")
+    lat = models.DecimalField(max_digits=13, decimal_places=8, null=True)
+    lon = models.DecimalField(max_digits=13, decimal_places=8, null=True)
 
     class Meta:
         verbose_name = 'Mensa'
