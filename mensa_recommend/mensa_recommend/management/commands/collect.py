@@ -6,6 +6,10 @@ from mensa_recommend.source.data_collection.utils import Collector
 
 
 class Command(BaseCommand):
+    """
+        The main command for preparing and scraping data.
+    """
+
     help = "Collect data through registered data collectors."
     data_collectors = {
         "imensa": imensa.IMensaCollector()
