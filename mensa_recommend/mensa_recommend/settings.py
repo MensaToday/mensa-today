@@ -83,11 +83,11 @@ WSGI_APPLICATION = 'mensa_recommend.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ['POSTGRES_DB'],
-        "USER": os.environ['POSTGRES_USER'],
-        "PASSWORD": os.environ['POSTGRES_PASSWORD'],
-        "HOST": os.environ['POSTGRES_HOST'],
-        "PORT": os.environ['POSTGRES_PORT'],
+        "NAME":  os.environ.get('POSTGRES_DB', ''),
+        "USER": os.environ.get('POSTGRES_USER', ''),
+        "PASSWORD": os.environ.get('POSTGRES_PASSWORD', ''),
+        "HOST": os.environ.get('POSTGRES_HOST', ''),
+        "PORT": os.environ.get('POSTGRES_PORT', ''),
     }
 }
 
@@ -133,3 +133,6 @@ STATIC_ROOT = os.path.join(BASE_DIR,  'static')
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
