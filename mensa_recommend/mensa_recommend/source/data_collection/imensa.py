@@ -51,15 +51,15 @@ class IMensaCollector(NoAuthURLCollector):
     def prepare(self) -> None:
         # insert static categories, additives and allergies
         for c in static_data.categories:
-            utils.save_integrity_free(Category(name=c))
+            utils.save_without_integrity(Category(name=c))
         for a in static_data.additives:
-            utils.save_integrity_free(Additive(name=a))
+            utils.save_without_integrity(Additive(name=a))
         for a in static_data.allergies:
-            utils.save_integrity_free(Allergy(name=a))
+            utils.save_without_integrity(Allergy(name=a))
 
         # insert mensa information
         for m in static_data.canteens:
-            utils.save_integrity_free(m)
+            utils.save_without_integrity(m)
 
     def _scrape(self, document: BeautifulSoup, **options) -> None:
         mensa: Mensa = options["mensa"]
