@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 from celery import shared_task
 import datetime
 from tqdm import tqdm
+import threading
 
 from courses.models import Room, Course, Timeslot, Reservation
 from .utils import Collector, NoAuthURLCollector, url_to_soup
@@ -383,6 +384,22 @@ class RoomCollector(NoAuthURLCollector):
     def __init__(self):
         self.room_url_pattern = 'https://studium.uni-muenster.de/qisserver/rds?state=wsearchv&search=3&alias_einrichtung.eid=einrichtung.dtxt&alias_k_raumart.raumartid=k_raumart.dtxt&raum.rgid={room_id}&P_start=0&P_anzahl=10&_form=display&language=en'
         self.open_street_map_pattern = 'https://nominatim.openstreetmap.org/search?q={query}&format=json&polygon=1&addressdetails=1'
+
+    def run(self):
+        pass
+
+    def prepare(self):
+        # Make use of threading to improve performance of simultaneous URL requests
+        threads = []
+        for url, options in self._build_urls():
+            t = threading.Thread(
+                target=self.__run, args=(url,), kwargs=options)
+            threads.append(t)
+            t.start()
+
+        # Wait until every thread performed its task
+        for t in threads:
+            t.join()
 
     def _build_urls(self) -> List[str]:
         return [('https://studium.uni-muenster.de/qisserver/rds?state=change&type=6&moduleParameter=raumSelect&nextdir=change&next=SearchSelect.vm&target=raumSearch&subdir=raum&source=state%3Dchange%26type%3D5%26moduleParameter%3DraumSearch%26nextdir%3Dchange%26next%3Dsearch.vm%26subdir%3Draum%26_form%3Ddisplay%26topitem%3Dfacilities%26subitem%3DsearchFacilities%26function%3Dnologgedin%26field%3Ddtxt&targetfield=dtxt&_form=display&noDBAction=y&init=y', None)]
