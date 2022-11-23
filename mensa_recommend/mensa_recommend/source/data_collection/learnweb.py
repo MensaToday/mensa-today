@@ -1,22 +1,22 @@
 """
     Define classes to crawl course data (including Date/Time and location) 
     from the learnweb and quispos system of the university Münster
-  
-    Copyright: Copyright 2022
-    License: MIT License
 """
 from __future__ import absolute_import, unicode_literals
-from typing import List, Tuple
-from urllib.parse import urlparse, parse_qs
+
+import datetime
 import re
-from .utils import Collector, NoAuthCollector, url_to_soup
-from bs4 import BeautifulSoup
+from typing import List, Tuple, Union
+from urllib.parse import urlparse, parse_qs
+
 import requests
-from courses.models import Room, Course, Timeslot, Reservation
-from users.models import User
+from bs4 import BeautifulSoup
 from celery import shared_task
 import datetime
 from tqdm import tqdm
+
+from courses.models import Room, Course, Timeslot, Reservation
+from .utils import Collector, NoAuthURLCollector, url_to_soup
 
 
 @shared_task
@@ -61,7 +61,8 @@ class LearnWebCollector(Collector):
         for course in courses:
             self.__save_course_details(course, headers)
 
-    def get_session_id(self) -> str:
+    def get_session_id(self) -> Union[str, bool]:
+
         """Authenticate the user to the sso of the learnweb. If the credentials
         are incorrect a False will be returned to indicate the wrong credentials
         to the user. This method can also be execuded first to initial check the
@@ -197,7 +198,7 @@ class LearnWebCollector(Collector):
                     Reservation(course=course, timeslot=timeslot,
                                 room=room).save()
 
-    def __get_quis_url_name(self, search_url: str, headers: dict) -> Tuple[str, str]:
+    def __get_quis_url_name(self, search_url: str, headers: dict) -> Union[Tuple[str, str], Tuple[None, None]]:
         """Private method to get the quispos url from the learnweb search result
 
             Parameters
@@ -375,7 +376,7 @@ class LearnWebCollector(Collector):
         return formatted_qis_table_data
 
 
-class RoomCollector(NoAuthCollector):
+class RoomCollector(NoAuthURLCollector):
     """
         Methods to get the all Rooms of the university including address and number of seats
     """
@@ -384,7 +385,7 @@ class RoomCollector(NoAuthCollector):
         self.room_url_pattern = 'https://studium.uni-muenster.de/qisserver/rds?state=wsearchv&search=3&alias_einrichtung.eid=einrichtung.dtxt&alias_k_raumart.raumartid=k_raumart.dtxt&raum.rgid={room_id}&P_start=0&P_anzahl=10&_form=display&language=en'
         self.open_street_map_pattern = 'https://nominatim.openstreetmap.org/search?q={query}&format=json&polygon=1&addressdetails=1'
 
-    def build_urls(self) -> List[str]:
+    def _build_urls(self) -> List[str]:
         return ['https://studium.uni-muenster.de/qisserver/rds?state=change&type=6&moduleParameter=raumSelect&nextdir=change&next=SearchSelect.vm&target=raumSearch&subdir=raum&source=state%3Dchange%26type%3D5%26moduleParameter%3DraumSearch%26nextdir%3Dchange%26next%3Dsearch.vm%26subdir%3Draum%26_form%3Ddisplay%26topitem%3Dfacilities%26subitem%3DsearchFacilities%26function%3Dnologgedin%26field%3Ddtxt&targetfield=dtxt&_form=display&noDBAction=y&init=y']
 
     def scrape(self, document: BeautifulSoup) -> None:
@@ -449,7 +450,7 @@ class RoomCollector(NoAuthCollector):
 
         return room_ids
 
-    def __get_room_info(self, room_id: int) -> Tuple[str, str, int]:
+    def __get_room_info(self, room_id: int) -> Tuple[str, str, Union[int, None]]:
         """private method to get all the room ids
 
             Parameters

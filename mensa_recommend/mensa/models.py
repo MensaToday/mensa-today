@@ -2,7 +2,8 @@ from django.db import models
 
 
 class Dish(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
+    main = models.BooleanField()
     categories = models.ManyToManyField('Category', through='DishCategory')
     allergies = models.ManyToManyField('Allergy', through='DishAllergy')
     mensen = models.ManyToManyField('Mensa', through='DishPlan')
@@ -13,8 +14,7 @@ class Dish(models.Model):
 
 
 class Category(models.Model):
-    id = models.CharField(primary_key=True, max_length=10, unique=True)
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
     dishes = models.ManyToManyField('Dish', through='DishCategory')
     users = models.ManyToManyField('users.User', through='UserCategory')
 
@@ -24,8 +24,7 @@ class Category(models.Model):
 
 
 class Allergy(models.Model):
-    id = models.CharField(primary_key=True, max_length=10, unique=True)
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
     allergies = models.ManyToManyField('Dish', through='DishAllergy')
     users = models.ManyToManyField('users.User', through='UserAllergy')
 
@@ -35,8 +34,7 @@ class Allergy(models.Model):
 
 
 class Additive(models.Model):
-    id = models.CharField(primary_key=True, max_length=10, unique=True)
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
     additives = models.ManyToManyField('Dish', through='DishAdditive')
 
     class Meta:
@@ -45,12 +43,17 @@ class Additive(models.Model):
 
 
 class Mensa(models.Model):
+    name_id = models.CharField(max_length=70, unique=True)
     name = models.CharField(max_length=70)
     street = models.CharField(max_length=100)
-    housenumer = models.IntegerField()
+    houseNumber = models.CharField(max_length=20)
+    zipCode = models.IntegerField()
+    city = models.CharField(max_length=50)
     startTime = models.TimeField()
-    endtime = models.TimeField()
+    endTime = models.TimeField()
     dishes = models.ManyToManyField("Dish", through="DishPlan")
+    lat = models.DecimalField(max_digits=13, decimal_places=8, null=True)
+    lon = models.DecimalField(max_digits=13, decimal_places=8, null=True)
     rooms = models.ManyToManyField(
         "courses.Room", through="courses.RoomMensaDistance")
 
@@ -60,22 +63,35 @@ class Mensa(models.Model):
 
 
 class CardBalance(models.Model):
-    balance = models.DecimalField(max_digits=2, decimal_places=2)
-    date = models.DateField()
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    balance = models.DecimalField(max_digits=5, decimal_places=2, null=False)
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        "users.User", on_delete=models.CASCADE, null=False)
+
+    class Meta:
+        unique_together = (('id', 'date'),)
 
 
 class DishCategory(models.Model):
+    class Meta:
+        unique_together = (('dish', 'category'),)
+
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
 class DishAllergy(models.Model):
+    class Meta:
+        unique_together = (('dish', 'allergy'),)
+
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     allergy = models.ForeignKey(Allergy, on_delete=models.CASCADE)
 
 
 class DishAdditive(models.Model):
+    class Meta:
+        unique_together = (('dish', 'additive'),)
+
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     additive = models.ForeignKey(Additive, on_delete=models.CASCADE)
 
@@ -91,8 +107,22 @@ class UserAllergy(models.Model):
 
 
 class DishPlan(models.Model):
+    class Meta:
+        unique_together = (('dish', 'mensa', 'date'),)
+
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     mensa = models.ForeignKey(Mensa, on_delete=models.CASCADE)
     date = models.DateField()
-    priceStudent = models.DecimalField(max_digits=2, decimal_places=2)
-    priceEmployee = models.DecimalField(max_digits=2, decimal_places=2)
+    priceStudent = models.DecimalField(max_digits=4, decimal_places=2)
+    priceEmployee = models.DecimalField(max_digits=4, decimal_places=2)
+
+
+class ExtDishRating(models.Model):
+    class Meta:
+        unique_together = (('dish', 'mensa', 'date'),)
+
+    mensa = models.ForeignKey(Mensa, on_delete=models.CASCADE)
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
+    date = models.DateField()
+    rating_avg = models.DecimalField(max_digits=2, decimal_places=1)
+    rating_count = models.IntegerField()
