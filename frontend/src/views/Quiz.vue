@@ -1,40 +1,65 @@
 <template lang="pug">
     div  
         v-container.center-items
-            h1 Tell Us About Yourself - Intro-Quiz
-            h2.mt-0 1. Specify Your Food Preference
-            v-row.d-flex
-                v-checkbox.mx-4(
-                    v-for="checkbox in food_preferences"
-                    v-model="checkbox.value"
-                    :key="checkbox.food_preference"
-                    :label="checkbox.food_preference")
-            v-row
-                h2.mb-4 2. Select 3 Dishes Which You Would Like to Eat
-            v-row
-                v-col(
-                    v-for="dish in dishes"
-                    cols="12" sm="12" md="4" 
-                    :key="dish.name")
-                    p.text-center {{dish.name}}
-                    v-img(:alt="dish.name" 
-                        :src="require('@/assets/quiz_dishes/' + dish.img)")
-                    div.justify-center
-                        v-btn.my-2(@click="dish.would_eat = false" large width="50%" elevation="1"
-                            :color="(dish.would_eat != false) ? 'gray' : 'primary'")
-                            v-icon {{(dish.would_eat != false) ? 'mdi-thumb-down-outline' : 'mdi-thumb-down'}} 
-                        v-btn.my-2(@click="dish.would_eat = true" large width="50%" elevation="1"
-                            :color="dish.would_eat ? 'green' : 'gray'")
-                            v-icon {{(dish.would_eat && dish.would_eat != null) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
-            v-btn.ma-2.px-12.float-right(to="/")
+            h1.text-center.my-8 Tell Us About Yourself - Intro-Quiz
+            
+            v-stepper(v-model='cur_step')
+                v-stepper-header
+                    v-stepper-step(:complete='cur_step > 1' step='1') Food Preferences
+                    v-divider
+                    v-stepper-step(:complete='cur_step > 2' step='2') Select Dishes
+                        //- Which You Would Like to Eat
+                    v-divider
+                    v-stepper-step(step='3') Sign In
+                v-stepper-items
+                    v-stepper-content(step='1')
+                        v-card.mb-4(max-width='800' flat)
+                            v-row
+                                v-col(cols="4" v-for="checkbox in food_preferences" :key="checkbox.food_preference")
+                                    v-checkbox.mx-3(
+                                        v-model="checkbox.value"
+                                        :label="checkbox.food_preference")
+                        v-btn.mb-4(color='primary' @click='cur_step = 2')
+                            | Continue
+                    v-stepper-content(step='2')
+                        v-card.mb-4(max-width='800' flat)
+                            v-row
+                                v-col(
+                                    v-for="dish in dishes"
+                                    cols="12" sm="12" md="6"
+                                    :key="dish.name")
+                                    p.text-center {{dish.name}}
+                                    v-img(:alt="dish.name" max-width="385"
+                                        :src="require('@/assets/quiz_dishes/' + dish.img)")
+                                    div.justify-center
+                                        v-btn.my-2(@click="dish.would_eat = false" large width="50%" elevation="1"
+                                            :color="(dish.would_eat != false) ? 'gray' : 'primary'")
+                                            v-icon {{(dish.would_eat != false) ? 'mdi-thumb-down-outline' : 'mdi-thumb-down'}} 
+                                        v-btn.my-2(@click="dish.would_eat = true" large width="50%" elevation="1"
+                                            :color="dish.would_eat ? 'green' : 'gray'")
+                                            v-icon {{(dish.would_eat && dish.would_eat != null) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
+                        v-btn(color='primary' @click='cur_step = 3')
+                            | Continue
+                        v-btn.ma-4(@click="cur_step-=1")
+                            | Go Back
+                    v-stepper-content(step='3')
+                        v-card.mb-4(max-width='800' flat)
+                            p Sign in to be implemented
+                        v-btn(color='primary' @click='cur_step = 1')
+                            | Sign In
+                        v-btn.ma-4(@click="cur_step-=1")
+                            | Go Back
+            
+            v-btn.ma-8.px-12.float-right(to="/")
                 v-icon mdi-chevron-right
-                | continue
+                | Home
 </template>
 
 <script>
 export default {
     name: "Quiz",
     data: () => ({
+        cur_step: 1,
         food_preferences: [
             {food_preference: "vegan",        value: false},
             {food_preference: "vegetarian",   value: false},
