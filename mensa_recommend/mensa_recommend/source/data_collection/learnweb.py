@@ -59,7 +59,7 @@ class LearnWebCollector(Collector):
         for course in courses:
             self.__save_course_details(course, headers)
 
-    def get_session_id(self) -> Union[str, False]:
+    def get_session_id(self) -> Union[str, bool]:
         """Authenticate the user to the sso of the learnweb. If the credentials
         are incorrect a False will be returned to indicate the wrong credentials
         to the user. This method can also be execuded first to initial check the
