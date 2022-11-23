@@ -62,7 +62,6 @@ class LearnWebCollector(Collector):
             self.__save_course_details(course, headers)
 
     def get_session_id(self) -> Union[str, bool]:
-
         """Authenticate the user to the sso of the learnweb. If the credentials
         are incorrect a False will be returned to indicate the wrong credentials
         to the user. This method can also be execuded first to initial check the
@@ -386,9 +385,9 @@ class RoomCollector(NoAuthURLCollector):
         self.open_street_map_pattern = 'https://nominatim.openstreetmap.org/search?q={query}&format=json&polygon=1&addressdetails=1'
 
     def _build_urls(self) -> List[str]:
-        return ['https://studium.uni-muenster.de/qisserver/rds?state=change&type=6&moduleParameter=raumSelect&nextdir=change&next=SearchSelect.vm&target=raumSearch&subdir=raum&source=state%3Dchange%26type%3D5%26moduleParameter%3DraumSearch%26nextdir%3Dchange%26next%3Dsearch.vm%26subdir%3Draum%26_form%3Ddisplay%26topitem%3Dfacilities%26subitem%3DsearchFacilities%26function%3Dnologgedin%26field%3Ddtxt&targetfield=dtxt&_form=display&noDBAction=y&init=y']
+        return [('https://studium.uni-muenster.de/qisserver/rds?state=change&type=6&moduleParameter=raumSelect&nextdir=change&next=SearchSelect.vm&target=raumSearch&subdir=raum&source=state%3Dchange%26type%3D5%26moduleParameter%3DraumSearch%26nextdir%3Dchange%26next%3Dsearch.vm%26subdir%3Draum%26_form%3Ddisplay%26topitem%3Dfacilities%26subitem%3DsearchFacilities%26function%3Dnologgedin%26field%3Ddtxt&targetfield=dtxt&_form=display&noDBAction=y&init=y', None)]
 
-    def scrape(self, document: BeautifulSoup) -> None:
+    def _scrape(self, document: BeautifulSoup) -> None:
         """method to format the qis table data
 
             Parameters
