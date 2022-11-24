@@ -4,16 +4,14 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 class CustomUserManager(BaseUserManager):
 
-    def _create_user(self, email, password, first_name, last_name, **extra_fields):
-        if not email:
-            raise ValueError("Email must be provided")
+    def _create_user(self, username, password, **extra_fields):
+        if not username:
+            raise ValueError("Username must be provided")
         if not password:
             raise ValueError("Password must be provided")
 
         user = self.model(
-            email=self.normalize_email(email),
-            first_name=first_name,
-            last_name=last_name,
+            username=username,
             **extra_fields
         )
 
@@ -21,12 +19,12 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, password, first_name, last_name, **extra_fields):
+    def create_user(self, username, password, **extra_fields):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
-        return self._create_user(email, password, first_name, last_name ** extra_fields)
+        return self._create_user(username, password, ** extra_fields)
 
-    def create_superuser(self, email, password, first_name, last_name, **extra_fields):
+    def create_superuser(self, username, password, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -35,12 +33,12 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self._create_user(email, password, first_name, last_name, **extra_fields)
+        return self._create_user(username, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
 
-    email = models.EmailField(unique=True, max_length=254)
+    username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=240)
     last_name = models.CharField(max_length=240)
 
@@ -57,8 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    USERNAME_FIELD = 'username'
 
     class Meta:
         verbose_name = 'User'

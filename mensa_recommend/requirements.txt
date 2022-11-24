@@ -6,3 +6,6 @@ beautifulsoup4 == 4.11.1
 celery == 5.2.7
 redis == 4.3.4
 tqdm == 4.64.1
+django-cors-headers == 3.13.0
+djangorestframework == 3.14.0
+djangorestframework-simplejwt == 5.2.2
