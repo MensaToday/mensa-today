@@ -1,8 +1,8 @@
 <template lang="pug">
-    div  
+    div
         v-container.center-items
             h1.text-center.my-8 Tell Us About Yourself - Intro-Quiz
-            
+
             v-stepper(v-model='cur_step')
                 v-stepper-header
                     v-stepper-step(:complete='cur_step > 1' step='1') Food Preferences
@@ -19,6 +19,12 @@
                                     v-checkbox.mx-3(
                                         v-model="checkbox.value"
                                         :label="checkbox.food_preference")
+                                v-col(cols="4")
+                                    v-checkbox.mx-3(
+                                        @click="isCheckAll ? uncheckAll() : checkAll()"
+                                        v-model="isCheckAll"
+                                        label="Select All")
+                                //- p - {{food_preferences[1]["value"]}} -
                         v-btn.mb-4(color='primary' @click='cur_step = 2')
                             | Continue
                     v-stepper-content(step='2')
@@ -68,7 +74,7 @@ export default {
             {food_preference: "chicken",      value: false},
             {food_preference: "beef",         value: false},
             {food_preference: "alcohol",      value: false},
-            ],
+        ],
         dishes: [
             {name: "Burger with Salad", img: "dish_preview.png", would_eat: null,
             // TODO: list of additional_ingrediants_allergies: [nuts, ...]
@@ -79,5 +85,25 @@ export default {
             additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]}
         ],
     }),
-};
+    computed: {
+        isCheckAll(){
+            for(let idx=0; idx<this.food_preferences.length; idx++){
+                if(this.food_preferences[idx]["value"] == false) return false
+            }
+            return true
+        }
+    },
+    methods: {
+        checkAll(){
+            for(let idx=0; idx<this.food_preferences.length; idx++){
+                this.food_preferences[idx]["value"] = true
+            }
+        },
+        uncheckAll(){
+            for(let idx=0; idx<this.food_preferences.length; idx++){
+                this.food_preferences[idx]["value"] = false
+            }
+        }
+    }
+};  
 </script>
