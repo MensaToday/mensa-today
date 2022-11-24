@@ -2,6 +2,7 @@ from .utils import Collector
 import requests
 from mensa.models import CardBalance
 from users.models import User
+from typing import Union
 
 
 class KlarnaCollector(Collector):
@@ -15,11 +16,13 @@ class KlarnaCollector(Collector):
         card_balances = []
         for user in users:
             balance = self.__get_current_balance(user.card_id)
-            card_balances.append(CardBalance(balance=balance, user=user))
+
+            if balance:
+                card_balances.append(CardBalance(balance=balance, user=user))
 
         self.save_balance(card_balances=card_balances)
 
-    def __get_current_balance(self, card_id: str) -> float:
+    def get_current_balance(self, card_id: str) -> Union[float, None]:
 
         klarna_url = self.url_pattern.format(card_id=card_id)
 
@@ -29,6 +32,9 @@ class KlarnaCollector(Collector):
             response = requests.get(klarna_url)
             response_json = response.json()
 
+            if response.status_code == 404:
+                return None
+
             if 'balance' in response_json:
                 balance = response_json['balance']
         except requests.exceptions.RequestException as error:
@@ -36,12 +42,15 @@ class KlarnaCollector(Collector):
 
         return balance/100
 
-    def save_balance(self, user: User = None, card_balances=None):
+    def save_balance(self, user: User = None, card_balances=None) -> None:
 
         if card_balances:
             CardBalance.objects.bulk_create(card_balances)
         elif user:
             if user.card_id:
                 balance = self.__get_current_balance(user.card_id)
-                card_balance = CardBalance(balance=balance, user=user)
-                card_balance.save()
+                if balance:
+                    card_balance = CardBalance(balance=balance, user=user)
+                    card_balance.save()
+                else:
+                    return card_balance
