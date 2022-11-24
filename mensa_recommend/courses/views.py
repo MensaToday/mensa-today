@@ -2,10 +2,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, run
 from celery.result import AsyncResult
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework import permissions
-from rest_framework import status
 
 
 def learnweb_login(request):
@@ -34,9 +30,3 @@ def learnweb_login(request):
                 run.delay(ziv_id, ziv_password, current_user.id)
 
     return render(request, 'learnweb_login.html', {})
-
-
-@api_view(['GET'])
-@permission_classes((permissions.IsAuthenticated,))
-def getData(request):
-    return Response("Hello World")

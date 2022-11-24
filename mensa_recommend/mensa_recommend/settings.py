@@ -49,10 +49,12 @@ INSTALLED_APPS = [
     'mensa',
     'users',
     'courses',
+    'api',
 ]
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [

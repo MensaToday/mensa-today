@@ -35,7 +35,7 @@ class LearnWebCollector(Collector):
         the quispos system. All crawled data will be stored in the database
     """
 
-    def __init__(self, ziv_id: str, ziv_password: str, current_user: int):
+    def __init__(self, ziv_id: str, ziv_password: str, current_user: int = None):
         self.ziv_id = ziv_id
         self.ziv_password = ziv_password
         self.current_user = current_user

@@ -3,5 +3,4 @@ from . import views
 
 urlpatterns = [
     path('learnweb_login', views.learnweb_login, name='learnweb_login'),
-    path('get_data', views.getData),
 ]
