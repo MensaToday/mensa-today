@@ -52,6 +52,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         'mensa.Allergy', through='mensa.UserAllergy')
 
     card_id = models.CharField(max_length=8, null=True)
+    dishes = models.ManyToManyField(
+        'mensa.Dish', through='mensa.UserDishRating')
 
     objects = CustomUserManager()
 

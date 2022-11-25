@@ -5,6 +5,7 @@ from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, r
 from mensa_recommend.source.data_collection.klarna import KlarnaCollector
 from rest_framework import status
 from users.models import User
+from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, UserDishRating
 from users.source.authentication.manual_jwt import get_tokens_for_user
 
 
@@ -79,7 +80,50 @@ def register(request):
                         user.card_id = card_id
                         user.save()
 
-                    # TODO save categories, allergies and ratings
+                    # Save categories
+                    if len(categories) == 0:
+                        categorie_objects = Category.objects.all()
+                    else:
+                        categorie_objects = []
+                        for category in categories:
+                            try:
+                                category_object = Category.objects.get(
+                                    name=category)
+
+                                categorie_objects.append(category_object)
+                            except:
+                                pass
+
+                    for co in categorie_objects:
+                        UserCategory(user=user, category=co).save()
+
+                    # Save allergies
+                    allergies_objects = []
+                    for allergy in allergies:
+                        try:
+                            allergy_object = Allergy.objects.get(name=allergy)
+                            allergies_objects.append(allergy_object)
+                        except:
+                            pass
+
+                    for ao in allergies_objects:
+                        UserAllergy(user=user, allergy=ao).save()
+
+                    # Save ratings
+                    for rating in ratings:
+                        if 'id' in rating and 'rating' in rating:
+
+                            if rating['rating'] > 1 or rating['rating'] < 0:
+                                print("Rating in invalid range")
+                            else:
+                                try:
+                                    dish = Dish.objects.get(id=rating['id'])
+                                except:
+                                    dish = None
+
+                                if dish:
+                                    UserDishRating(
+                                        user=user, dish=dish, rating=rating['rating']).save()
 
                     # Id data is correct then crawling can be started
                     run.delay(ziv_id, ziv_password, user.id)
