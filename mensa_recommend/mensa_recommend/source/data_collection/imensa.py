@@ -71,7 +71,6 @@ class IMensaCollector(NoAuthURLCollector):
             category_name: str = div.find(class_="aw-meal-category-name").text
             side_meal = category_name.lower().startswith("beilage")
 
-            no_meal = False
             # go to every meal in that meal category
             for meal in div.find_all(class_="aw-meal row no-margin-xs"):
                 # Some "meals" entries are used to display information of the mensa.
