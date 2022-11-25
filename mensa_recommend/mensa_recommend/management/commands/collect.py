@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError, CommandParser
 
-from mensa_recommend.source.data_collection import imensa
+from mensa_recommend.source.data_collection import imensa, learnweb, room_mensa_distance
 
 from mensa_recommend.source.data_collection.utils import Collector
 
@@ -12,13 +12,16 @@ class Command(BaseCommand):
 
     help = "Collect data through registered data collectors."
     data_collectors = {
-        "imensa": imensa.IMensaCollector()
+        "imensa": imensa.IMensaCollector(),
+        "room": learnweb.RoomCollector(),
+        "room_mensa_distance": room_mensa_distance.RoomMensaDistanceCollector()
     }
 
     def add_arguments(self, parser: CommandParser):
         parser.add_argument("-s", "--source", required=True, type=str,
                             help="Select a specific data source collector for execution.")
-        parser.add_argument("-p", "--prepare", action="store_true", help="Setup specific collector.")
+        parser.add_argument(
+            "-p", "--prepare", action="store_true", help="Setup specific collector.")
 
     def handle(self, *args, **options):
         source: str = options["source"].lower()
@@ -29,10 +32,12 @@ class Command(BaseCommand):
 
             if prepare:
                 collector.prepare()
-                self.stdout.write(f"Successfully prepared data collector '{source}'.")
+                self.stdout.write(
+                    f"Successfully prepared data collector '{source}'.")
             else:
                 collector.run()
-                self.stdout.write(f"Successfully ran data collector '{source}'.")
+                self.stdout.write(
+                    f"Successfully ran data collector '{source}'.")
         else:
             raise CommandError(
                 f"Unknown data source collector: '{source}'. "

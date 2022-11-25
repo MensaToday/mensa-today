@@ -54,6 +54,8 @@ class Mensa(models.Model):
     dishes = models.ManyToManyField("Dish", through="DishPlan")
     lat = models.DecimalField(max_digits=13, decimal_places=8, null=True)
     lon = models.DecimalField(max_digits=13, decimal_places=8, null=True)
+    rooms = models.ManyToManyField(
+        "courses.Room", through="courses.RoomMensaDistance")
 
     class Meta:
         verbose_name = 'Mensa'
@@ -61,9 +63,13 @@ class Mensa(models.Model):
 
 
 class CardBalance(models.Model):
-    balance = models.DecimalField(max_digits=2, decimal_places=2)
-    date = models.DateField()
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    balance = models.DecimalField(max_digits=5, decimal_places=2, null=False)
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        "users.User", on_delete=models.CASCADE, null=False)
+
+    class Meta:
+        unique_together = (('id', 'date'),)
 
 
 class DishCategory(models.Model):

@@ -28,9 +28,19 @@ class Room(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=80)
     seats = models.IntegerField(null=True)
+    lon = models.DecimalField(max_digits=13, decimal_places=8, null=True)
+    lat = models.DecimalField(max_digits=13, decimal_places=8, null=True)
+    mensen = models.ManyToManyField(
+        'mensa.Mensa', through='RoomMensaDistance')
 
 
 class Reservation(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     timeslot = models.ForeignKey(Timeslot, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
+
+
+class RoomMensaDistance(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    mensa = models.ForeignKey('mensa.Mensa', on_delete=models.CASCADE)
+    distance = models.FloatField()
