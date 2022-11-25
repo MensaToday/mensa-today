@@ -5,6 +5,7 @@ class Dish(models.Model):
     name = models.CharField(max_length=200, unique=True)
     main = models.BooleanField()
     categories = models.ManyToManyField('Category', through='DishCategory')
+    additives = models.ManyToManyField('Additive', through='DishAdditive')
     allergies = models.ManyToManyField('Allergy', through='DishAllergy')
     mensen = models.ManyToManyField('Mensa', through='DishPlan')
     users = models.ManyToManyField('users.User', through='UserDishRating')
