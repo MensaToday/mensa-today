@@ -3,9 +3,14 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
 from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, run
 from mensa_recommend.source.data_collection.klarna import KlarnaCollector
+from mensa_recommend.source.computations.date_computations import get_last_monday
 from rest_framework import status
+
+from .serializers import DishPlanSerializer, DishSerializer
+
 from users.models import User
-from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, UserDishRating
+from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, UserDishRating, DishPlan
+
 from users.source.authentication.manual_jwt import get_tokens_for_user
 
 
@@ -178,6 +183,54 @@ def check_card_id(request):
             return Response("Card ID wrong", status=status.HTTP_404_NOT_FOUND)
     else:
         return Response("Not all fields provided", status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def get_dishplan(request):
+    """Get the dishplan for the next week
+
+        Route: api/v1/user/check_card_id
+        Authorization: Authenticated
+        Methods: GET
+
+        Output
+        -------
+        [
+            {
+                "dish": {
+                    "id": 154,
+                    "categories": [
+                        {
+                            "category": {
+                                "id": 1,
+                                "name": "Vegan"
+                            }
+                        }
+                    ],
+                    "main": false,
+                    "name": "Kroketten"
+                },
+                "mensa": {
+                    "id": 9,
+                    "name": "Mensa am Aasee",
+                    "city": "Münster",
+                    "street": "Bismarckallee",
+                    "houseNumber": "11",
+                    "zipCode": 48151,
+                    "startTime": "11:45:00",
+                    "endTime": "14:30:00"
+                },
+                "date": "2022-11-24",
+                "priceStudent": "0.75",
+                "priceEmployee": "0.50"
+            }
+        ]
+    """
+
+    last_monday = get_last_monday()
+
+    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gt=last_monday), many=True).data)
 
 
 @api_view(['GET'])
