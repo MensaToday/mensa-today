@@ -7,6 +7,11 @@ export default new Vuex.Store({
   state: {},
   getters: {},
   mutations: {},
-  actions: {},
+  actions: {
+    // TODO: adjust register API call. This is a placeholder
+    async Register(User){
+      await axios.post("register/", User)
+    },
+  },
   modules: {},
 });
