@@ -16,10 +16,10 @@
                         v-card.mb-4(max-width='800' flat)
                             v-card-text
                                 v-row
-                                    v-col.py-0(cols="4" v-for="checkbox in food_preferences" :key="checkbox.food_preference")
+                                    v-col.py-0(cols="4" v-for="(value, food_preference, index) in food_preferences" :key="index")
                                         v-checkbox.mx-3(
-                                            v-model="checkbox.value"
-                                            :label="checkbox.food_preference")
+                                            v-model="food_preferences[food_preference]"
+                                            :label="food_preference")
                                     v-col.py-0(cols="4")
                                         v-checkbox.mx-3(
                                             @click="isCheckAll ? uncheckAll() : checkAll()"
@@ -128,15 +128,15 @@ export default {
     data: () => ({
         cur_step: 1,
         // TODO: adjust food_preferences data structure to make food_preference the key
-        food_preferences: [
-            {food_preference: "Vegan",        value: false},
-            {food_preference: "Vegetarian",   value: false},
-            {food_preference: "Pork",         value: false},
-            {food_preference: "Beef",         value: false},
-            {food_preference: "Poultry",      value: false},
-            {food_preference: "Alcohol",      value: false},
-            {food_preference: "Fish",         value: false},
-        ],
+        food_preferences: {
+            "Vegan": false,
+            "Vegetarian": false,
+            "Pork": false,
+            "Beef": false,
+            "Poultry": false,
+            "Alcohol": false,
+            "Fish": false,
+        },
         additives: {
             "Dyed": false,
             "Preservatives": false,
@@ -202,8 +202,8 @@ export default {
     computed: {
         isCheckAll: {
             get: function(){
-                for(let idx=0; idx<this.food_preferences.length; idx++){
-                    if(this.food_preferences[idx]["value"] == false) return false
+                for (let [key, value] of Object.entries(this.food_preferences)) {
+                    if(value == false) return false
                 }
                 return true
             },
@@ -216,14 +216,14 @@ export default {
         // import LogInUser action
         ...mapActions(["LogIn"]),
         checkAll(){
-            for(let idx=0; idx<this.food_preferences.length; idx++){
-                this.food_preferences[idx]["value"] = true
-            }
+            Object.keys(this.food_preferences).forEach(key => {
+                this.food_preferences[key] = true
+            })
         },
         uncheckAll(){
-            for(let idx=0; idx<this.food_preferences.length; idx++){
-                this.food_preferences[idx]["value"] = false
-            }
+            Object.keys(this.food_preferences).forEach(key => {
+                this.food_preferences[key] = false
+            })
         },
         updateObject(obj, values){
             for(let idx=0; idx<values.length; idx++){
@@ -240,7 +240,7 @@ export default {
                     'allergies': this.allergies,
                     'ratings': this.dishes
                 }
-                await this.Register();
+                await this.Register(User);
                 // Redirect to suggestion webpage
                 setTimeout(() => { 
                     this.showError = false
