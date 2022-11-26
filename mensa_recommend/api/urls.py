@@ -6,4 +6,5 @@ urlpatterns = [
     path('user/register', views.register),
     path('user/check_card_id', views.check_card_id),
     path('mensa/get_dishplan', views.get_dishplan),
+    path('mensa/user_ratings', views.user_ratings)
 ]

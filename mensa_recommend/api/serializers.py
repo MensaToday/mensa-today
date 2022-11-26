@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from mensa.models import DishPlan, Dish, Category, DishCategory, Mensa
+from mensa.models import DishPlan, Dish, Category, DishCategory, Mensa, UserDishRating
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -42,3 +42,10 @@ class DishPlanSerializer(serializers.ModelSerializer):
         fields = ["dish", "mensa", "date",
                   "priceStudent", "priceEmployee"]
         model = DishPlan
+
+
+class UserDishRatingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ["dish", "rating"]
+        model = UserDishRating

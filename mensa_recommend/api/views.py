@@ -6,12 +6,13 @@ from mensa_recommend.source.data_collection.klarna import KlarnaCollector
 from mensa_recommend.source.computations.date_computations import get_last_monday
 from rest_framework import status
 
-from .serializers import DishPlanSerializer, DishSerializer
+from .serializers import DishPlanSerializer, DishSerializer, UserDishRatingSerializer
 
 from users.models import User
 from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, UserDishRating, DishPlan
 
 from users.source.authentication.manual_jwt import get_tokens_for_user
+from mensa_recommend.source.computations.transformer import transform_rating
 
 
 @api_view(['POST'])
@@ -231,6 +232,42 @@ def get_dishplan(request):
     last_monday = get_last_monday()
 
     return Response(DishPlanSerializer(DishPlan.objects.filter(date__gt=last_monday), many=True).data)
+
+@api_view(['GET', 'POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def user_ratings(request):
+
+    if request.method == 'POST':
+        if 'dish_id' in request.data and 'rating' in request.data:
+            dish_id = request.data['dish_id']
+            rating = request.data['rating']
+            user = request.user
+            
+            try:
+                dish = Dish.objects.get(id=dish_id)
+            except:
+                dish = None
+            
+            if dish:
+                rating = transform_rating(rating)
+
+                if rating:
+                    UserDishRating(dish=dish, user=user, rating=rating)
+
+                    return Response(status=status.HTTP_200_OK)
+                else:
+                    return Response("Rating not a number or not between 0 and 5", status=status.HTTP_400_BAD_REQUEST)
+            else:      
+                return Response("Dish cannot be found in the database", status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response("Not all fields provided", status=status.HTTP_404_NOT_FOUND)
+
+    elif request.method == 'GET':
+        user = request.user
+
+        ratings = UserDishRating.objects.get(user=user)
+        
+        return Response(UserDishRatingSerializer(ratings).data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
