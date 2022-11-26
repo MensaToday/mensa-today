@@ -8,6 +8,7 @@ class Dish(models.Model):
     additives = models.ManyToManyField('Additive', through='DishAdditive')
     allergies = models.ManyToManyField('Allergy', through='DishAllergy')
     mensen = models.ManyToManyField('Mensa', through='DishPlan')
+    users = models.ManyToManyField('users.User', through='UserDishRating')
 
     class Meta:
         verbose_name = 'Dish'
@@ -127,3 +128,9 @@ class ExtDishRating(models.Model):
     date = models.DateField()
     rating_avg = models.DecimalField(max_digits=2, decimal_places=1)
     rating_count = models.IntegerField()
+
+
+class UserDishRating(models.Model):
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
+    rating = models.FloatField()
