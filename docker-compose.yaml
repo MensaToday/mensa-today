@@ -1,10 +1,10 @@
 version: '3.8'
 services:
   app:
-    build: .
     image: mensa_app
+    build: mensa_recommend
     volumes:
-      - .:/app
+      - ./mensa_recommend/:/app
     ports:
       - 9999:9999
     command: python manage.py runserver 0.0.0.0:9999
@@ -40,10 +40,10 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     restart: always
   celery:
-    build: .
+    build: mensa_recommend
     command: celery -A mensa_recommend worker -l INFO
     volumes:
-      - .:/usr/src/app
+      - ./mensa_recommend/:/usr/src/app
     env_file:
       - database-variables.env
     environment:
@@ -54,6 +54,16 @@ services:
       - redis
   redis:
     image: 'redis:alpine'
+  frontend:
+    build:
+      context: frontend
+    ports:
+      - "8080:8080"
+    command: npm run serve
+    container_name: vue-ui
+    volumes:
+       - ./frontend:/usr/src/app
+       - /usr/src/app/node_modules
 
 volumes:
   postgres_data:
