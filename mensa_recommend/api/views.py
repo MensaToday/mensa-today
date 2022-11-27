@@ -236,38 +236,89 @@ def get_dishplan(request):
 @api_view(['GET', 'POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def user_ratings(request):
+    """Save or get user ratings
+
+        Route: api/v1/mensa/user_ratings
+        Authorization: Authenticated
+        Methods: Get, Post
+
+        POST
+        ----
+
+        Input
+        ------
+        {
+            "dish_id": int
+            "rating": 1-5
+        }
+
+        Output
+        -------
+        200-OK when rating is successully stored in the database
+
+        GET
+        ---
+
+        Output
+        -------
+        [
+            {
+                "dish": {
+                    "id": int,
+                    "main": bool,
+                    "name": str
+                },
+                "rating": float between 0-1
+            }
+        ]
+    """
 
     if request.method == 'POST':
+
+        # Check if all required attributes are given
         if 'dish_id' in request.data and 'rating' in request.data:
+
+            # Get data
             dish_id = request.data['dish_id']
             rating = request.data['rating']
             user = request.user
             
+            # Check if dish is available
             try:
                 dish = Dish.objects.get(id=dish_id)
             except:
                 dish = None
             
             if dish:
+
+                # Transform rating to float between 0-1
                 rating = transform_rating(rating)
 
+                # If rating is valid
                 if rating:
-                    UserDishRating(dish=dish, user=user, rating=rating)
+                    
+                    # Save the rating
+                    UserDishRating(dish=dish, user=user, rating=rating).save()
 
                     return Response(status=status.HTTP_200_OK)
                 else:
-                    return Response("Rating not a number or not between 0 and 5", status=status.HTTP_400_BAD_REQUEST)
+                    return Response("Rating not a number or not between 1 and 5", status=status.HTTP_400_BAD_REQUEST)
             else:      
                 return Response("Dish cannot be found in the database", status=status.HTTP_404_NOT_FOUND)
         else:
             return Response("Not all fields provided", status=status.HTTP_404_NOT_FOUND)
 
     elif request.method == 'GET':
+
         user = request.user
 
-        ratings = UserDishRating.objects.get(user=user)
+        # Get all ratings for the user
+        try:
+            ratings = UserDishRating.objects.all().filter(user=user)
+        except:
+            ratings = []
         
-        return Response(UserDishRatingSerializer(ratings).data, status=status.HTTP_200_OK)
+        return Response(UserDishRatingSerializer(ratings, many=True).data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

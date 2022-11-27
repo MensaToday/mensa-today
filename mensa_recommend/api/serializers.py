@@ -44,7 +44,15 @@ class DishPlanSerializer(serializers.ModelSerializer):
         model = DishPlan
 
 
+class BasicDishSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ["id", "main", "name"]
+        model = Dish
+
 class UserDishRatingSerializer(serializers.ModelSerializer):
+
+    dish = BasicDishSerializer(read_only=True)
 
     class Meta:
         fields = ["dish", "rating"]
