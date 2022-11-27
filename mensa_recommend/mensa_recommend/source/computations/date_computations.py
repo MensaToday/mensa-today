@@ -10,5 +10,5 @@ def get_last_monday() -> datetime.date:
         The date of the last monday
     """
     today = datetime.date.today()
-    last_monday = today - datetime.timedelta(days=-today.weekday(), weeks=1)
+    last_monday = today - datetime.timedelta(days=today.weekday())
     return last_monday
