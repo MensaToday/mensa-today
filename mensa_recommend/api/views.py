@@ -38,9 +38,11 @@ def register(request):
                 "access": str
             }
         If the user already exists:
-            409 CONFLICT
+            406 NOT ACCEPTABLE
         If the credentials are wrong:
             401 UNAUTHORIZED
+        If not all fields were provided:
+                406 NOT ACCEPTABLE
     """
 
     # check if request parameters were provided
@@ -77,7 +79,7 @@ def register(request):
                     current_balance = 1
 
                 # if card if correct current_balance is not None
-                if current_balance:
+                if current_balance is not None:
                     user = User.objects.create_user(ziv_id, ziv_password)
 
                     # If the card_id is -1 no card id was provided by the user.
@@ -146,10 +148,10 @@ def register(request):
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         else:
-            return Response("User already exists", status=status.HTTP_409_CONFLICT)
+            return Response("User already exists", status=status.HTTP_406_NOT_ACCEPTABLE)
 
     else:
-        return Response("Not all fields provided", status=status.HTTP_404_NOT_FOUND)
+        return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 @api_view(['POST'])
@@ -170,7 +172,8 @@ def check_card_id(request):
         Output
         -------
         If the card_id is valid the balance will be returned.
-        When it is wrong an 404 will be returned.
+        When it is wrong a 404 will be returned.
+        If not all fields were provided: 406
     """
 
     if 'card_id' in request.data:
@@ -183,7 +186,7 @@ def check_card_id(request):
         else:
             return Response("Card ID wrong", status=status.HTTP_404_NOT_FOUND)
     else:
-        return Response("Not all fields provided", status=status.HTTP_404_NOT_FOUND)
+        return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 @api_view(['GET'])
@@ -233,6 +236,7 @@ def get_dishplan(request):
 
     return Response(DishPlanSerializer(DishPlan.objects.filter(date__gt=last_monday), many=True).data)
 
+
 @api_view(['GET', 'POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def user_ratings(request):
@@ -255,6 +259,9 @@ def user_ratings(request):
         Output
         -------
         200-OK when rating is successully stored in the database
+        400 when ratings is not a number between 1-5
+        404 when dish cannot be found in the database
+        406 when not all fields were provided
 
         GET
         ---
@@ -282,13 +289,13 @@ def user_ratings(request):
             dish_id = request.data['dish_id']
             rating = request.data['rating']
             user = request.user
-            
+
             # Check if dish is available
             try:
                 dish = Dish.objects.get(id=dish_id)
             except:
                 dish = None
-            
+
             if dish:
 
                 # Transform rating to float between 0-1
@@ -296,17 +303,17 @@ def user_ratings(request):
 
                 # If rating is valid
                 if rating:
-                    
+
                     # Save the rating
                     UserDishRating(dish=dish, user=user, rating=rating).save()
 
                     return Response(status=status.HTTP_200_OK)
                 else:
                     return Response("Rating not a number or not between 1 and 5", status=status.HTTP_400_BAD_REQUEST)
-            else:      
+            else:
                 return Response("Dish cannot be found in the database", status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response("Not all fields provided", status=status.HTTP_404_NOT_FOUND)
+            return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
 
     elif request.method == 'GET':
 
@@ -317,7 +324,7 @@ def user_ratings(request):
             ratings = UserDishRating.objects.all().filter(user=user)
         except:
             ratings = []
-        
+
         return Response(UserDishRatingSerializer(ratings, many=True).data, status=status.HTTP_200_OK)
 
 
