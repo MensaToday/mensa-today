@@ -30,7 +30,7 @@
                                         v-combobox(v-model='selected_allergies' :items='Object.keys(allergies)' 
                                             :search-input.sync='search' hide-selected 
                                             label='Specify Allergies' 
-                                            multiple persistent-hint small-chips)
+                                            multiple persistent-hint small-chips clearable)
                                             template(v-slot:no-data)
                                                 v-list-item
                                                     v-list-item-content
@@ -42,7 +42,7 @@
                                         v-combobox(v-model='selected_additives' :items='Object.keys(additives)' 
                                             :search-input.sync='search' hide-selected 
                                             label='Specify Additives You Dislike' 
-                                            multiple persistent-hint small-chips)
+                                            multiple persistent-hint small-chips clearable)
                                             template(v-slot:no-data)
                                                 v-list-item
                                                     v-list-item-content
@@ -61,7 +61,6 @@
                     v-stepper-content(step='2')
                         v-card.mb-4(max-width='800' flat)
                             v-card-text
-                                p {{ allergies }}
                                 v-row
                                     v-col(
                                         v-for="dish in dishes"
