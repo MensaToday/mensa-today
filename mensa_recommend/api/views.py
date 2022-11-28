@@ -266,7 +266,7 @@ def get_dishplan(request):
     """
 
     last_monday = get_last_monday()
-    print(last_monday)
+
     return Response(DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday), many=True).data)
 
 
