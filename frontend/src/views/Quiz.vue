@@ -53,7 +53,7 @@
 
                                 v-card-actions
                                     v-spacer
-                                    v-btn(color='primary' 
+                                    v-btn(color='primary' :disabled="no_food_preferences"
                                         @click='updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); cur_step = 2')
                                         //- @click="allergies['Gluten']=true; cur_step = 2")
                                         v-icon mdi-chevron-right
@@ -72,22 +72,22 @@
                                     v-for="(dish, index) in dishes"
                                     :key="dish.name"
                                     :step='index+1')
-                                    v-img(:alt="dish.name" max-width="385"
+                                    v-img.mx-auto(:alt="dish.name" max-width="395"
                                         :src="require('@/assets/quiz_dishes/' + dish.img)")
                                     div.justify-center
-                                        v-btn.my-2(@click="dish.rating = false" large width="50%" elevation="1"
-                                            :color="(dish.rating != false) ? 'gray' : 'primary'")
-                                            v-icon {{(dish.rating != false) ? 'mdi-thumb-down-outline' : 'mdi-thumb-down'}} 
-                                        v-btn.my-2(@click="dish.rating = true" large width="50%" elevation="1"
+                                        v-btn.my-2(@click="dish.rating = 0" large width="50%" elevation="1"
+                                            :color="(dish.rating != 0) ? 'gray' : 'primary'")
+                                            v-icon {{(dish.rating == 0) ? 'mdi-thumb-down' : 'mdi-thumb-down-outline'}} 
+                                        v-btn.my-2(@click="dish.rating = 1" large width="50%" elevation="1"
                                             :color="dish.rating ? 'green' : 'gray'")
-                                            v-icon {{(dish.rating && dish.rating != null) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
-                                    v-card-actions
+                                            v-icon {{(dish.rating == 1) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
+                                    v-card-actions.pr-0
                                         v-btn(v-if='cur_step_dishes>1'
                                             @click="cur_step_dishes-=1") 
                                             v-icon mdi-chevron-left
                                             | Back
                                         v-spacer
-                                        v-btn(color='primary' v-if='cur_step_dishes<3'
+                                        v-btn(color='primary' v-if='cur_step_dishes<3' :disabled="dish.rating == null"
                                             @click='cur_step_dishes++')
                                             v-icon mdi-chevron-right
                                             | Continue
@@ -104,7 +104,7 @@
                             v-card-text
                                 v-form(@submit.prevent="submit")
                                     v-text-field(
-                                        label="ZIV Email"
+                                        label="ZIV Identifier"
                                         prepend-icon="mdi-account"
                                         v-model="form.email")
                                     v-text-field(
@@ -119,7 +119,7 @@
                                         prepend-icon="mdi-card-account-details"
                                         v-model="form.mensa_card_id")
                                     v-divider
-                                p(v-if="showError") Email or Password is incorrect
+                                p(v-if="showError") Identifier or Password is incorrect
                             
                             v-card-actions
                                 v-btn(@click="cur_step-=1") 
@@ -140,7 +140,7 @@ import { mapActions } from "vuex";
 export default {
     name: "Quiz",
     data: () => ({
-        cur_step: 2,
+        cur_step: 1,
         cur_step_dishes: 1,
         // TODO: adjust food_preferences data structure to make food_preference the key
         food_preferences: {
@@ -216,6 +216,17 @@ export default {
         showPassword: false
     }),
     computed: {
+        no_food_preferences: {
+            get: function(){
+                for (let [key, value] of Object.entries(this.food_preferences)) {
+                    if(value == true) return false
+                }
+                return true
+            },
+            set: function(){
+                return true
+            }
+        },
         isCheckAll: {
             get: function(){
                 for (let [key, value] of Object.entries(this.food_preferences)) {
