@@ -58,32 +58,47 @@
                                         //- @click="allergies['Gluten']=true; cur_step = 2")
                                         v-icon mdi-chevron-right
                                         | Continue
-                    v-stepper-content(step='2')
-                        v-card.mb-4(max-width='800' flat)
-                            v-card-text
-                                v-row
-                                    v-col(
-                                        v-for="dish in dishes"
-                                        cols="12" sm="12" md="6"
-                                        :key="dish.name")
-                                        p.text-center {{dish.name}}
-                                        v-img(:alt="dish.name" max-width="385"
-                                            :src="require('@/assets/quiz_dishes/' + dish.img)")
-                                        div.justify-center
-                                            v-btn.my-2(@click="dish.would_eat = false" large width="50%" elevation="1"
-                                                :color="(dish.would_eat != false) ? 'gray' : 'primary'")
-                                                v-icon {{(dish.would_eat != false) ? 'mdi-thumb-down-outline' : 'mdi-thumb-down'}} 
-                                            v-btn.my-2(@click="dish.would_eat = true" large width="50%" elevation="1"
-                                                :color="dish.would_eat ? 'green' : 'gray'")
-                                                v-icon {{(dish.would_eat && dish.would_eat != null) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
-                            v-card-actions
-                                v-btn(@click="cur_step-=1") 
-                                    v-icon mdi-chevron-left
-                                    | Back
-                                v-spacer
-                                v-btn(color='primary' @click='cur_step = 3')
-                                    v-icon mdi-chevron-right
-                                    | Continue
+                    v-stepper-content(step='2').pa-0
+                        v-stepper(v-model='cur_step_dishes' tile).mt-0.pt-0
+                            v-stepper-header
+                                v-stepper-step(:complete='cur_step > 1' step='1')
+                                v-divider
+                                v-stepper-step(:complete='cur_step > 2' step='2')
+                                    //- Which You Would Like to Eat
+                                v-divider
+                                v-stepper-step(step='3')
+                            v-stepper-items
+                                v-stepper-content(
+                                    v-for="(dish, index) in dishes"
+                                    :key="dish.name"
+                                    :step='index+1')
+                                    v-img(:alt="dish.name" max-width="385"
+                                        :src="require('@/assets/quiz_dishes/' + dish.img)")
+                                    div.justify-center
+                                        v-btn.my-2(@click="dish.rating = false" large width="50%" elevation="1"
+                                            :color="(dish.rating != false) ? 'gray' : 'primary'")
+                                            v-icon {{(dish.rating != false) ? 'mdi-thumb-down-outline' : 'mdi-thumb-down'}} 
+                                        v-btn.my-2(@click="dish.rating = true" large width="50%" elevation="1"
+                                            :color="dish.rating ? 'green' : 'gray'")
+                                            v-icon {{(dish.rating && dish.rating != null) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
+                                    v-card-actions
+                                        v-btn(v-if='cur_step_dishes>1'
+                                            @click="cur_step_dishes-=1") 
+                                            v-icon mdi-chevron-left
+                                            | Back
+                                        v-spacer
+                                        v-btn(color='primary' v-if='cur_step_dishes<3'
+                                            @click='cur_step_dishes++')
+                                            v-icon mdi-chevron-right
+                                            | Continue
+                        v-card-actions
+                            v-btn(@click="cur_step-=1") 
+                                v-icon mdi-chevron-left
+                                | Back
+                            v-spacer
+                            v-btn(color='primary' @click='cur_step = 3' :disabled='ratings_incomplete')
+                                v-icon mdi-chevron-right
+                                | Continue
                     v-stepper-content(step='3')
                         v-card.mb-4(max-width='800' flat)
                             v-card-text
@@ -125,7 +140,8 @@ import { mapActions } from "vuex";
 export default {
     name: "Quiz",
     data: () => ({
-        cur_step: 1,
+        cur_step: 2,
+        cur_step_dishes: 1,
         // TODO: adjust food_preferences data structure to make food_preference the key
         food_preferences: {
             "Vegan": false,
@@ -182,12 +198,13 @@ export default {
         selected_allergies: [],
         selected_additives: [],
         dishes: [
-            {name: "Burger with Salad", img: "dish_preview.png", would_eat: null,
+            {name: "Burger with Salad", img: "dish_preview.png", rating: null,
             // TODO: list of additional_ingrediants & allergies: [nuts, ...] + API Call probably needs the dish ID
+            // rating: 1 if the user would eat it (thumbs up), else 0
             additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]},
-            {name: "Burger without Salad", img: "dish_preview.png", would_eat: null,
+            {name: "Burger without Salad", img: "dish_preview.png", rating: null,
             additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]},
-            {name: "Burger", img: "dish_preview.png", would_eat: null,
+            {name: "Burger", img: "dish_preview.png", rating: null,
             additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]}
         ],
         form: {
@@ -208,6 +225,17 @@ export default {
             },
             set: function(){
                 return false
+            }
+        },
+        ratings_incomplete: {
+            get: function(){
+                for(let idx = 0; idx<this.dishes.length; idx++){
+                    if(this.dishes[idx]['rating'] == null) return true
+                }
+                return false
+            },
+            set: function(){
+                return true
             }
         }
     },
