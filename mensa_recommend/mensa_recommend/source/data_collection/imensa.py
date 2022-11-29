@@ -1,12 +1,13 @@
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from typing import List, Tuple
 
 from bs4 import BeautifulSoup, Tag
+from django.db import IntegrityError
 
 from mensa.models import Category, Allergy, Additive, Dish, DishCategory, DishAllergy, DishAdditive, DishPlan, Mensa, \
     ExtDishRating
-from . import utils
 from . import static_data
+from . import utils
 from .utils import NoAuthURLCollector
 
 
@@ -30,7 +31,14 @@ def _get_dish(name: str, main_meal: bool) -> Dish:
         return Dish.objects.get(name=name)
     except Dish.DoesNotExist:
         d = Dish(name=name, main=main_meal)
-        d.save()
+
+        # Ignore duplicate errors and just return the dish. Issue only occurs in multithreading context.
+        # Using the created instead of the database instance does not change much. The data is the same.
+        try:
+            d.save()
+        except IntegrityError:
+            pass
+
         return d
 
 
@@ -184,4 +192,4 @@ class IMensaCollector(NoAuthURLCollector):
         weekday = self.days.index(day)
         now = datetime.now().date()
         diff = weekday - now.weekday()
-        return date(now.year, now.month, now.day + diff)
+        return now + timedelta(days=diff)
