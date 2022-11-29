@@ -19,18 +19,19 @@ v-app
   v-main
     router-view
     template
-  v-footer(dark padless)
-    v-card.indigo.lighten-1.white--text.text-center(flat tile)
-      v-card-text
-        v-btn.mx-4.white--text(v-for='icon in icons' :key='icon.mdi' icon target="_blank" :href="icon.link")
-          v-icon(size='24px' elevation='15')
-            | {{ icon.mdi }}
-      v-card-text.white--text.pt-0
-        | Phasellus feugiat arcu sapien, et iaculis ipsum elementum sit amet. Mauris cursus commodo interdum. Praesent ut risus eget metus luctus accumsan id ultrices nunc. Sed at orci sed massa consectetur dignissim a sit amet dui. Duis commodo vitae velit et faucibus. Morbi vehicula lacinia malesuada. Nulla placerat augue vel ipsum ultrices, cursus iaculis dui sollicitudin. Vestibulum eu ipsum vel diam elementum tempor vel ut orci. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-      v-divider
-      v-card-text.white--text
-        | {{ new Date().getFullYear() }} &mdash; 
-        strong Martin Jostmann, Leo Giesen, Erik Zimmermann, Marcel Reckmann, Polina Kireyeu
+  v-footer.mt-12(dark padless)
+    v-row 
+      v-col(cols='12')
+        v-card.indigo.lighten-1.white--text.text-center(flat tile)
+          v-btn.mx-4.white--text(v-for='icon in icons' :key='icon.mdi' icon target="_blank" :href="icon.link")
+            v-icon(size='24px' elevation='15')
+                | {{ icon.mdi }}
+          //- v-card-text.white--text.pt-0
+          //-   | Phasellus feugiat arcu sapien, et iaculis ipsum elementum sit amet. Mauris cursus commodo interdum. Praesent ut risus eget metus luctus accumsan id ultrices nunc. Sed at orci sed massa consectetur dignissim a sit amet dui. Duis commodo vitae velit et faucibus. Morbi vehicula lacinia malesuada. Nulla placerat augue vel ipsum ultrices, cursus iaculis dui sollicitudin. Vestibulum eu ipsum vel diam elementum tempor vel ut orci. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+          v-divider
+          v-card-text.white--text
+            | {{ new Date().getFullYear() }} &mdash; 
+            strong Martin Jostmann, Leo Giesen, Erik Zimmermann, Marcel Reckmann, Polina Kireyeu
 </template>
 
 <script>
