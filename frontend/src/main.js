@@ -8,8 +8,8 @@ import store from "./store";
 // withCredentials: instruction to Axios to send all requests with credentials such as
 // authorization headers, TLS client certificates, or cookies (as in our case)
 axios.defaults.baseURL = 'http://localhost:9999/api/v1/';
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = axios.defaults.baseURL;
-axios.defaults.withCredentials = true;
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = 'http://localhost:8080/';
+// axios.defaults.withCredentials = false;
 
 // Handle expired tokens: 401 Unauthorized Error
 // axios.interceptors.response.use(undefined, function (error) {
