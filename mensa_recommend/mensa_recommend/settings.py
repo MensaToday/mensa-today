@@ -81,8 +81,6 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:8080',
     'http://localhost',
 )
-
-CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:9999',
     'http://localhost:8080',
@@ -100,6 +98,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
+
 
 AUTH_USER_MODEL = 'users.User'
 
