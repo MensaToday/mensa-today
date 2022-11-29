@@ -16,16 +16,14 @@ div
                 | Mensa am Ring
     //- Dish Image
     v-row.my-0
-        v-col 
+        v-col
             v-img(alt="Burger with Salad" width="375" max-width="100vw"
                 src="@/assets/quiz_dishes/dish_preview.png")
     //- Review & Comment Section
-    v-row.justify-space-between.my-6.align-center.justify-center
-        v-col.col-12.col-sm-12.col-md-8
-            p Leave a Review and Feedback:
-            v-rating.mt-4(hover length="5" background-color="gray" 
+    v-row.mt-0.mb-4
+        v-col.d-flex.justify-space-between.py-0
+            v-rating(hover length="5" background-color="gray" 
                 v-model="suggested_dish_rating")
-        v-col.col-12.col-sm-12.col-md-4
             v-btn(@click="") 
                 v-icon mdi-comment-outline
                 | comment

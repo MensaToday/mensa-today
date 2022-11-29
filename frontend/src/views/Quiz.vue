@@ -61,10 +61,9 @@
                     v-stepper-content(step='2').pa-0
                         v-stepper(v-model='cur_step_dishes' tile).mt-0.pt-0
                             v-stepper-header
-                                v-stepper-step(:complete='cur_step > 1' step='1')
+                                v-stepper-step(:complete='cur_step_dishes > 1' step='1')
                                 v-divider
-                                v-stepper-step(:complete='cur_step > 2' step='2')
-                                    //- Which You Would Like to Eat
+                                v-stepper-step(:complete='cur_step_dishes > 2' step='2')
                                 v-divider
                                 v-stepper-step(step='3')
                             v-stepper-items
@@ -72,8 +71,17 @@
                                     v-for="(dish, index) in dishes"
                                     :key="dish.name"
                                     :step='index+1')
-                                    v-img.mx-auto(:alt="dish.name" max-width="395"
-                                        :src="require('@/assets/quiz_dishes/' + dish.img)")
+                                    div.p-relative
+                                        v-img.mx-auto(:alt="dish.name" max-width="395"
+                                            :src="require('@/assets/quiz_dishes/' + dish.img)")
+                                        v-btn.p-absolute(fab style="position: absolute; top: 40%; left: 6%" 
+                                            v-if='cur_step_dishes>1'
+                                            @click="cur_step_dishes-=1") 
+                                            v-icon mdi-chevron-left
+                                        v-btn.p-absolute(color='primary' fab style="position: absolute; top: 40%; right: 6%;"
+                                            v-if='cur_step_dishes<3' :disabled="dish.rating == null"
+                                            @click='cur_step_dishes++')
+                                            v-icon mdi-chevron-right
                                     div.justify-center
                                         v-btn.my-2(@click="dish.rating = 0" large width="50%" elevation="1"
                                             :color="(dish.rating != 0) ? 'gray' : 'primary'")
@@ -81,16 +89,8 @@
                                         v-btn.my-2(@click="dish.rating = 1" large width="50%" elevation="1"
                                             :color="dish.rating ? 'green' : 'gray'")
                                             v-icon {{(dish.rating == 1) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
-                                    v-card-actions.pr-0
-                                        v-btn(v-if='cur_step_dishes>1'
-                                            @click="cur_step_dishes-=1") 
-                                            v-icon mdi-chevron-left
-                                            | Back
-                                        v-spacer
-                                        v-btn(color='primary' v-if='cur_step_dishes<3' :disabled="dish.rating == null"
-                                            @click='cur_step_dishes++')
-                                            v-icon mdi-chevron-right
-                                            | Continue
+                                    
+                                    
                         v-card-actions
                             v-btn(@click="cur_step-=1") 
                                 v-icon mdi-chevron-left
@@ -119,14 +119,14 @@
                                         prepend-icon="mdi-card-account-details"
                                         v-model="form.mensa_card_id")
                                     v-divider
-                                p(v-if="showError") Identifier or Password is incorrect
+                                p(v-if="showError") Identifier or password is incorrect
                             
                             v-card-actions
                                 v-btn(@click="cur_step-=1") 
                                     v-icon mdi-chevron-left
                                     | Back
                                 v-spacer
-                                v-btn(color="primary" @click="$router.push('/suggestion')") 
+                                v-btn(color="primary" @click="register()") 
                                     v-icon mdi-chevron-right
                                     | Register                            
             
@@ -140,9 +140,8 @@ import { mapActions } from "vuex";
 export default {
     name: "Quiz",
     data: () => ({
-        cur_step: 1,
+        cur_step: 3,
         cur_step_dishes: 1,
-        // TODO: adjust food_preferences data structure to make food_preference the key
         food_preferences: {
             "Vegan": false,
             "Vegetarian": false,
@@ -251,8 +250,8 @@ export default {
         }
     },
     methods: {
-        // import LogInUser action
-        ...mapActions(["LogIn"]),
+        // import Register action
+        ...mapActions(["Register"]),
         checkAll(){
             Object.keys(this.food_preferences).forEach(key => {
                 this.food_preferences[key] = true
@@ -278,13 +277,18 @@ export default {
                     'allergies': this.allergies,
                     'ratings': this.dishes
                 }
+                // console.log("Local User")
+                // console.log(User)
                 await this.Register(User);
                 // Redirect to suggestion webpage
-                setTimeout(() => { 
-                    this.showError = false
-                    this.$router.push('/suggestion')
-                }, 1000);
-            } catch (error) {this.showError = true}
+                // setTimeout(() => { 
+                //     this.showError = false
+                //     this.$router.push('/suggestion')
+                // }, 1000);
+            } catch (error) {
+                console.log(error)
+                this.showError = true
+            }
         },
     }
 };  

@@ -1,5 +1,7 @@
+import axios from 'axios';
 import Vue from "vue";
 import Vuex from "vuex";
+
 
 Vue.use(Vuex);
 
@@ -8,9 +10,8 @@ export default new Vuex.Store({
   getters: {},
   mutations: {},
   actions: {
-    // TODO: adjust register API call. This is a placeholder
     async Register(User){
-      await axios.post("register/", User)
+      await axios.post("user/register/", User)
     },
   },
   modules: {},
