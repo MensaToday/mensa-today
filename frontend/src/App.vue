@@ -1,12 +1,19 @@
 <template lang="pug">
   v-app
-    v-app-bar(app='' color='primary' dark)
-      .d-flex.align-center
+    v-app-bar(app color='primary' dark)
+      .d-flex.align-center(to="/")
         v-img.shrink.mr-2(alt='MensaToday Logo' contain src='@/assets/logo.png' transition='scale-transition' width='40')
         h2 MensaToday
-      v-spacer
-        //- something on the right side
-    //- TheNavigation
+      v-tabs(align-with-title)
+        v-spacer
+        v-tab.white--text(v-for="view in views" :key="view.to.name" :to="view.to") 
+          v-icon.mr-3 mdi-{{ view.icon }}
+          | {{ view.tag }}
+        v-spacer
+        .d-flex.align-center.mr-6
+          v-btn.px-3(outlined @click="logout()")
+            v-icon.mr-3 mdi-logout
+            | Logout
     v-main
       router-view
 </template>
@@ -16,6 +23,28 @@
 export default {
   name: 'App',
   data: () => ({
+    views: [
+      // {
+      //   tag: "Home",
+      //   to: { name: "Home" },
+      //   icon: "home"
+      // },
+      {
+        tag: "Your Mensa Week",
+        to: { name: "Home" },
+        icon: "food"
+      },
+      {
+        tag: "Suggestion (temporary)",
+        to: { name: "Suggestion" },
+        icon: "food"
+      },
+      {
+        tag: "Quiz (temporary)",
+        to: { name: "Quiz" },
+        icon: "information-outline"
+      }
+    ],
   }),
 };
 </script>
