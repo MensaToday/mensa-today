@@ -1,23 +1,24 @@
 <template lang="pug">
-div 
+div(max-width="450") 
     v-row.mt-4
-        v-col.col-9
+        v-col.col-9.pb-0
             h3.d-inline Burger with Salad
-        v-col.col-3
+        v-col.col-3.pb-0
             h3.ma-0.text-right 3,80€
     v-row.my-0
-        v-col.align-center.justify-center.d-flex.justify-space-between
+        v-col.align-center.justify-center.d-flex.justify-space-between.py-0
             v-img(alt="beef" height="60" max-width="60" contain
                 src="@/assets/dish_icons/food_preferences/rind.png")
-            v-img(alt="beef" height="80" max-width="80" contain
-                src="@/assets/dish_icons/nutri_scores/nutri-b.png")
+            //- v-img(alt="beef" height="80" max-width="80" contain
+            //-     src="@/assets/dish_icons/nutri_scores/nutri-b.png")
             v-btn(@click="" rounded)
                 v-icon mdi-navigation-variant-outline
                 | Mensa am Ring
     //- Dish Image
     v-row.my-0
-        v-col
-            v-img(alt="Burger with Salad" width="375" max-width="100vw"
+        v-col.pt-0.px-0
+            //- div size = 450px with padding of 6; img size = 450-2*6 = 438
+            v-img(alt="Burger with Salad" width="438" max-width="100vw"
                 src="@/assets/quiz_dishes/dish_preview.png")
     //- Review & Comment Section
     v-row.mt-0.mb-4

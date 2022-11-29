@@ -140,7 +140,7 @@ import { mapActions } from "vuex";
 export default {
     name: "Quiz",
     data: () => ({
-        cur_step: 3,
+        cur_step: 1,
         cur_step_dishes: 1,
         food_preferences: {
             "Vegan": false,
