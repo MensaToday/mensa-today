@@ -1,10 +1,13 @@
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework import permissions
 from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, run
 from mensa_recommend.source.data_collection.klarna import KlarnaCollector
 from mensa_recommend.source.computations.date_computations import get_last_monday
+
 from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import permissions
 
 from .serializers import DishPlanSerializer, DishSerializer, UserDishRatingSerializer
 
@@ -160,6 +163,19 @@ def register(request):
 
     else:
         return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def logout(request):
+    try:
+        refresh_token = request.data["refresh_token"]
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+
+        return Response(status=status.HTTP_205_RESET_CONTENT)
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
