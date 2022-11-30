@@ -22,10 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^&b)bhcd%s+q3!)pxb3t*&b_bgzkz6^3u%9gi9^9rzx)-i749j'
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-^&b)bhcd%s+q3!)pxb3t*&b_bgzkz6^3u%9gi9^9rzx)-i749j")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ['*']
 
@@ -72,7 +73,7 @@ JWT_AUTH = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LEEWAY': 0,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=86400),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=int(os.getenv("JWT_EXPIRATION_DETLA", 86400))),
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }
@@ -80,6 +81,7 @@ JWT_AUTH = {
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:9999',
     'http://localhost',
+    'http://10.14.28.50:9999',
 )
 
 MIDDLEWARE = [
