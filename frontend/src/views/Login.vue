@@ -24,7 +24,7 @@ v-container
                 v-icon mdi-account-plus
                 | Register
             v-spacer
-            v-btn(color="green" @click="login()") 
+            v-btn(dark color="green darken-2" @click="login()") 
                 v-icon mdi-login-variant
                 | Login 
 </template>
@@ -52,8 +52,6 @@ export default {
                     'username': this.form.email,
                     'password': this.form.password
                 }
-                console.log("Local User")
-                console.log(User)
                 await this.Login(User);
                 // Redirect to homepage
                 setTimeout(() => { 

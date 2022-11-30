@@ -277,14 +277,12 @@ export default {
                     'allergies': this.allergies,
                     'ratings': this.dishes
                 }
-                // console.log("Local User")
-                // console.log(User)
                 await this.Register(User);
-                // Redirect to suggestion webpage
-                // setTimeout(() => { 
-                //     this.showError = false
-                //     this.$router.push('/suggestion')
-                // }, 1000);
+                // Redirect to homepage
+                setTimeout(() => { 
+                    this.showError = false
+                    this.$router.push('/')
+                }, 500);
             } catch (error) {
                 console.log(error)
                 this.showError = true
