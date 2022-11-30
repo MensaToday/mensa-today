@@ -52,6 +52,7 @@ div
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "Home",
   data () {
@@ -87,6 +88,8 @@ export default {
     },
   },
   methods: {
+    ...mapActions(["GetDishplan"]),   
+
     nextPage () {
       if (this.page + 1 <= this.numberOfPages) this.page += 1
     },
@@ -96,6 +99,13 @@ export default {
     updateItemsPerPage (number) {
       this.itemsPerPage = number
     },
+    async getDishplan(){
+      try {
+        await this.GetDishplan();
+      } catch (error) {
+        console.log(error)
+      }
+    }
   },
 };
 </script>

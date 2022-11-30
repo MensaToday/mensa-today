@@ -127,7 +127,7 @@
                                     | Back
                                 v-spacer
                                 v-btn(color="primary" @click="register()") 
-                                    v-icon mdi-chevron-right
+                                    v-icon mdi-account-plus
                                     | Register                            
             
             v-btn.ma-8.px-12.float-right(to="/")

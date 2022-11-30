@@ -20,12 +20,12 @@ v-container
             p(v-if="showError") Identifier or password is incorrect
         
         v-card-actions
-            v-btn(@click="cur_step-=1") 
-                v-icon mdi-chevron-left
-                | Back
+            v-btn(@click="this.$router.push('/quiz')" color="primary") 
+                v-icon mdi-account-plus
+                | Register
             v-spacer
-            v-btn(color="primary" @click="login()") 
-                v-icon mdi-chevron-right
+            v-btn(color="green" @click="login()") 
+                v-icon mdi-login-variant
                 | Login 
 </template>
 
@@ -55,10 +55,10 @@ export default {
                 console.log("Local User")
                 console.log(User)
                 await this.Login(User);
-                // Redirect to suggestion webpage
+                // Redirect to homepage
                 setTimeout(() => { 
                     this.showError = false
-                    this.$router.push('/suggestion')
+                    this.$router.push('/')
                 }, 500);
             } catch (error) {
                 console.log(error)

@@ -14,7 +14,8 @@ export default new Vuex.Store({
       email: null,
       mensa_card_id: null,
     },
-    card_balance: null
+    card_balance: null,
+    dishplan: null
   },
   getters: {
     isLoggedIn: (state) => state.access_token != null,
@@ -33,6 +34,9 @@ export default new Vuex.Store({
     },
     setBalance(state, card_balance){
       state.card_balance = card_balance
+    },
+    setDishplan(state, dishplan) {
+      state.dishplan = dishplan
     }
   },
   actions: {
@@ -72,5 +76,10 @@ export default new Vuex.Store({
       var card_balance = response.data.card_balance
       commit("setBalance", card_balance)
     },
+    async GetDishplan({commit}) {
+      let dishplan = await axios.post('mensa/get_dishplan')
+      // var card_balance = response.data.dishplan
+      commit("setDishplan", dishplan)
+    }
   },
 });

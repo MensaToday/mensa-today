@@ -11,6 +11,7 @@ const routes = [
     name: "Home",
     component: HomeView,
     // check if user is logged in. If yes, redirect user to user-specific page
+    meta: { requiresAuth: true }
   },
   {
     path: "/about",
@@ -71,7 +72,7 @@ router.beforeEach((to, from, next) => {
       }
     }
     // if not logged in, the user is redirected to the home page
-    next("/");
+    next("/login");
   } else {
     next();
   }
