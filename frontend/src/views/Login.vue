@@ -44,27 +44,27 @@ export default {
     }
 },
     methods: {
-    ...mapActions(["Login"]),   
+        ...mapActions(["Login"]),   
 
-    async login() {
-        try {
-        let User = {
-            'username': this.form.email,
-            'password': this.form.password
+        async login() {
+            try {
+                let User = {
+                    'username': this.form.email,
+                    'password': this.form.password
+                }
+                console.log("Local User")
+                console.log(User)
+                await this.Login(User);
+                // Redirect to suggestion webpage
+                setTimeout(() => { 
+                    this.showError = false
+                    this.$router.push('/suggestion')
+                }, 500);
+            } catch (error) {
+                console.log(error)
+                this.showError = true
+            }
         }
-        console.log("Local User")
-        console.log(User)
-        await this.Login(User);
-        // Redirect to suggestion webpage
-        // setTimeout(() => { 
-        //     this.showError = false
-        //     this.$router.push('/suggestion')
-        // }, 1000);
-        } catch (error) {
-            console.log(error)
-            this.showError = true
-        }
-    }
     },
 };
 </script>

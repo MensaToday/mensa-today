@@ -10,7 +10,7 @@ v-app
         v-icon.mr-3 mdi-{{ view.icon }}
         | {{ view.tag }}
       v-spacer
-      .d-flex.align-center.mr-6
+      .d-flex.align-center.mr-6(v-if="this.$store.getters.isLoggedIn")
         v-icon.mr-2 mdi-wallet
         p.my-auto.mr-9 3,49€
         v-btn.px-3(outlined @click="logout()")
@@ -37,7 +37,7 @@ v-app
 </template>
 
 <script>
-
+import { mapActions } from "vuex";
 export default {
   name: 'App',
   data: () => ({
@@ -69,6 +69,22 @@ export default {
       },
     ]
   }),
+  methods: {
+    ...mapActions(["Logout"]),
+    async logout(){
+      try {
+        await this.Logout();
+        // Redirect to login webpage
+        setTimeout(() => { 
+          this.showError = false
+          this.$router.push('/login')
+        }, 500);
+      } catch (error) {
+        console.log(error)
+        this.showError = true
+      }
+    }
+  }
 };
 </script>
 
