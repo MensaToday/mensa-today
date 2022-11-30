@@ -8,7 +8,12 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     access_token: null,
-    refresh_token: null
+    refresh_token: null,
+    user: {
+      id: null, 
+      email: null,
+      mensa_card_id: null,
+    }
   },
   getters: {
     isLoggedIn: (state) => state.access_token != null,
@@ -18,23 +23,22 @@ export default new Vuex.Store({
       state.access_token = access_token
       state.refresh_token = refresh_token
     },
+    setUser(state, user){
+      state.user = user
+    }
   },
   actions: {
     async Register({commit}, User){
-      // console.log("Store User")
-      // console.log(User)
-      let response = await axios.post("user/register", User)
-      console.log("response")
-      console.log(response)
-      commit("loggedIn", true)
+      await axios.post("user/register", User)
+      commit("setUser", User)
     },
     async Login({commit}, User_credentials) {
-      console.log("Store User_credentials")
-      console.log(User_credentials)
       let response = await axios.post('user/login', User_credentials)
       var access_token = response.data.access
       var refresh_token = response.data.refresh
+      // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token])
+      // commit("setUser", user)
       
       // const decodedToken = getters.decodedToken
       // // get the id of currently logged in user
