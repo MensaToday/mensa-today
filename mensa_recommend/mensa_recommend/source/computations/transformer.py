@@ -1,6 +1,7 @@
 from typing import Union
 
-def transform_rating(rating: Union[int]) -> Union[float, None]:
+
+def transform_rating(rating: int) -> Union[float, None]:
     """Transform a rating of the form 1-5 to a float of the form 0-1
 
         Parameters
@@ -18,6 +19,6 @@ def transform_rating(rating: Union[int]) -> Union[float, None]:
     """
 
     if rating >= 1 and rating <= 5:
-        return rating/5
+        return (rating-1)/4
     else:
         return None
