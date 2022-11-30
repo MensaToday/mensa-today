@@ -18,6 +18,7 @@ import threading
 
 from courses.models import Room, Course, Timeslot, Reservation
 from .utils import Collector, NoAuthURLCollector, url_to_soup
+import global_data
 
 
 @shared_task
@@ -81,7 +82,8 @@ class LearnWebCollector(Collector):
         try:
             # Send payload to authentication server via a post request
             session = requests.Session()
-            session_response = session.post(self.base_url, data=payload)
+            session_response = session.post(
+                self.base_url, data=payload, proxies=global_data.proxies)
 
             # Check if credentials are correct. If not a 401 (unauthorized) will be
             # the status code and a False will be returned
@@ -558,7 +560,8 @@ class RoomCollector(NoAuthURLCollector):
 
         # Get the open street map json response
         try:
-            location_data = requests.get(open_street_map_url).json()
+            location_data = requests.get(
+                open_street_map_url, proxies=global_data.proxies).json()
 
         except requests.exceptions.RequestException as error:
             raise SystemError(error) from error

@@ -1,0 +1,75 @@
+version: '3.8'
+services:
+  app:
+    image: mensa_app
+    build:
+      context: mensa_recommend
+      dockerfile: Dockerfile.local
+    volumes:
+      - ./mensa_recommend/:/app
+    ports:
+      - 9999:9999
+    command: python manage.py runserver 0.0.0.0:9999
+    env_file:
+      - database-variables.env
+    environment:
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - database-variables.env
+    expose:
+      - '5433'
+    ports:
+      - '5433:5432'
+    command: -p 5433
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    depends_on:
+      - db
+    env_file:
+      - database-variables.env
+    ports:
+      - '8888:80'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: always
+  celery:
+    build:
+      context: mensa_recommend
+      dockerfile: Dockerfile.local
+    command: celery -A mensa_recommend worker -l INFO
+    volumes:
+      - ./mensa_recommend/:/usr/src/app
+    env_file:
+      - database-variables.env
+    environment:
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+    depends_on:
+      - app
+      - redis
+  redis:
+    image: 'redis:alpine'
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile.local
+    ports:
+      - '8080:8080'
+    command: npm run serve
+    container_name: vue-ui
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+
+volumes:
+  postgres_data:
+  pgadmin_data:
