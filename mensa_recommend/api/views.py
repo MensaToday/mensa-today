@@ -27,7 +27,15 @@ def register(request):
         Input
         ------
         {
-            "card_id": int
+            "username": str,
+            "password": str,
+            "categories": [],
+            "allergies": [],
+            "card_id": int,
+            "ratings": [{
+                "id": int,
+                "rating": int
+            }]
         }
 
         Output
@@ -191,6 +199,31 @@ def check_card_id(request):
 
 @api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated,))
+def get_balance(request):
+    """Get the current card balance
+
+        Route: api/v1/user/get_balance
+        Authorization: Authenticated
+        Methods: GET
+
+        Output
+        -------
+        If card is not None:
+            balance with 200
+        If card is None:
+            404 Not found
+    """
+    user = request.user
+
+    if user.card_id is not None:
+        balance = KlarnaCollector().get_current_balance(user.card_id)
+        return Response(balance, status=status.HTTP_200_OK)
+    else:
+        return Response("No card_id in user profile", status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
 def get_dishplan(request):
     """Get the dishplan for the next week
 
@@ -234,7 +267,7 @@ def get_dishplan(request):
 
     last_monday = get_last_monday()
 
-    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gt=last_monday), many=True).data)
+    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday), many=True).data)
 
 
 @api_view(['GET', 'POST'])
