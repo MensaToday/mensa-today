@@ -1,62 +1,54 @@
 <template lang="pug">
 div  
   v-container
-    v-row
-      v-col
-        h1.my-4.center-text MensaToday
-    v-row.center-items
-      v-col
-        v-btn(to="/suggestion") Daily Suggesion
-        v-btn.ml-10(to="/quiz") Introduction Quiz
+    h1.text-center Your Mensa Week
+
     v-row 
       v-col
-        h1.center-text Your Mensa Week
-    v-row 
-      v-col
-      v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' :search='search' :sort-by='sortBy.toLowerCase()' :sort-desc='sortDesc' hide-default-footer)
-        template(v-slot:header)
-          v-toolbar.mb-1(dark color='blue darken-3')
-            v-text-field(v-model='search' clearable flat solo-inverted hide-details prepend-inner-icon='mdi-magnify' label='Search')
-            template(v-if='$vuetify.breakpoint.mdAndUp')
+        v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' :search='search' :sort-by='sortBy.toLowerCase()' :sort-desc='sortDesc' hide-default-footer)
+          template(v-slot:header)
+            v-toolbar.mb-1(dark color='blue darken-3')
+              v-text-field(v-model='search' clearable flat solo-inverted hide-details prepend-inner-icon='mdi-magnify' label='Search')
+              template(v-if='$vuetify.breakpoint.mdAndUp')
+                v-spacer
+                v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' prepend-inner-icon='mdi-magnify' label='Sort by')
+                v-spacer
+                v-btn-toggle(v-model='sortDesc' mandatory)
+                  v-btn(large depressed color='blue' :value='false')
+                    v-icon mdi-arrow-up
+                  v-btn(large depressed color='blue' :value='true')
+                    v-icon mdi-arrow-down
+          template(v-slot:default='props')
+            v-row
+              v-col(v-for='item in props.items' :key='item.name' cols='12' sm='6' md='4' lg='3')
+                v-card
+                  v-card-title.subheading.font-weight-bold
+                    | {{ item.name }}
+                  v-divider
+                  v-list(dense)
+                    v-list-item(v-for='(key, index) in filteredKeys' :key='index')
+                      v-list-item-content(:class="{ 'blue--text': sortBy === key }")
+                        | {{ key }}:
+                      v-list-item-content.align-end(:class="{ 'blue--text': sortBy === key }")
+                        | {{ item[key.toLowerCase()] }}
+          template(v-slot:footer)
+            v-row.mt-2(align='center' justify='center')
+              span.grey--text Items per page
+              v-menu(offset-y)
+                template(v-slot:activator='{ on, attrs }')
+                  v-btn.ml-2(dark text color='primary' v-bind='attrs' v-on='on')
+                    | {{ itemsPerPage }}
+                    v-icon mdi-chevron-down
+                v-list
+                  v-list-item(v-for='(number, index) in itemsPerPageArray' :key='index' @click='updateItemsPerPage(number)')
+                    v-list-item-title {{ number }}
               v-spacer
-              v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' prepend-inner-icon='mdi-magnify' label='Sort by')
-              v-spacer
-              v-btn-toggle(v-model='sortDesc' mandatory)
-                v-btn(large depressed color='blue' :value='false')
-                  v-icon mdi-arrow-up
-                v-btn(large depressed color='blue' :value='true')
-                  v-icon mdi-arrow-down
-        template(v-slot:default='props')
-          v-row
-            v-col(v-for='item in props.items' :key='item.name' cols='12' sm='6' md='4' lg='3')
-              v-card
-                v-card-title.subheading.font-weight-bold
-                  | {{ item.name }}
-                v-divider
-                v-list(dense)
-                  v-list-item(v-for='(key, index) in filteredKeys' :key='index')
-                    v-list-item-content(:class="{ 'blue--text': sortBy === key }")
-                      | {{ key }}:
-                    v-list-item-content.align-end(:class="{ 'blue--text': sortBy === key }")
-                      | {{ item[key.toLowerCase()] }}
-        template(v-slot:footer)
-          v-row.mt-2(align='center' justify='center')
-            span.grey--text Items per page
-            v-menu(offset-y)
-              template(v-slot:activator='{ on, attrs }')
-                v-btn.ml-2(dark text color='primary' v-bind='attrs' v-on='on')
-                  | {{ itemsPerPage }}
-                  v-icon mdi-chevron-down
-              v-list
-                v-list-item(v-for='(number, index) in itemsPerPageArray' :key='index' @click='updateItemsPerPage(number)')
-                  v-list-item-title {{ number }}
-            v-spacer
-            span.mr-4.grey--text
-              | Page {{ page }} of {{ numberOfPages }}
-            v-btn.mr-1(fab dark color='blue darken-3' @click='formerPage')
-              v-icon mdi-chevron-left
-            v-btn.ml-1(fab dark color='blue darken-3' @click='nextPage')
-              v-icon mdi-chevron-right
+              span.mr-4.grey--text
+                | Page {{ page }} of {{ numberOfPages }}
+              v-btn.mr-1(fab dark color='blue darken-3' @click='formerPage')
+                v-icon mdi-chevron-left
+              v-btn.ml-1(fab dark color='blue darken-3' @click='nextPage')
+                v-icon mdi-chevron-right
 
       //- v-col.cols-4(v-for="idx in 3" :key="idx")
       //-   SingleDish

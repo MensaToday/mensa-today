@@ -16,9 +16,11 @@ v-app
         v-btn.px-3(outlined @click="logout()")
           v-icon mdi-logout
           | Logout
+  
   v-main
     router-view
     template
+  
   v-footer.mt-12(dark padless)
     v-row 
       v-col(cols='12')

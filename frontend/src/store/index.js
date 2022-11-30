@@ -7,44 +7,45 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    loggedIn: false
+    access_token: null,
+    refresh_token: null
   },
-  getters: {},
+  getters: {
+    isLoggedIn: (state) => state.access_token != null,
+  },
   mutations: {
-    loggedIn(state, loggedIn){
-      state.loggedIn = loggedIn
-  },
+    setTokens(state, [access_token, refresh_token]){
+      state.access_token = access_token
+      state.refresh_token = refresh_token
+    },
   },
   actions: {
     async Register({commit}, User){
       // console.log("Store User")
       // console.log(User)
-      let response = await axios.post("user/register", User,
-        // {
-        // headers: {
-        //   'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjY5NjU3MTIxLCJpYXQiOjE2Njk2NTY4MjEsImp0aSI6IjI2MjI2YjM0MDM0MTQxYTA5YzY3NzMzNzgyMDkyZWZjIiwidXNlcl9pZCI6Mn0.LWa17AykufL2ncXXSPbddKKP8Z0Xum72tVeuIIQOvXs`,
-        // }
-        // }
-      )
+      let response = await axios.post("user/register", User)
       console.log("response")
       console.log(response)
       commit("loggedIn", true)
     },
+    async Login({commit}, User_credentials) {
+      console.log("Store User_credentials")
+      console.log(User_credentials)
+      let response = await axios.post('user/login', User_credentials)
+      var access_token = response.data.access
+      var refresh_token = response.data.refresh
+      commit("setTokens", [access_token, refresh_token])
+      
+      // const decodedToken = getters.decodedToken
+      // // get the id of currently logged in user
+      // const id = decodedToken.identity
+      
+      // // get all data from currently logged in user 
+      // dispatch('getAllUserData', id)
+  
+      // // enable the automatic refresh token cycle
+      // // the token needs to be decoded first, so we wait 2 seconds before we begin
+      // setTimeout(() => dispatch('AutoRefreshToken'), 2000)
+    },
   },
-  // async LogIn({getters, dispatch, commit}, user) {
-  //   let response = await axios.post('token/auth', user)
-  //   var token = response.data.access_token
-  //   commit("setToken", token)
-    
-  //   const decodedToken = getters.decodedToken
-  //   // get the id of currently logged in user
-  //   const id = decodedToken.identity
-    
-  //   // get all data from currently logged in user 
-  //   dispatch('getAllUserData', id)
-
-  //   // enable the automatic refresh token cycle
-  //   // the token needs to be decoded first, so we wait 2 seconds before we begin
-  //   setTimeout(() => dispatch('AutoRefreshToken'), 2000)
-  // },
 });
