@@ -133,4 +133,4 @@ class ExtDishRating(models.Model):
 class UserDishRating(models.Model):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
-    rating = models.FloatField()
+    rating = models.FloatField()  # range: 0.0 .. 1.0
