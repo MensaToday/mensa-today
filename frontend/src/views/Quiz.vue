@@ -3,7 +3,7 @@
         v-container.center-items
             h1.text-center.my-8 Tell Us About Yourself - Intro-Quiz
 
-            v-stepper(v-model='cur_step')
+            v-stepper(v-model='cur_step' width="500")
                 v-stepper-header
                     v-stepper-step(:complete='cur_step > 1' step='1') Food Preferences
                     v-divider
