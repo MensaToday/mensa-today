@@ -6,10 +6,6 @@ import router from "./router";
 import store from "./store";
 
 axios.defaults.baseURL = 'http://localhost:9999/api/v1/';
-const access_token = store.state.access_token // localStorage.getItem('access_token');
-if (access_token) {
-  axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
-}
     
 Vue.config.productionTip = false;
 

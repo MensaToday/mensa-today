@@ -15,7 +15,8 @@ v-container
                     label="Password" 
                     :type="showPassword ? 'text' : 'password'"
                     :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" 
-                    @click:append="showPassword = !showPassword")
+                    @click:append="showPassword = !showPassword"
+                    v-on:keyup.enter="login()")
                 v-divider
             p(v-if="showError") Identifier or password is incorrect
         

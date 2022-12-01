@@ -48,8 +48,13 @@ export default new Vuex.Store({
       let response = await axios.post('user/login', User_credentials)
       var access_token = response.data.access
       var refresh_token = response.data.refresh
+      window.localStorage.setItem('access_token', access_token);
+      window.localStorage.setItem('refresh_token', refresh_token);
       // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token])
+      
+      if(access_token) axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token
+
       // commit("setUser", user)
       
       // const decodedToken = getters.decodedToken
@@ -64,7 +69,7 @@ export default new Vuex.Store({
       // setTimeout(() => dispatch('AutoRefreshToken'), 2000)
     },
     // TODO: The following API-calls are in development
-    async Logout(state, {commit}) {
+    async Logout({state, commit}) {
       let response = await axios.post('user/logout', {"refresh_token": state.refresh_token})
       // var access_token = response.data.access
       // var refresh_token = response.data.refresh
@@ -72,13 +77,13 @@ export default new Vuex.Store({
       commit("rmTokens")
     },
     async GetBalance({commit}, card_id) {
-      let response = await axios.post('user/logout', {"card_id": card_id})
+      let response = await axios.get('user/logout', {"card_id": card_id})
       var card_balance = response.data.card_balance
       commit("setBalance", card_balance)
     },
     async GetDishplan({commit}) {
-      let dishplan = await axios.post('mensa/get_dishplan')
-      // var card_balance = response.data.dishplan
+      let response = await axios.get('mensa/get_dishplan')
+      var dishplan = response.data
       commit("setDishplan", dishplan)
     }
   },

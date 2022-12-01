@@ -88,7 +88,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["GetDishplan"]),   
+    ...mapActions(["GetDishplan", "GetBalance"]),   
 
     nextPage () {
       if (this.page + 1 <= this.numberOfPages) this.page += 1
@@ -105,7 +105,20 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    async getBalance(){
+      try {
+        await this.GetBalance();
+      } catch (error) {
+        console.log(error)
+      }
     }
+  },
+  created() {
+    setTimeout(() => { 
+      this.getDishplan()
+      this.getBalance()
+    }, 1000);
   },
 };
 </script>
