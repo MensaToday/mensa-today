@@ -1,7 +1,7 @@
 <template lang="pug">
 v-app
   v-app-bar(app color='primary' dark)
-    .d-flex.align-center(@click="$router.push('/')")
+    .d-flex.align-center(@click="$router.push('/').catch(()=>{})")
       v-img.shrink.mr-2(alt='MensaToday Logo' contain src='@/assets/logo.png' transition='scale-transition' width='40')
       h2 MensaToday
     v-tabs(align-with-title)
