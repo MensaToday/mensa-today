@@ -35,7 +35,7 @@ class DishRecommender:
 
         if entire_week:
             self._date_start = day - timedelta(days=day.weekday())
-            self._date_end = day + timedelta(days=6 - day.weekday())
+            self._date_end = self._date_start + timedelta(days=4)
         else:
             self._date_start = day
             self._date_end = day
