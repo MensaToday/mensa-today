@@ -1,9 +1,0 @@
-{
-  "Alcohol": "@/assets/dish_icons/food_preferences/alkohol.png",
-  "Fish": "@/assets/dish_icons/food_preferences/fisch.png",
-  "Poultry": "@/assets/dish_icons/food_preferences/huhn.png",
-  "Beef": "@/assets/dish_icons/food_preferences/rind.png",
-  "Pork": "@/assets/dish_icons/food_preferences/schwein_hi.png",
-  "Vegan": "@/assets/dish_icons/food_preferences/vegan_hi.png",
-  "Vegetarian": "@/assets/dish_icons/food_preferences/vegetarisch_hi.png"
-}
