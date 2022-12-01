@@ -1,5 +1,5 @@
-from datetime import date
-from typing import List, Tuple
+from datetime import date, timedelta
+from typing import List, Tuple, Dict
 
 import numpy as np
 from numpy import dot
@@ -32,11 +32,18 @@ class DishRecommender:
 
     def __init__(self, user: User, day: date, entire_week: bool = False):
         self._user = user
-        self._date = day
-        self._entire_week = entire_week  # TODO
-        self._plan: List[DishPlan] = []
-        self._ratings: List[DishPlan] = []
+
+        if entire_week:
+            self._date_start = day - timedelta(days=day.weekday())
+            self._date_end = day + timedelta(days=6 - day.weekday())
+        else:
+            self._date_start = day
+            self._date_end = day
+
+        self._plan: Dict[date, List[DishPlan]] = {}
+        self._ratings: List[UserDishRating] = []
         self._dishes: List[Dish] = []
+        self._encoded_dishes: List[Tuple[int, List[int]]] = []
 
     def load(self) -> None:
         if len(self._dishes) > 0:
@@ -45,39 +52,67 @@ class DishRecommender:
         self._plan = self.__load_dish_plan()
         self._ratings = self.__load_ratings()
         self._dishes = self.__extract_distinct_dishes()
+        self._encoded_dishes = self.__encode_dishes()
 
-    def predict(self, recommendations_per_day: int = 1) -> List[
-            Tuple[DishPlan, float]]:
-        predictions = self.__predict_dishes(recommendations_per_day)
-
-        result = []
-        for dish_id, p in predictions:
-            result.append((self.__find_dish_in_plan(dish_id), p))
-
-        return result
-
-    def __find_dish_in_plan(self, dish_id: int) -> DishPlan:
-        for plan in self._plan:
-            if plan.dish.id == dish_id:
-                return plan
-
-        raise KeyError(f"Could not find dish with id={dish_id}.")
-
-    def __predict_dishes(self, recommendations_per_day: int) -> List[
-            Tuple[int, float]]:
+    def predict(self, recommendations_per_day: int = 1) -> Dict[date, List[
+            Tuple[DishPlan, float]]]:
         if len(self._dishes) == 0:
             raise Exception("Dishes not loaded! Run load() before.")
 
         if recommendations_per_day <= 0:
             raise ValueError("'recommendations_per_day' must be > 0.")
 
-        encoded_dishes = self.__encode_dishes()
+        separated_encoded_dishes = self.__get_separated_encoded_dishes()
+        result = {}
+        for day in self.__days():
+            dishes = separated_encoded_dishes[day]
+            pred = self.__predict_dishes(recommendations_per_day, dishes)
 
-        profile = self.__compute_user_profile(encoded_dishes)
+            mapped = []
+            for dish_id, p in pred:
+                mapped.append((self.__find_dish_in_plan(dish_id, day), p))
+            result[day] = mapped
+
+        return result
+
+    def __days(self) -> List[date]:
+        days = []
+        for i in range((self._date_end - self._date_start).days + 1):
+            current_date = self._date_start + timedelta(days=i)
+            days.append(current_date)
+        return days
+
+    def __get_separated_encoded_dishes(self) -> Dict[
+            date, List[Tuple[int, List[float]]]]:
+        separated_dishes = {}
+        for day in self._plan.keys():
+            ids = set()
+            for dp in self._plan[day]:
+                ids.add(dp.dish.id)
+
+            dishes = []
+            for dish_id, dish in self._encoded_dishes:
+                if dish_id in ids:
+                    dishes.append((dish_id, dish))
+
+            separated_dishes[day] = dishes
+        return separated_dishes
+
+    def __find_dish_in_plan(self, dish_id: int, day: date) -> DishPlan:
+        for plan in self._plan[day]:
+            if plan.dish.id == dish_id:
+                return plan
+
+        raise KeyError(f"Could not find dish with id={dish_id}.")
+
+    def __predict_dishes(self, recommendations_per_day: int,
+                         available_dishes: List[Tuple[int, List[float]]]) -> \
+            List[Tuple[int, float]]:
+        profile = self.__compute_user_profile(available_dishes)
 
         dish_ids = []
         predictions = []
-        for dish_id, enc in encoded_dishes:
+        for dish_id, enc in available_dishes:
             dish_ids.append(dish_id)
 
             sim = cosine_similarity(profile, enc)
@@ -97,14 +132,20 @@ class DishRecommender:
             predictions.pop(max_id)
         return result
 
-    def __load_dish_plan(self) -> List[DishPlan]:
-        return DishPlan.objects.filter(date=self._date, dish__main=True)
+    def __load_dish_plan(self) -> Dict[date, List[DishPlan]]:
+        plan = {}
+        for day in self.__days():
+            plan[day] = DishPlan.objects.filter(date=day, dish__main=True)
+        return plan
 
     def __load_ratings(self) -> List[UserDishRating]:
         return UserDishRating.objects.filter(user=self._user.id)
 
     def __extract_distinct_dishes(self) -> List[Dish]:
-        dishes = {dp.dish for dp in self._plan}
+        dishes = set()
+        for key in self._plan.keys():
+            for dp in self._plan[key]:
+                dishes.add(dp.dish)
 
         for rating in self._ratings:
             dishes.add(rating.dish)
@@ -113,14 +154,14 @@ class DishRecommender:
         return list(dishes)
 
     def __compute_user_profile(self, encoded_dishes: List[
-            Tuple[int, List[int]]]) -> List[float]:
+            Tuple[int, List[float]]]) -> List[float]:
         X = []
         for rating in self._ratings:
             X += np.multiply(rating.rating,
                              encoded_dishes[rating.dish.id])
         return X
 
-    def __encode_dishes(self) -> List[Tuple[int, List[int]]]:
+    def __encode_dishes(self) -> List[Tuple[int, List[float]]]:
         enc = []
 
         enc_cat = self.__encode_categories()
