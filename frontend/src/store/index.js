@@ -75,6 +75,7 @@ export default new Vuex.Store({
     },
     // TODO: The following API-calls are in development
     async Logout({state, commit}) {
+      console.log(state.refresh_token)
       let response = await axios.post('user/logout', {"refresh_token": state.refresh_token})
       console.log(response)
       // var access_token = response.data.access

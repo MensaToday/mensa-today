@@ -54,6 +54,8 @@ export default {
                     'password': this.form.password
                 }
                 await this.Login(User);
+                // reset form
+                this.form = {email: "", password: ""}
                 // wait 3 seconds before navigating to the displan because the api call takes so long
                 // it is not a best practice 😵‍💫
                 setTimeout(() => { 

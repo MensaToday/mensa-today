@@ -52,6 +52,9 @@
                                                             | &quot;.
 
                                 v-card-actions
+                                    v-btn(color='primary' @click="$router.push('/login')")
+                                        v-icon mdi-login-variant
+                                        | Login
                                     v-spacer
                                     v-btn(color='primary' :disabled="no_food_preferences"
                                         @click='updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); cur_step = 2')
@@ -126,13 +129,9 @@
                                     v-icon mdi-chevron-left
                                     | Back
                                 v-spacer
-                                v-btn(color="primary" @click="register()") 
+                                v-btn(color="green" @click="register()") 
                                     v-icon mdi-account-plus
-                                    | Register                            
-            
-            v-btn.ma-8.px-12.float-right(to="/")
-                v-icon mdi-chevron-right
-                | Home
+                                    | Register
 </template>
 
 <script>
