@@ -54,11 +54,14 @@ export default {
                     'password': this.form.password
                 }
                 await this.Login(User);
-                // Redirect to homepage
+                // wait 3 seconds before navigating to the displan because the api call takes so long
+                // it is not a best practice 😵‍💫
                 setTimeout(() => { 
-                    this.showError = false
-                    this.$router.push('/')
-                }, 500);
+                    if(this.$store.state.dishplan){
+                        this.showError = false
+                        this.$router.push('/')
+                    }
+                }, 3000);
             } catch (error) {
                 console.log(error)
                 this.showError = true
