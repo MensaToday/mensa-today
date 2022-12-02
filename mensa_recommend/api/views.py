@@ -252,7 +252,7 @@ def get_dishplan(request):
         [
             {
                 "dish": {
-                    "id": 154,
+                    "id": 239,
                     "categories": [
                         {
                             "category": {
@@ -261,22 +261,31 @@ def get_dishplan(request):
                             }
                         }
                     ],
-                    "main": false,
-                    "name": "Kroketten"
+                    "additives": [
+                        {
+                            "additive": {
+                                "id": 1,
+                                "name": "Dyed"
+                            }
+                        }
+                    ],
+                    "allergies": [],
+                    "main": true,
+                    "name": "Steckrübeneintopf"
                 },
                 "mensa": {
-                    "id": 9,
-                    "name": "Mensa am Aasee",
+                    "id": 4,
+                    "name": "Bistro Durchblick",
                     "city": "Münster",
-                    "street": "Bismarckallee",
-                    "houseNumber": "11",
-                    "zipCode": 48151,
-                    "startTime": "11:45:00",
-                    "endTime": "14:30:00"
+                    "street": "Fliednerstr.",
+                    "houseNumber": "21",
+                    "zipCode": 48149,
+                    "startTime": "11:30:00",
+                    "endTime": "13:30:00"
                 },
-                "date": "2022-11-24",
-                "priceStudent": "0.75",
-                "priceEmployee": "0.50"
+                "date": "2022-12-01",
+                "priceStudent": "3.08",
+                "priceEmployee": "2.05"
             }
         ]
     """
