@@ -8,6 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 from django.db import IntegrityError
 from django.db.models import Model
+import global_data
 
 __non_digit__ = re.compile('[^0-9,.]')
 
@@ -29,7 +30,8 @@ def translate(key: str, **context) -> str:
 
 class TranslationKeyNotFound(Exception):
     def __init__(self, key: str, **context) -> None:
-        super().__init__(f"Could not find '{key}' in translate.json! Context: {context}")
+        super().__init__(
+            f"Could not find '{key}' in translate.json! Context: {context}")
 
 
 def _remove_non_digit(s: str) -> str:
@@ -98,7 +100,7 @@ def response_to_soup(res: requests.Response) -> BeautifulSoup:
 
 
 def url_to_soup(url: str, headers: dict = None) -> BeautifulSoup:
-    return response_to_soup(requests.get(url, headers=headers))
+    return response_to_soup(requests.get(url, headers=headers, proxies=global_data.proxies))
 
 
 def save_without_integrity(model_instance: Model) -> None:
@@ -141,7 +143,8 @@ class NoAuthURLCollector(Collector):
         # Make use of threading to improve performance of simultaneous URL requests
         threads = []
         for url, options in self._build_urls():
-            t = threading.Thread(target=self.__run, args=(url,), kwargs=options)
+            t = threading.Thread(
+                target=self.__run, args=(url,), kwargs=options)
             threads.append(t)
             t.start()
 

@@ -39,6 +39,16 @@ Celery is an open source asynchronous task queue or job queue which is based on 
 
 ![erm](ERM.png)
 
+## Production
+
+To deploy the django app use the `docker-compose-prod.yaml` file. This file requires a `prod-variables.env` file which have to be create:
+
+```
+SECRET_KEY = foo
+DEBUG = False
+JWT_EXPIRATION_DETLA = 10800
+```
+
 ## Contribution
 
 ### Code Documentation Template

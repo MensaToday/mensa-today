@@ -3,6 +3,7 @@ import requests
 from mensa.models import CardBalance
 from users.models import User
 from typing import Union
+import global_data
 
 
 class KlarnaCollector(Collector):
@@ -29,7 +30,7 @@ class KlarnaCollector(Collector):
         balance: float
 
         try:
-            response = requests.get(klarna_url)
+            response = requests.get(klarna_url, proxies=global_data.proxies)
             response_json = response.json()
 
             if response.status_code == 404:
