@@ -3,6 +3,9 @@ from typing import List, Tuple
 
 from bs4 import BeautifulSoup, Tag
 from django.db import IntegrityError
+import requests
+import json
+import re
 
 from mensa.models import Category, Allergy, Additive, Dish, DishCategory, DishAllergy, DishAdditive, DishPlan, Mensa, \
     ExtDishRating
@@ -11,7 +14,7 @@ from . import utils
 from .utils import NoAuthURLCollector
 
 
-def _get_dish(name: str, main_meal: bool) -> Dish:
+def _get_dish(name: str, main_meal: bool, image_url: str) -> Dish:
     """Load a dish by a given name or create one if absent. Can later be used to implement some sort of name matching in
     order to get rid of duplicated dishes.
 
@@ -21,6 +24,8 @@ def _get_dish(name: str, main_meal: bool) -> Dish:
         The name of a dish.
     main_meal : bool
         Whether the dish is a main or side meal.
+    image_url : str
+        URL of the image for the dish
 
     Return
     ------
@@ -30,7 +35,7 @@ def _get_dish(name: str, main_meal: bool) -> Dish:
     try:
         return Dish.objects.get(name=name)
     except Dish.DoesNotExist:
-        d = Dish(name=name, main=main_meal)
+        d = Dish(name=name, main=main_meal, url=image_url)
 
         # Ignore duplicate errors and just return the dish. Issue only occurs in multithreading context.
         # Using the created instead of the database instance does not change much. The data is the same.
@@ -47,7 +52,8 @@ class IMensaCollector(NoAuthURLCollector):
         self.url = "https://www.imensa.de/{city}/{mensa}/{day}.html"
         self.cities = {
             "muenster": [
-                "mensa-da-vinci", "bistro-denkpause",  # "bistro-friesenring",  # does not exist anymore?
+                # "bistro-friesenring",  # does not exist anymore?
+                "mensa-da-vinci", "bistro-denkpause",
                 "bistro-katholische-hochschule",
                 "bistro-durchblick", "bistro-frieden", "bistro-kabu", "bistro-oeconomicum", "hier-und-jetzt",
                 "mensa-am-aasee",
@@ -88,10 +94,11 @@ class IMensaCollector(NoAuthURLCollector):
                     break
 
                 # get meal information
-                name, price, groups, rating = self.__scrape_meal(meal, mensa, day)
+                name, price, groups, rating, image_url = self.__scrape_meal(
+                    meal, mensa, day)
 
                 # either gets an existing dish or creates one
-                d = _get_dish(name, not side_meal)
+                d = _get_dish(name, not side_meal, image_url)
 
                 # save additional meal data to database
                 self.__save_groups(d, groups)
@@ -102,13 +109,16 @@ class IMensaCollector(NoAuthURLCollector):
         categories, additives, allergies = groups
         for c in categories:
             category = Category.objects.get(name=c)
-            utils.save_without_integrity(DishCategory(dish=dish, category=category))
+            utils.save_without_integrity(
+                DishCategory(dish=dish, category=category))
         for a in additives:
             additive = Additive.objects.get(name=a)
-            utils.save_without_integrity(DishAdditive(dish=dish, additive=additive))
+            utils.save_without_integrity(
+                DishAdditive(dish=dish, additive=additive))
         for a in allergies:
             allergy = Allergy.objects.get(name=a)
-            utils.save_without_integrity(DishAllergy(dish=dish, allergy=allergy))
+            utils.save_without_integrity(
+                DishAllergy(dish=dish, allergy=allergy))
 
     def __save_price(self, dish: Dish, mensa: Mensa, dish_plan_date: date, price: Tuple[float, float]) -> None:
         price_for_students, price_for_non_students = price
@@ -127,13 +137,18 @@ class IMensaCollector(NoAuthURLCollector):
         # load data of actual meal
         name = meal.find(class_="aw-meal-description").text
 
+        # Get an image for the dish from duckduckgo
+        image_url = self.__get_image_url(name)
+
         # The price for employees is not available on http://imensa.de but can be easily calculated at the
         # moment.
-        price_for_students = utils.to_float(meal.find(title="Preis für Studierende").text[:-2])
+        price_for_students = utils.to_float(
+            meal.find(title="Preis für Studierende").text[:-2])
         price_for_non_students = price_for_students * 1.5
         price = (price_for_non_students, price_for_students)
 
-        attributes = meal.find(class_="small aw-meal-attributes").span.text.replace("\xa0", "").split(" ")
+        attributes = meal.find(
+            class_="small aw-meal-attributes").span.text.replace("\xa0", "").split(" ")
 
         att_type = 0
         categories = []
@@ -173,7 +188,7 @@ class IMensaCollector(NoAuthURLCollector):
 
         rating = (ratings_count, ratings_avg)
 
-        return name, price, groups, rating
+        return name, price, groups, rating, image_url
 
     def _build_urls(self) -> List[Tuple[str, dict]]:
         urls = []
@@ -193,3 +208,64 @@ class IMensaCollector(NoAuthURLCollector):
         now = datetime.now().date()
         diff = weekday - now.weekday()
         return now + timedelta(days=diff)
+
+    def __get_image_url(self, name: str) -> str:
+        results = self.__search(name)
+        image_url: str = None
+
+        if results:
+            if type(results) is dict:
+                if 'results' in results:
+                    for result in results['results']:
+                        if result['height'] < result['width']:
+                            image_url = result['image']
+                            break
+
+        return image_url
+
+    def __search(self, keywords: str, max_results=None):
+        url = 'https://duckduckgo.com/'
+        params = {
+            'q': keywords
+        }
+
+        #   First make a request to above URL, and parse out the 'vqd'
+        #   This is a special token, which should be used in the subsequent request
+        res = requests.post(url, data=params)
+        searchObj = re.search(r'vqd=([\d-]+)\&', res.text, re.M | re.I)
+
+        if not searchObj:
+            return -1
+
+        headers = {
+            'authority': 'duckduckgo.com',
+            'accept': 'application/json, text/javascript, */* q=0.01',
+            'sec-fetch-dest': 'empty',
+            'x-requested-with': 'XMLHttpRequest',
+            'user-agent': 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-mode': 'cors',
+            'referer': 'https://duckduckgo.com/',
+            'accept-language': 'en-US,enq=0.9',
+        }
+
+        params = (
+            ('l', 'de-de'),
+            ('o', 'json'),
+            ('q', keywords),
+            ('vqd', searchObj.group(1)),
+            ('f', ',,,,layaout:Wide,license:Share'),
+            ('p', '1'),
+            ('v7exp', 'a'),
+        )
+
+        requestUrl = url + "i.js"
+
+        data = None
+        try:
+            res = requests.get(requestUrl, headers=headers, params=params)
+            data = json.loads(res.text)
+        except:
+            print("Failure: ", res.status_code, keywords)
+
+        return data
