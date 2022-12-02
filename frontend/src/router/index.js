@@ -51,25 +51,12 @@ const router = new VueRouter({
 
 // check if a user is logged in and hence, is allowed to visit a page requiring authorization 
 router.beforeEach((to, from, next) => {
-  // step 1: if user logged in, redirect user to user-specific page
-  if(to.matched.some((record) => record.meta.isNotLoggedIn)) {
-    // if logged in, the user is redirected to the home page
-    if (store.getters.isLoggedIn) {
-      next('/')
-    }
-  }
-
-  // check if authorization is required: 
-  // cf. meta tags in routes
+  // check if authorization is required (cf. meta tags in routes)
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     // if a user is logged in, he can enter
     if (store.getters.isLoggedIn) {
-      // and the correct user type is given
-      
-      if(to.matched.some((record) => record.meta.permissionLevel == store.getters.permissionLevelString)) {
-        next();
-        return;
-      }
+      next();
+      return;
     }
     // if not logged in, the user is redirected to the home page
     next("/login");
