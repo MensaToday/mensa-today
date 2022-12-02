@@ -73,14 +73,14 @@ class DishRecommender:
         """
             user : User
                 The user for whom recommendations should be generated. This is
-                important as we use content-based filtering and therefore recommend
-                dishes based on previous ratings.
+                important as we use content-based filtering and therefore
+                recommend dishes based on previous ratings.
             day : date
                 The day that should be recommended for.
             entire_week : bool
-                If true, the method predict() returns predictions for the entire
-                week. Otherwise, only recommendations for the day that was
-                specified before are generated.
+                If true, the method predict() returns predictions for the
+                entire week. Otherwise, only recommendations for the day that
+                was specified before are generated.
         """
         self._user = user
 
@@ -183,7 +183,7 @@ class DishRecommender:
         return days
 
     def __get_separated_encoded_dishes(self) -> Dict[
-        date, List[Tuple[int, List[float]]]]:
+            date, List[Tuple[int, List[float]]]]:
         """Separate combined encoded dishes to access them on a daily basis.
 
         Return
