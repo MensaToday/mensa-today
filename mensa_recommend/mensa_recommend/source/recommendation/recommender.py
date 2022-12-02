@@ -66,6 +66,7 @@ class DishRecommender:
         first demo and a most viable product.
     """
     # This version of a sentence transformer was the smallest I could find.
+    # Size: ~100MB
     sentence_transformer = SentenceTransformer('all-MiniLM-L6-v2')
 
     def __init__(self, user: User, day: date, entire_week: bool = False):
@@ -97,7 +98,7 @@ class DishRecommender:
 
     def load(self) -> None:
         """Load important data and already prepares the dishes for predicting.
-        Warning: This may take up to 2 seconds.
+        Warning: This may take up to 1-2 seconds.
 
         Return
         ------
@@ -125,7 +126,7 @@ class DishRecommender:
         self._encoded_dishes = self.__encode_dishes()
 
     def predict(self, recommendations_per_day: int = 1) -> Dict[date, List[
-        Tuple[DishPlan, float]]]:
+            Tuple[DishPlan, float]]]:
         """Predicting recommendations for a user. This process is efficient and
         can be executed synchronously without any problems.
 
@@ -254,7 +255,7 @@ class DishRecommender:
             combining the dish_id and the prediction value.
         """
         # computes the user profile for the comparison
-        profile = self.__compute_user_profile(available_dishes)
+        profile = self.__compute_user_profile()
 
         dish_ids = []
         predictions = []
@@ -305,7 +306,7 @@ class DishRecommender:
         result : List[UserDishRating]
             All ratings of the selected user that could be found.
         """
-        return UserDishRating.objects.filter(user=self._user.id)
+        return UserDishRating.objects.filter(user=self._user)
 
     def __extract_distinct_dishes(self) -> List[Dish]:
         """Extract all distinct dishes that were loaded by the dish plan and
@@ -327,25 +328,24 @@ class DishRecommender:
         # important: change dishes back to list to ensure static dish order
         return list(dishes)
 
-    def __compute_user_profile(self, encoded_dishes: List[
-            Tuple[int, List[float]]]) -> List[float]:
+    def __compute_user_profile(self) -> List[float]:
         """Compute the user profile by multiplying the ratings with their
         corresponding dish characteristic vectors.
-
-        Parameters
-        ----------
-        encoded_dishes : List[Tuple[int, List[float]]]
-            The dish pool.
 
         Return
         ------
         X : List[float]
             The user profile.
         """
-        X = []
+        mapped = {dish_id: data for dish_id, data in self._encoded_dishes}
+
+        # instantiate profile with zeros and
+        data_vector_length = len(self._encoded_dishes[0][1])
+        X = [0] * data_vector_length
+
         for rating in self._ratings:
-            X += np.multiply(rating.rating,
-                             encoded_dishes[rating.dish.id])
+            data = mapped[rating.dish.id]
+            X += np.multiply(rating.rating, data)
         return X
 
     def __encode_dishes(self) -> List[Tuple[int, List[float]]]:
@@ -388,7 +388,7 @@ class DishRecommender:
         categories = []
 
         for d in self._dishes:
-            categories.extend([c.id for c in d.categories])
+            categories.append([c.id for c in d.categories.all()])
 
         return encode_binary(categories)
 
@@ -403,7 +403,7 @@ class DishRecommender:
         additives = []
 
         for d in self._dishes:
-            additives.extend([a.id for a in d.additives])
+            additives.append([a.id for a in d.additives.all()])
 
         return encode_binary(additives)
 
@@ -418,7 +418,7 @@ class DishRecommender:
         allergies = []
 
         for d in self._dishes:
-            allergies.extend([a.id for a in d.allergies])
+            allergies.append([a.id for a in d.allergies.all()])
 
         return encode_binary(allergies)
 
