@@ -10,11 +10,12 @@ export default new Vuex.Store({
     access_token: null,
     refresh_token: null,
     user: {
+      name: null,
       id: null, 
       email: null,
       mensa_card_id: null,
     },
-    card_balance: null,
+    card_balance: 4.71,
     dishplan: null
   },
   getters: {
@@ -44,7 +45,7 @@ export default new Vuex.Store({
       await axios.post("user/register", User)
       commit("setUser", User)
     },
-    async Login({commit}, User_credentials) {
+    async Login({commit, dispatch}, User_credentials) {
       let response = await axios.post('user/login', User_credentials)
       var access_token = response.data.access
       var refresh_token = response.data.refresh
@@ -52,6 +53,10 @@ export default new Vuex.Store({
       window.localStorage.setItem('refresh_token', refresh_token);
       // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token])
+      setTimeout(() => { 
+        dispatch("GetDishplan")
+        // dispatch("getBalance")
+      }, 1);
       
       if(access_token) axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token
 
@@ -71,13 +76,14 @@ export default new Vuex.Store({
     // TODO: The following API-calls are in development
     async Logout({state, commit}) {
       let response = await axios.post('user/logout', {"refresh_token": state.refresh_token})
+      console.log(response)
       // var access_token = response.data.access
       // var refresh_token = response.data.refresh
       // commit("setTokens", [access_token, refresh_token])
       commit("rmTokens")
     },
-    async GetBalance({commit}, card_id) {
-      let response = await axios.get('user/logout', {"card_id": card_id})
+    async GetBalance({commit}) {
+      let response = await axios.get('user/get_balance')
       var card_balance = response.data.card_balance
       commit("setBalance", card_balance)
     },
