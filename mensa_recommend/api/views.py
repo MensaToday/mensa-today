@@ -273,7 +273,17 @@ def get_dishplan(request):
                     "main": true,
                     "name": "Steckrübeneintopf"
                 },
-                "mensa": {
+                "ext_ratings": {
+                    "id": 1678,
+                    "rating_avg": "0.0",
+                    "rating_count": 0
+                },
+                "user_ratings": [
+                    {
+                        "rating": 1.0
+                    }
+                ],
+                "mensa": { 
                     "id": 4,
                     "name": "Bistro Durchblick",
                     "city": "Münster",
@@ -286,13 +296,13 @@ def get_dishplan(request):
                 "date": "2022-12-01",
                 "priceStudent": "3.08",
                 "priceEmployee": "2.05"
-            }
+            },
         ]
     """
 
     last_monday = get_last_monday()
 
-    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday), many=True).data)
+    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday), many=True, context={'user': request.user}).data)
 
 
 @api_view(['GET', 'POST'])
