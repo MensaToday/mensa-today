@@ -1,7 +1,7 @@
 import os
 
 
-production = os.getenv("PRODUCTION", "True") == "True"
+production = os.getenv("PRODUCTION", "False") == "True"
 
 if production:
     proxies = {
@@ -9,4 +9,4 @@ if production:
         'https': 'http://wwwproxy.uni-muenster.de:3128',
     }
 else:
-    proxies = {}
+    proxies = None

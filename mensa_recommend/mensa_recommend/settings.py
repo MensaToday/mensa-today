@@ -79,21 +79,27 @@ JWT_AUTH = {
 }
 
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost:9999',
+    'http://127.0.0.1',
+    'http://127.0.0.1:8080',
+    'http://127.0.0.1:9999',
     'http://localhost',
+    'http://localhost:8080',
+    'http://localhost:9999',
+    'http://10.14.28.50',
+    'http://10.14.28.50:8080',
     'http://10.14.28.50:9999',
 )
+CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
 ]
 
 AUTH_USER_MODEL = 'users.User'
