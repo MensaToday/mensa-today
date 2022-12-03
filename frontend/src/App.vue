@@ -33,7 +33,7 @@ v-app
           v-divider
           v-card-text.white--text
             | {{ new Date().getFullYear() }} &mdash; 
-            strong Martin Jostmann, Leo Giesen, Erik Zimmermann, Marcel Reckmann, Polina Kireyeu
+            strong Marten Jostmann, Leo Giesen, Erik Zimmermann, Marcel Reckmann, Polina Kireyeu
 </template>
 
 <script>

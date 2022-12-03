@@ -1,6 +1,8 @@
 <template lang="pug">
 v-container
     v-card.mx-auto.mt-12(max-width='400')
+        v-overlay(:absolute="absolute" :value="overlay")
+            v-progress-circular(indeterminate color="primary")
         v-card-title
             h2.my-3 Login
         v-card-text
@@ -41,7 +43,9 @@ export default {
             password: ""
         },
         showError: false,
-        showPassword: false
+        showPassword: false,
+        absolute: true,
+        overlay: false
     }
 },
     methods: {
@@ -58,6 +62,7 @@ export default {
                 this.form = {email: "", password: ""}
                 // wait 3 seconds before navigating to the displan because the api call takes so long
                 // it is not a best practice 😵‍💫
+                this.overlay = true
                 setTimeout(() => { 
                     if(this.$store.state.dishplan){
                         this.showError = false

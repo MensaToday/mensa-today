@@ -9,19 +9,19 @@ div
           template(v-slot:header)
             v-toolbar.mb-1(color='primary' dark)
               h3 Recommendations for Today: {{ $store.state.dishplan[0].date }} 
-              v-spacer
-              v-text-field(v-model='search' clearable flat solo-inverted hide-details 
-                prepend-inner-icon='mdi-magnify' label='Search')
-              template(v-if='$vuetify.breakpoint.mdAndUp')
-                v-spacer
-                v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
-                  prepend-inner-icon='mdi-filter-variant' label='Filter')
+              //- v-spacer
+              //- v-text-field(v-model='search' clearable flat solo-inverted hide-details 
+              //-   prepend-inner-icon='mdi-magnify' label='Search')
+              //- template(v-if='$vuetify.breakpoint.mdAndUp')
+              //-   v-spacer
+              //-   v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
+              //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
           template(v-slot:default='props')
             v-row
               v-col(v-for='item in props.items' cols='12' sm='6' md='4' lg='3')
                 v-card
-                  v-img(:alt="item.dish.name" height='250'
-                    :src="require('@/assets/quiz_dishes/dish_preview.png')")
+                  //- v-img(:alt="item.dish.name" height='250'
+                  //-   :src="require('@/assets/quiz_dishes/dish_preview.png')")
                   v-card-title.subheading.font-weight-bold(style="word-break: normal")
                     | {{ item.dish.name }}
                   v-divider
@@ -96,12 +96,13 @@ export default {
     return {
       items: this.$store.state.dishplan,
       itemsPerPageArray: [4, 8, 12],
-      search: '',
+      search: "",
       filter: {},
       sortDesc: false,
       page: 1,
-      itemsPerPage: 4,
-      sortBy: 'name',
+      itemsPerPage: 5,
+      sortBy: 'dish.id',
+      // TODO: filters: 
       keys: [
         'dish.categories[0].category',
         'dish.main',
