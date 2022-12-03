@@ -1,12 +1,12 @@
-from datetime import date, datetime
+from datetime import datetime, date
 from typing import List, Tuple
 
 from bs4 import BeautifulSoup, Tag
-from mensa.models import (Additive, Allergy, Category, Dish, DishAdditive,
-                          DishAllergy, DishCategory, DishPlan, ExtDishRating,
-                          Mensa)
 
-from . import static_data, utils
+from mensa.models import Category, Allergy, Additive, Dish, DishCategory, DishAllergy, DishAdditive, DishPlan, Mensa, \
+    ExtDishRating
+from . import utils
+from . import static_data
 from .utils import NoAuthURLCollector
 
 
@@ -184,4 +184,4 @@ class IMensaCollector(NoAuthURLCollector):
         weekday = self.days.index(day)
         now = datetime.now().date()
         diff = weekday - now.weekday()
-        return date(now.year, now.month, now.day)
+        return date(now.year, now.month, now.day + diff)
