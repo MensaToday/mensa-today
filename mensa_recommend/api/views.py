@@ -1,10 +1,13 @@
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework import permissions
 from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, run
 from mensa_recommend.source.data_collection.klarna import KlarnaCollector
 from mensa_recommend.source.computations.date_computations import get_last_monday
+
 from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import permissions
 
 from .serializers import DishPlanSerializer, DishSerializer, UserDishRatingSerializer
 
@@ -27,7 +30,15 @@ def register(request):
         Input
         ------
         {
-            "card_id": int
+            "username": str,
+            "password": str,
+            "categories": [],
+            "allergies": [],
+            "card_id": int,
+            "ratings": [{
+                "id": int,
+                "rating": int
+            }]
         }
 
         Output
@@ -155,6 +166,19 @@ def register(request):
 
 
 @api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def logout(request):
+    try:
+        refresh_token = request.data["refresh_token"]
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+
+        return Response(status=status.HTTP_205_RESET_CONTENT)
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def check_card_id(request):
     """Check if the card_id is valid
@@ -187,6 +211,31 @@ def check_card_id(request):
             return Response("Card ID wrong", status=status.HTTP_404_NOT_FOUND)
     else:
         return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def get_balance(request):
+    """Get the current card balance
+
+        Route: api/v1/user/get_balance
+        Authorization: Authenticated
+        Methods: GET
+
+        Output
+        -------
+        If card is not None:
+            balance with 200
+        If card is None:
+            404 Not found
+    """
+    user = request.user
+
+    if user.card_id is not None:
+        balance = KlarnaCollector().get_current_balance(user.card_id)
+        return Response(balance, status=status.HTTP_200_OK)
+    else:
+        return Response("No card_id in user profile", status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -234,7 +283,7 @@ def get_dishplan(request):
 
     last_monday = get_last_monday()
 
-    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gt=last_monday), many=True).data)
+    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday), many=True).data)
 
 
 @api_view(['GET', 'POST'])
