@@ -9,3 +9,4 @@ tqdm == 4.64.1
 django-cors-headers == 3.13.0
 djangorestframework == 3.14.0
 djangorestframework-simplejwt == 5.2.2
+pycryptodome == 3.14.1

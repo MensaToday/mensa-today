@@ -122,7 +122,7 @@
 </template>
 
 <script>
-import jsencrypt from 'jsencrypt';
+import { JSEncrypt } from 'jsencrypt';
 import { mapActions } from "vuex";
 export default {
     name: "Quiz",
@@ -215,8 +215,8 @@ export default {
     },
     methods: {
         encrypt(m){
-            const encrypt = new jsencrypt();
-            encrypt.setPublicKey(`-----BEGIN PUBLIC KEY-----
+            let encryptor = new JSEncrypt();
+            encryptor.setPublicKey(`-----BEGIN PUBLIC KEY-----
                 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyIarxNbmhpiGUBce9LZc
                 1PdNpKTMNxYjDzw51Z7YjTIgVbWyY50PegHhC2ivVoEjjxEhWRe2hJi++a9SSEUC
                 +9VtHgYYtUmA+9pQ4cEg+iEy7od12tvYg60LM6qxdqGV10ndFah0sLXIzX4x5neh
@@ -226,8 +226,7 @@ export default {
                 MwIDAQAB
                 -----END PUBLIC KEY-----
                 `);
-            const encrypted = encrypt.encrypt(m);
-            return encrypted;
+            return encryptor.encrypt(m);
         },
         // import LogInUser action
         ...mapActions(["LogIn"]),
