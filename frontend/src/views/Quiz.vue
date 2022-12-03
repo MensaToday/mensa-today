@@ -124,6 +124,7 @@
 <script>
 import { JSEncrypt } from 'jsencrypt';
 import { mapActions } from "vuex";
+import config from "@/config.js";
 export default {
     name: "Quiz",
     data: () => ({
@@ -198,7 +199,8 @@ export default {
             mensa_card_id: "",
         },
         showError: false,
-        showPassword: false
+        showPassword: false,
+        publicKey: config.publicKey
     }),
     computed: {
         isCheckAll: {
@@ -216,16 +218,7 @@ export default {
     methods: {
         encrypt(m){
             let encryptor = new JSEncrypt();
-            encryptor.setPublicKey(`-----BEGIN PUBLIC KEY-----
-                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyIarxNbmhpiGUBce9LZc
-                1PdNpKTMNxYjDzw51Z7YjTIgVbWyY50PegHhC2ivVoEjjxEhWRe2hJi++a9SSEUC
-                +9VtHgYYtUmA+9pQ4cEg+iEy7od12tvYg60LM6qxdqGV10ndFah0sLXIzX4x5neh
-                F2w/A3fE6rOCKbE85DXn6hCXilJV4F2bEOGu55xU4YM36/EA26cG/vVRYY3hItB4
-                t2traTE3GX0CNxc+keyi7p5tXWE2YKHoSWmYUk5OWWxibPllczJflHPQ8tL6STJI
-                6A8foX3x062Rg/0rv//lNwpU5kW/ZiNvG1RXanxKCQrc8Tx37Hc5Hz1C7rzVRn5V
-                MwIDAQAB
-                -----END PUBLIC KEY-----
-                `);
+            encryptor.setPublicKey(this.publicKey);
             return encryptor.encrypt(m);
         },
         // import LogInUser action
