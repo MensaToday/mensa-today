@@ -5,13 +5,13 @@ import vuetify from "./plugins/vuetify";
 import router from "./router";
 import store from "./store";
 
-axios.defaults.baseURL = 'http://localhost:9999/api/v1/';
+axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
     
 Vue.config.productionTip = false;
 
 new Vue({
   router,
   store,
-  vuetify,
+  vuetify,  
   render: (h) => h(App),
 }).$mount("#app");
