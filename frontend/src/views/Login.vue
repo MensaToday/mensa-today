@@ -20,7 +20,7 @@ v-container
                     @click:append="showPassword = !showPassword"
                     v-on:keyup.enter="login()")
                 v-divider
-            p(v-if="showError") Identifier or password is incorrect
+            p(v-if="showError") {{showError}}
         
         v-card-actions
             v-btn(@click="this.$router.push('/quiz')" color="primary") 
@@ -71,7 +71,7 @@ export default {
                 }, 3000);
             } catch (error) {
                 console.log(error)
-                this.showError = true
+                this.showError = error.message
             }
         }
     },

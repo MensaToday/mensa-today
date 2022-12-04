@@ -86,11 +86,7 @@ CORS_ORIGIN_WHITELIST = (
     'http://10.14.28.50:8080',
     'http://10.14.28.50:9999',
 )
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:9999',
-    'http://localhost:8080',
-    'http://localhost',
-]
+CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -156,7 +156,7 @@ def register(request):
 
             else:
                 # If data is not correct send user feedback
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
+                return Response("Identifier or password is incorrect", status=status.HTTP_401_UNAUTHORIZED)
 
         else:
             return Response("User already exists", status=status.HTTP_406_NOT_ACCEPTABLE)

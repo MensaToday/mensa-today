@@ -122,7 +122,7 @@
                                         prepend-icon="mdi-card-account-details"
                                         v-model="form.mensa_card_id")
                                     v-divider
-                                p(v-if="showError") Identifier or password is incorrect
+                                p(v-if="showError") {{showError}}
                             
                             v-card-actions
                                 v-btn(@click="cur_step-=1") 
@@ -271,7 +271,7 @@ export default {
                 let User = {
                     'username': this.form.email,
                     'password': this.form.password,
-                    'card_id': this.form.mensa_card_id,
+                    'card_id': +this.form.mensa_card_id,
                     'categories': this.food_preferences,
                     'allergies': this.allergies,
                     'ratings': this.dishes
@@ -284,7 +284,7 @@ export default {
                 }, 500);
             } catch (error) {
                 console.log(error)
-                this.showError = true
+                this.showError = error.message
             }
         },
     }

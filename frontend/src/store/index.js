@@ -1,3 +1,4 @@
+import { api } from '@/api';
 import axios from 'axios';
 import Vue from "vue";
 import Vuex from "vuex";
@@ -19,16 +20,22 @@ export default new Vuex.Store({
     dishplan: null
   },
   getters: {
-    isLoggedIn: (state) => state.access_token != null,
+    isLoggedIn: (state) => true // state.user.id != null,
   },
   mutations: {
-    setTokens(state, [access_token, refresh_token]){
+    setTokens(state, { access_token, refresh_token}){
       state.access_token = access_token
       state.refresh_token = refresh_token
+
+      // TODO: typically we sync the whole Vuex store to localStorage
+      window.localStorage.setItem('access_token', access_token);
+      window.localStorage.setItem('refresh_token', refresh_token);
     },
     rmTokens(state){
       state.access_token = null
       state.refresh_token = null
+
+      // TODO: rm tokens from localstorage
     },
     setUser(state, user){
       state.user = user
@@ -41,24 +48,25 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async Register({commit}, User){
-      await axios.post("user/register", User)
-      commit("setUser", User)
+    async Register({commit}, user){
+      const { access, refresh} = await api.register(user)
+      commit("setUser", user)
+      commit("setTokens", {
+        access_token: access,
+        refresh_token: refresh,
+      })
     },
-    async Login({commit, dispatch}, User_credentials) {
-      let response = await axios.post('user/login', User_credentials)
-      var access_token = response.data.access
-      var refresh_token = response.data.refresh
-      window.localStorage.setItem('access_token', access_token);
-      window.localStorage.setItem('refresh_token', refresh_token);
-      // var user =  response.data.user
-      commit("setTokens", [access_token, refresh_token])
+    async Login({commit, dispatch}, userCredentials) {
+      const { access, refresh } = await api.login(userCredentials)
+      commit("setTokens", {
+        access_token: access,
+        refresh_token: refresh,
+      })
       setTimeout(() => { 
         dispatch("GetDishplan")
-        // dispatch("getBalance")
+        // dispatch("GetBalance")
       }, 1);
       
-      if(access_token) axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token
 
       // commit("setUser", user)
       
@@ -74,22 +82,16 @@ export default new Vuex.Store({
       // setTimeout(() => dispatch('AutoRefreshToken'), 2000)
     },
     // TODO: The following API-calls are in development
-    async Logout({state, commit}) {
-      let response = await axios.post('user/logout', {"refresh_token": state.refresh_token})
-      console.log(response)
-      // var access_token = response.data.access
-      // var refresh_token = response.data.refresh
-      // commit("setTokens", [access_token, refresh_token])
+    async Logout({commit}) {
+      await api.logout()
       commit("rmTokens")
     },
     async GetBalance({commit}) {
-      let response = await axios.get('user/get_balance')
-      var card_balance = response.data.card_balance
+      const { card_balance } = await api.getBalance()
       commit("setBalance", card_balance)
     },
     async GetDishplan({commit}) {
-      let response = await axios.get('mensa/get_dishplan')
-      var dishplan = response.data
+      const dishplan = await api.getDishPlan()
       commit("setDishplan", dishplan)
     }
   },
