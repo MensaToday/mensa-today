@@ -2,16 +2,16 @@
 div(max-width="450") 
     v-row.mt-4
         v-col.col-9.pb-0
-            h3.d-inline Burger with Salad
+            h3.d-inline {{ dishPlan.dish.name }}
         v-col.col-3.pb-0
-            h3.ma-0.text-right 3,80€
+            h3.ma-0.text-right {{dishPlan.priceStudent }}€
     v-row.my-0
         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
             v-img(alt="beef" height="60" max-width="60" contain
                 src="@/assets/dish_icons/food_preferences/Beef.png")
-            v-btn(@click="" rounded)
+            v-btn(:href="getGoogleMapsUrl(dishPlan.mensa.name)" rounded)
                 v-icon mdi-navigation-variant-outline
-                | Mensa am Ring
+                | {{ dishPlan.mensa.name }}
     //- Dish Image
     v-row.my-0
         v-col.pt-0.px-0
@@ -30,9 +30,17 @@ div(max-width="450")
 
 <script>
 export default {
-    name: "SingleDish",
-    data: () => ({
-        suggested_dish_rating: null,
-    }),
+  name: "SingleDish",
+  data: () => ({
+    suggested_dish_rating: null,
+  }),
+  props: ["dishPlan"],
+  methods: {
+    getGoogleMapsUrl(mensaName) {
+        const url = new URL("https://www.google.com/maps/dir/?api=1")
+        url.searchParams.set("destination", mensaName)
+        return url.toString()
+    }
+  }
 };
 </script>
