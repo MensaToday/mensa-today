@@ -64,6 +64,7 @@
                     v-stepper-content(step='2').pa-0
                         v-stepper(v-model='cur_step_dishes' tile).mt-0.pt-0
                             v-stepper-header
+                                p #Filtered Dishes: {{ relevantDishes }}
                                 v-stepper-step(:complete='cur_step_dishes > 1' step='1')
                                 v-divider
                                 v-stepper-step(:complete='cur_step_dishes > 2' step='2')
@@ -74,7 +75,7 @@
                                     v-for="(dish, index) in dishes"
                                     :key="dish.dish.name"
                                     :step='index+1')
-                                    h3.my-0 {{ dish.dish.name }}    
+                                    h3.my-0 {{ dish.dish.name }}
                                     v-row.my-0
                                         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
                                             h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
@@ -152,7 +153,7 @@ import { mapActions } from "vuex";
 export default {
   name: "Quiz",
   data: () => ({
-    cur_step: 2,
+    cur_step: 1,
     cur_step_dishes: 1,
     food_preferences: {
       Vegan: false,
@@ -209,6 +210,7 @@ export default {
     selected_allergies: [],
     selected_additives: [],
     dishes: dishes,
+    relevantDishes: null,
     form: {
       email: "",
       password: "",
@@ -276,6 +278,25 @@ export default {
       for (let idx = 0; idx < values.length; idx++) {
         obj[values[idx]] = true;
       }
+    },
+    checkRelevance(user_attribute, dish_attribute, attribute_name){
+        for(let idx = 0; idx < dishes.length; idx++){
+            attribute = String(dish_attribute[idx])+"."+attribute_name + ".name"
+            console.log(attribute)
+            console.log(user_attribute[attribute])
+            if(!user_attribute[attribute]) return false
+        }
+        return true
+    },
+    filtered_dishes(){
+        let relevantDishes = this.dishes.filter(dish =>
+            this.food_preferences[dish.dish.categories[0].category.name]
+        );
+        this.relevantDishes = relevantDishes
+        return relevantDishes
+        // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
+        // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
+        // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
     },
     async register() {
       try {
