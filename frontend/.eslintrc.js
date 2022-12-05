@@ -12,17 +12,17 @@ module.exports = {
   ],
 
   parserOptions: {
-    parser: '@babel/eslint-parser',
+    parser: "@babel/eslint-parser",
   },
 
   rules: {
-    'no-console': 'off',
-    'no-debugger': 'off',
+    "no-console": "off",
+    "no-debugger": "off",
   },
 
-  'extends': [
-    'plugin:vue/essential',
-    'eslint:recommended',
-    'plugin:prettier/recommended'
-  ]
+  extends: [
+    "plugin:vue/essential",
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+  ],
 };

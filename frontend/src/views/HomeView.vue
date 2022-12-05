@@ -92,7 +92,7 @@ div
 import { mapActions } from "vuex";
 export default {
   name: "Home",
-  data () {
+  data() {
     return {
       items: this.$store.state.dishplan,
       itemsPerPageArray: [4, 8, 12],
@@ -101,55 +101,55 @@ export default {
       sortDesc: false,
       page: 1,
       itemsPerPage: 5,
-      sortBy: '',
-      // TODO: filters: 
+      sortBy: "",
+      // TODO: filters:
       keys: [
-        'dish.categories[0].category',
-        'dish.main',
-        'mensa.name',
-        'date',
-        'priceStudent',
-      ]
-    }
+        "dish.categories[0].category",
+        "dish.main",
+        "mensa.name",
+        "date",
+        "priceStudent",
+      ],
+    };
   },
   computed: {
-    numberOfPages () {
-      if(this.items) return Math.ceil(this.items.length / this.itemsPerPage)
-      else return 1
+    numberOfPages() {
+      if (this.items) return Math.ceil(this.items.length / this.itemsPerPage);
+      else return 1;
     },
-    filteredKeys () {
-      return this.keys.filter(key => key !== 'Name')
+    filteredKeys() {
+      return this.keys.filter((key) => key !== "Name");
     },
   },
   methods: {
-    ...mapActions(["GetDishplan", "GetBalance"]),   
+    ...mapActions(["GetDishplan", "GetBalance"]),
 
-    nextPage () {
-      if (this.page + 1 <= this.numberOfPages) this.page += 1
+    nextPage() {
+      if (this.page + 1 <= this.numberOfPages) this.page += 1;
     },
-    formerPage () {
-      if (this.page - 1 >= 1) this.page -= 1
+    formerPage() {
+      if (this.page - 1 >= 1) this.page -= 1;
     },
-    updateItemsPerPage (number) {
-      this.itemsPerPage = number
+    updateItemsPerPage(number) {
+      this.itemsPerPage = number;
     },
-    async getDishplan(){
+    async getDishplan() {
       try {
         await this.GetDishplan();
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     },
-    async getBalance(){
+    async getBalance() {
       try {
         await this.GetBalance();
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
+    },
   },
   // created() {
-  //   setTimeout(() => { 
+  //   setTimeout(() => {
   //     this.getDishplan()
   //     // this.getBalance()
   //   }, 1000);

@@ -154,164 +154,215 @@ import dishes from "@/assets/quiz_dishes/dishes.json";
 import config from "@/config.js";
 import { mapActions } from "vuex";
 export default {
-    name: "Quiz",
-    data: () => ({
-        cur_step: 2,
-        cur_step_dishes: 1,
-        food_preferences: {
-            "Vegan": false,
-            "Vegetarian": false,
-            "Pork": false,
-            "Beef": false,
-            "Poultry": false,
-            "Alcohol": false,
-            "Fish": false,
-        },
-        additives: {
-            "Dyed": false,
-            "Preservatives": false,
-            "Antioxidants": false,
-            "Flavor enhancers": false,
-            "Sulphurated": false,
-            "Blackened": false,
-            "Waxed": false,
-            "Phosphate": false,
-            "Sweeteners": false,
-            "Phenylalanine source": false
-        },
-        allergies: {
-            "Gluten": false,
-            "Spelt": false,
-            "Barles": false,
-            "Oats": false,
-            "Kamut": false,
-            "Rye": false,
-            "Wheat": false,
-            "Crustaceans": false,
-            "Egg": false,
-            "Fish": false,
-            "Peanuts": false,
-            "Soy": false,
-            "Milk": false,
-            "Nuts": false,
-            "Almonds": false,
-            "Hazelnuts": false,
-            "Walnuts": false,
-            "Cashews": false,
-            "Pecans": false,
-            "Brazil nuts": false,
-            "Pistachios": false,
-            "Macadamias": false,
-            "Celerey": false,
-            "Mustard": false,
-            "Sesame": false,
-            "Lupines": false,
-            "Molluscs": false,
-            "Sulfur dioxide": false
-        },
-        search: null,
-        selected_allergies: [],
-        selected_additives: [],
-        dishes: [
-            {name: "Burger with Salad", img: "dish_preview.png", rating: null,
-            // TODO: list of additional_ingrediants & allergies: [nuts, ...] + API Call probably needs the dish ID
-            // rating: 1 if the user would eat it (thumbs up), else 0
-            additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]},
-            {name: "Burger without Salad", img: "dish_preview.png", rating: null,
-            additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]},
-            {name: "Burger", img: "dish_preview.png", rating: null,
-            additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]}
-        ],
-        dishes: dishes,
-        form: {
-            email: "",
-            password: "",
-            mensa_card_id: "",
-        },
-        overlay: true,
-        showError: false,
-        showPassword: false,
-        publicKey: config.publicKey
-    }),
-    computed: {
-        no_food_preferences: {
-            get: function(){
-                for (let [key, value] of Object.entries(this.food_preferences)) {
-                    if(value == true) return false
-                }
-                return true
-            },
-            set: function(){
-                return true
-            }
-        },
-        isCheckAll: {
-            get: function(){
-                for (let [key, value] of Object.entries(this.food_preferences)) {
-                    if(value == false) return false
-                }
-                return true
-            },
-            set: function(){
-                return false
-            }
-        },
-        ratings_incomplete: {
-            get: function(){
-                for(let idx = 0; idx<this.dishes.length; idx++){
-                    if(this.dishes[idx]['rating'] == null) return true
-                }
-                return false
-            },
-            set: function(){
-                return true
-            }
-        }
+  name: "Quiz",
+  data: () => ({
+    cur_step: 2,
+    cur_step_dishes: 1,
+    food_preferences: {
+      Vegan: false,
+      Vegetarian: false,
+      Pork: false,
+      Beef: false,
+      Poultry: false,
+      Alcohol: false,
+      Fish: false,
     },
-    methods: {
-        // import Register action
-        ...mapActions(["Register"]),
-        encrypt(m){
-            let encryptor = new JSEncrypt();
-            encryptor.setPublicKey(this.publicKey);
-            return encryptor.encrypt(m);
-        },
-        checkAll(){
-            Object.keys(this.food_preferences).forEach(key => {
-                this.food_preferences[key] = true
-            })
-        },
-        uncheckAll(){
-            Object.keys(this.food_preferences).forEach(key => {
-                this.food_preferences[key] = false
-            })
-        },
-        updateObject(obj, values){
-            for(let idx=0; idx<values.length; idx++){
-                obj[values[idx]] = true
-            }
-        },
-        async register() {
-            try {
-                let User = {
-                    'username': this.form.email,
-                    'password': this.form.password,
-                    'card_id': this.form.mensa_card_id,
-                    'categories': this.food_preferences,
-                    'allergies': this.allergies,
-                    'ratings': this.dishes
-                }
-                await this.Register(User);
-                // Redirect to homepage
-                setTimeout(() => { 
-                    this.showError = false
-                    this.$router.push('/')
-                }, 500);
-            } catch (error) {
-                console.log(error)
-                this.showError = true
-            }
-        },
-    }
-};  
+    additives: {
+      Dyed: false,
+      Preservatives: false,
+      Antioxidants: false,
+      "Flavor enhancers": false,
+      Sulphurated: false,
+      Blackened: false,
+      Waxed: false,
+      Phosphate: false,
+      Sweeteners: false,
+      "Phenylalanine source": false,
+    },
+    allergies: {
+      Gluten: false,
+      Spelt: false,
+      Barles: false,
+      Oats: false,
+      Kamut: false,
+      Rye: false,
+      Wheat: false,
+      Crustaceans: false,
+      Egg: false,
+      Fish: false,
+      Peanuts: false,
+      Soy: false,
+      Milk: false,
+      Nuts: false,
+      Almonds: false,
+      Hazelnuts: false,
+      Walnuts: false,
+      Cashews: false,
+      Pecans: false,
+      "Brazil nuts": false,
+      Pistachios: false,
+      Macadamias: false,
+      Celerey: false,
+      Mustard: false,
+      Sesame: false,
+      Lupines: false,
+      Molluscs: false,
+      "Sulfur dioxide": false,
+    },
+    search: null,
+    selected_allergies: [],
+    selected_additives: [],
+    dishes: [
+      {
+        name: "Burger with Salad",
+        img: "dish_preview.png",
+        rating: null,
+        // TODO: list of additional_ingrediants & allergies: [nuts, ...] + API Call probably needs the dish ID
+        // rating: 1 if the user would eat it (thumbs up), else 0
+        additional_ingrediants_allergies: [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+        ],
+      },
+      {
+        name: "Burger without Salad",
+        img: "dish_preview.png",
+        rating: null,
+        additional_ingrediants_allergies: [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+        ],
+      },
+      {
+        name: "Burger",
+        img: "dish_preview.png",
+        rating: null,
+        additional_ingrediants_allergies: [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+        ],
+      },
+    ],
+    dishes: dishes,
+    form: {
+      email: "",
+      password: "",
+      mensa_card_id: "",
+    },
+    overlay: true,
+    showError: false,
+    showPassword: false,
+    publicKey: config.publicKey,
+  }),
+  computed: {
+    no_food_preferences: {
+      get: function () {
+        for (let [key, value] of Object.entries(this.food_preferences)) {
+          if (value == true) return false;
+        }
+        return true;
+      },
+      set: function () {
+        return true;
+      },
+    },
+    isCheckAll: {
+      get: function () {
+        for (let [key, value] of Object.entries(this.food_preferences)) {
+          if (value == false) return false;
+        }
+        return true;
+      },
+      set: function () {
+        return false;
+      },
+    },
+    ratings_incomplete: {
+      get: function () {
+        for (let idx = 0; idx < this.dishes.length; idx++) {
+          if (this.dishes[idx]["rating"] == null) return true;
+        }
+        return false;
+      },
+      set: function () {
+        return true;
+      },
+    },
+  },
+  methods: {
+    // import Register action
+    ...mapActions(["Register"]),
+    encrypt(m) {
+      let encryptor = new JSEncrypt();
+      encryptor.setPublicKey(this.publicKey);
+      return encryptor.encrypt(m);
+    },
+    checkAll() {
+      Object.keys(this.food_preferences).forEach((key) => {
+        this.food_preferences[key] = true;
+      });
+    },
+    uncheckAll() {
+      Object.keys(this.food_preferences).forEach((key) => {
+        this.food_preferences[key] = false;
+      });
+    },
+    updateObject(obj, values) {
+      for (let idx = 0; idx < values.length; idx++) {
+        obj[values[idx]] = true;
+      }
+    },
+    async register() {
+      try {
+        let User = {
+          username: this.form.email,
+          password: this.form.password,
+          card_id: this.form.mensa_card_id,
+          categories: this.food_preferences,
+          allergies: this.allergies,
+          ratings: this.dishes,
+        };
+        await this.Register(User);
+        // Redirect to homepage
+        setTimeout(() => {
+          this.showError = false;
+          this.$router.push("/");
+        }, 500);
+      } catch (error) {
+        console.log(error);
+        this.showError = true;
+      }
+    },
+  },
+};
 </script>
