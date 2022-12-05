@@ -17,7 +17,6 @@ from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, Use
 from users.source.authentication.manual_jwt import get_tokens_for_user
 from mensa_recommend.source.computations.transformer import transform_rating
 
-
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def register(request):
