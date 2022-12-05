@@ -1,3 +1,6 @@
+import datetime
+from datetime import datetime
+
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -12,6 +15,7 @@ from mensa_recommend.source.computations.transformer import transform_rating
 from mensa_recommend.source.data_collection.klarna import KlarnaCollector
 from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, \
     run
+from mensa_recommend.source.recommendation import recommender
 from users.models import User
 from users.source.authentication.manual_jwt import get_tokens_for_user
 from .serializers import DishPlanSerializer, UserDishRatingSerializer
@@ -416,3 +420,125 @@ def getData(request):
         return Response("Hello World v1")
     else:
         return Response("Hello World v2")
+
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def get_recommendations(request):
+    """Get user recommendations.
+
+        Route: api/v1/mensa/get_recommendations
+        Authorization: Authenticated
+        Methods: Get
+
+        GET
+        ---
+
+        Input
+        ------
+        {
+            "day": "2022.12.05",
+            "entire_week": "False",
+            "recommendations_per_day": 1
+        }
+
+        Output
+        -------
+        {
+            "2022.12.05": [
+                [
+                    {
+                        "dish": {
+                            "id": 85,
+                            "categories": [
+                                {
+                                    "category": {
+                                        "id": 2,
+                                        "name": "Vegetarian"
+                                    }
+                                }
+                            ],
+                            "additives": [],
+                            "allergies": [
+                                {
+                                    "allergy": {
+                                        "id": 9,
+                                        "name": "Egg"
+                                    }
+                                },
+                                {
+                                    "allergy": {
+                                        "id": 1,
+                                        "name": "Gluten"
+                                    }
+                                },
+                                {
+                                    "allergy": {
+                                        "id": 13,
+                                        "name": "Milk"
+                                    }
+                                },
+                                {
+                                    "allergy": {
+                                        "id": 7,
+                                        "name": "Wheat"
+                                    }
+                                }
+                            ],
+                            "main": true,
+                            "name": "Ricotta-Spinat-Cannelloni mit Tomatensauce"
+                        },
+                        "ext_ratings": {
+                            "id": 153,
+                            "rating_avg": "5.0",
+                            "rating_count": 1
+                        },
+                        "user_ratings": [],
+                        "mensa": {
+                            "id": 11,
+                            "name": "Mensa Bispinghof",
+                            "city": "Münster",
+                            "street": "Bispinghof",
+                            "houseNumber": "9-14",
+                            "zipCode": 48149,
+                            "startTime": "11:00:00",
+                            "endTime": "14:30:00"
+                        },
+                        "date": "2022-12-05",
+                        "priceStudent": "2.05",
+                        "priceEmployee": "3.08"
+                    },
+                    0.7345052573194639
+                ]
+            ]
+        }
+
+        200-OK if inputs are valid
+        406 when not all fields were provided or the inputs were malformed
+    """
+    if "day" not in request.data \
+            or "entire_week" not in request.data:
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    try:
+        day: datetime.date = recommender.str_to_date(request.data["day"])
+    except ValueError:
+        return Response("Wrong 'day' format. Use: %Y.%m.%d",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    entire_week: bool = request.data["entire_week"].lower() == "true"
+
+    if "recommendations_per_day" in request.data:
+        try:
+            rec_per_day = int(request.data["recommendations_per_day"])
+        except ValueError:
+            return Response("Wrong 'recommendations_per_day' format. "
+                            "Use integers only.",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+    else:
+        rec_per_day = 1
+
+    r = recommender.DishRecommender(request.user, day, entire_week)
+    res = r.predict(rec_per_day, serialize=True)
+    return Response(res, status=status.HTTP_200_OK)

@@ -8,5 +8,6 @@ urlpatterns = [
     path('user/check_card_id', views.check_card_id),
     path('user/get_balance', views.get_balance),
     path('mensa/get_dishplan', views.get_dishplan),
-    path('mensa/user_ratings', views.user_ratings)
+    path('mensa/user_ratings', views.user_ratings),
+    path('mensa/get_recommendations', views.get_recommendations)
 ]
