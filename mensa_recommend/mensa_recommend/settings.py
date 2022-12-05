@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from pathlib import Path
-import os
 import datetime
+import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,9 +79,6 @@ JWT_AUTH = {
 }
 
 CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1',
-    'http://127.0.0.1:8080',
-    'http://127.0.0.1:9999',
     'http://localhost',
     'http://localhost:8080',
     'http://localhost:9999',
@@ -89,6 +86,11 @@ CORS_ORIGIN_WHITELIST = (
     'http://10.14.28.50:8080',
     'http://10.14.28.50:9999',
 )
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:9999',
+    'http://localhost:8080',
+    'http://localhost',
+]
 CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
@@ -101,6 +103,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 AUTH_USER_MODEL = 'users.User'
 

@@ -3,7 +3,7 @@
         v-container.center-items
             h1.text-center.my-8 Tell Us About Yourself - Intro-Quiz
 
-            v-stepper(v-model='cur_step')
+            v-stepper(v-model='cur_step' width="500")
                 v-stepper-header
                     v-stepper-step(:complete='cur_step > 1' step='1') Food Preferences
                     v-divider
@@ -30,7 +30,7 @@
                                         v-combobox(v-model='selected_allergies' :items='Object.keys(allergies)' 
                                             :search-input.sync='search' hide-selected 
                                             label='Specify Allergies' 
-                                            multiple persistent-hint small-chips)
+                                            multiple persistent-hint small-chips clearable)
                                             template(v-slot:no-data)
                                                 v-list-item
                                                     v-list-item-content
@@ -42,7 +42,7 @@
                                         v-combobox(v-model='selected_additives' :items='Object.keys(additives)' 
                                             :search-input.sync='search' hide-selected 
                                             label='Specify Additives You Dislike' 
-                                            multiple persistent-hint small-chips)
+                                            multiple persistent-hint small-chips clearable)
                                             template(v-slot:no-data)
                                                 v-list-item
                                                     v-list-item-content
@@ -52,45 +52,62 @@
                                                             | &quot;.
 
                                 v-card-actions
+                                    v-btn(color='primary' @click="$router.push('/login')")
+                                        v-icon mdi-login-variant
+                                        | Login
                                     v-spacer
-                                    v-btn(color='primary' 
+                                    v-btn(color='primary' :disabled="no_food_preferences"
                                         @click='updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); cur_step = 2')
                                         //- @click="allergies['Gluten']=true; cur_step = 2")
                                         v-icon mdi-chevron-right
                                         | Continue
-                    v-stepper-content(step='2')
-                        v-card.mb-4(max-width='800' flat)
-                            v-card-text
-                                p {{ allergies }}
-                                v-row
-                                    v-col(
-                                        v-for="dish in dishes"
-                                        cols="12" sm="12" md="6"
-                                        :key="dish.name")
-                                        p.text-center {{dish.name}}
-                                        v-img(:alt="dish.name" max-width="385"
+                    v-stepper-content(step='2').pa-0
+                        v-stepper(v-model='cur_step_dishes' tile).mt-0.pt-0
+                            v-stepper-header
+                                v-stepper-step(:complete='cur_step_dishes > 1' step='1')
+                                v-divider
+                                v-stepper-step(:complete='cur_step_dishes > 2' step='2')
+                                v-divider
+                                v-stepper-step(step='3')
+                            v-stepper-items
+                                v-stepper-content(
+                                    v-for="(dish, index) in dishes"
+                                    :key="dish.name"
+                                    :step='index+1')
+                                    div.p-relative
+                                        v-img.mx-auto(:alt="dish.name" max-width="395"
                                             :src="require('@/assets/quiz_dishes/' + dish.img)")
-                                        div.justify-center
-                                            v-btn.my-2(@click="dish.would_eat = false" large width="50%" elevation="1"
-                                                :color="(dish.would_eat != false) ? 'gray' : 'primary'")
-                                                v-icon {{(dish.would_eat != false) ? 'mdi-thumb-down-outline' : 'mdi-thumb-down'}} 
-                                            v-btn.my-2(@click="dish.would_eat = true" large width="50%" elevation="1"
-                                                :color="dish.would_eat ? 'green' : 'gray'")
-                                                v-icon {{(dish.would_eat && dish.would_eat != null) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
-                            v-card-actions
-                                v-btn(@click="cur_step-=1") 
-                                    v-icon mdi-chevron-left
-                                    | Back
-                                v-spacer
-                                v-btn(color='primary' @click='cur_step = 3')
-                                    v-icon mdi-chevron-right
-                                    | Continue
+                                        v-btn.p-absolute(fab style="position: absolute; top: 40%; left: 6%" 
+                                            v-if='cur_step_dishes>1'
+                                            @click="cur_step_dishes-=1") 
+                                            v-icon mdi-chevron-left
+                                        v-btn.p-absolute(color='primary' fab style="position: absolute; top: 40%; right: 6%;"
+                                            v-if='cur_step_dishes<3' :disabled="dish.rating == null"
+                                            @click='cur_step_dishes++')
+                                            v-icon mdi-chevron-right
+                                    div.justify-center
+                                        v-btn.my-2(@click="dish.rating = 0" large width="50%" elevation="1"
+                                            :color="(dish.rating != 0) ? 'gray' : 'primary'")
+                                            v-icon {{(dish.rating == 0) ? 'mdi-thumb-down' : 'mdi-thumb-down-outline'}} 
+                                        v-btn.my-2(@click="dish.rating = 1" large width="50%" elevation="1"
+                                            :color="dish.rating ? 'green' : 'gray'")
+                                            v-icon {{(dish.rating == 1) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
+                                    
+                                    
+                        v-card-actions
+                            v-btn(@click="cur_step-=1") 
+                                v-icon mdi-chevron-left
+                                | Back
+                            v-spacer
+                            v-btn(color='primary' @click='cur_step = 3' :disabled='ratings_incomplete')
+                                v-icon mdi-chevron-right
+                                | Continue
                     v-stepper-content(step='3')
                         v-card.mb-4(max-width='800' flat)
                             v-card-text
                                 v-form(@submit.prevent="submit")
                                     v-text-field(
-                                        label="ZIV Email"
+                                        label="ZIV Identifier"
                                         prepend-icon="mdi-account"
                                         v-model="form.email")
                                     v-text-field(
@@ -105,31 +122,27 @@
                                         prepend-icon="mdi-card-account-details"
                                         v-model="form.mensa_card_id")
                                     v-divider
-                                p(v-if="showError") Email or Password is incorrect
+                                p(v-if="showError") Identifier or password is incorrect
                             
                             v-card-actions
                                 v-btn(@click="cur_step-=1") 
                                     v-icon mdi-chevron-left
                                     | Back
                                 v-spacer
-                                v-btn(color="primary" @click="$router.push('/suggestion')") 
-                                    v-icon mdi-chevron-right
-                                    | Register                            
-            
-            v-btn.ma-8.px-12.float-right(to="/")
-                v-icon mdi-chevron-right
-                | Home
+                                v-btn(color="green" @click="register()") 
+                                    v-icon mdi-account-plus
+                                    | Register
 </template>
 
 <script>
+import config from "@/config.js";
 import { JSEncrypt } from 'jsencrypt';
 import { mapActions } from "vuex";
-import config from "@/config.js";
 export default {
     name: "Quiz",
     data: () => ({
         cur_step: 1,
-        // TODO: adjust food_preferences data structure to make food_preference the key
+        cur_step_dishes: 1,
         food_preferences: {
             "Vegan": false,
             "Vegetarian": false,
@@ -185,12 +198,13 @@ export default {
         selected_allergies: [],
         selected_additives: [],
         dishes: [
-            {name: "Burger with Salad", img: "dish_preview.png", would_eat: null,
+            {name: "Burger with Salad", img: "dish_preview.png", rating: null,
             // TODO: list of additional_ingrediants & allergies: [nuts, ...] + API Call probably needs the dish ID
+            // rating: 1 if the user would eat it (thumbs up), else 0
             additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]},
-            {name: "Burger without Salad", img: "dish_preview.png", would_eat: null,
+            {name: "Burger without Salad", img: "dish_preview.png", rating: null,
             additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]},
-            {name: "Burger", img: "dish_preview.png", would_eat: null,
+            {name: "Burger", img: "dish_preview.png", rating: null,
             additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]}
         ],
         form: {
@@ -203,6 +217,17 @@ export default {
         publicKey: config.publicKey
     }),
     computed: {
+        no_food_preferences: {
+            get: function(){
+                for (let [key, value] of Object.entries(this.food_preferences)) {
+                    if(value == true) return false
+                }
+                return true
+            },
+            set: function(){
+                return true
+            }
+        },
         isCheckAll: {
             get: function(){
                 for (let [key, value] of Object.entries(this.food_preferences)) {
@@ -213,16 +238,27 @@ export default {
             set: function(){
                 return false
             }
+        },
+        ratings_incomplete: {
+            get: function(){
+                for(let idx = 0; idx<this.dishes.length; idx++){
+                    if(this.dishes[idx]['rating'] == null) return true
+                }
+                return false
+            },
+            set: function(){
+                return true
+            }
         }
     },
     methods: {
+        // import Register action
+        ...mapActions(["Register"]),
         encrypt(m){
             let encryptor = new JSEncrypt();
             encryptor.setPublicKey(this.publicKey);
             return encryptor.encrypt(m);
         },
-        // import LogInUser action
-        ...mapActions(["LogIn"]),
         checkAll(){
             Object.keys(this.food_preferences).forEach(key => {
                 this.food_preferences[key] = true
@@ -249,12 +285,15 @@ export default {
                     'ratings': this.dishes
                 }
                 await this.Register(User);
-                // Redirect to suggestion webpage
+                // Redirect to homepage
                 setTimeout(() => { 
                     this.showError = false
-                    this.$router.push('/suggestion')
-                }, 1000);
-            } catch (error) {this.showError = true}
+                    this.$router.push('/')
+                }, 500);
+            } catch (error) {
+                console.log(error)
+                this.showError = true
+            }
         },
     }
 };  
