@@ -61,7 +61,7 @@ export default {
     icons: [
       {
         "mdi": "mdi-email",
-        "link": "mailto:leo.giesen@uni-muenster.de"
+        "link": "mailto:mensa.today@gmail.com"
       },
       {
         "mdi": "mdi-github",
