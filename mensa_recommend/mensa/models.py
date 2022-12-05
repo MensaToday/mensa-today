@@ -10,6 +10,8 @@ class Dish(models.Model):
     allergies = models.ManyToManyField('Allergy', through='DishAllergy')
     mensen = models.ManyToManyField('Mensa', through='DishPlan')
     users = models.ManyToManyField('users.User', through='UserDishRating')
+    ext_ratings = models.ManyToManyField(
+        "Mensa", related_name="dish_ext_ratings", through="ExtDishRating")
 
     class Meta:
         verbose_name = 'Dish'
@@ -55,6 +57,8 @@ class Mensa(models.Model):
     startTime = models.TimeField()
     endTime = models.TimeField()
     dishes = models.ManyToManyField("Dish", through="DishPlan")
+    ext_ratings = models.ManyToManyField(
+        "Dish", related_name="mensa_ext_ratings", through="ExtDishRating")
     lat = models.DecimalField(max_digits=13, decimal_places=8, null=True)
     lon = models.DecimalField(max_digits=13, decimal_places=8, null=True)
     rooms = models.ManyToManyField(
