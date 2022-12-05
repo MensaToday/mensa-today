@@ -135,7 +135,9 @@
 </template>
 
 <script>
+import { JSEncrypt } from 'jsencrypt';
 import { mapActions } from "vuex";
+import config from "@/config.js";
 export default {
     name: "Quiz",
     data: () => ({
@@ -211,7 +213,8 @@ export default {
             mensa_card_id: "",
         },
         showError: false,
-        showPassword: false
+        showPassword: false,
+        publicKey: config.publicKey
     }),
     computed: {
         no_food_preferences: {
@@ -251,6 +254,11 @@ export default {
     methods: {
         // import Register action
         ...mapActions(["Register"]),
+        encrypt(m){
+            let encryptor = new JSEncrypt();
+            encryptor.setPublicKey(this.publicKey);
+            return encryptor.encrypt(m);
+        },
         checkAll(){
             Object.keys(this.food_preferences).forEach(key => {
                 this.food_preferences[key] = true
