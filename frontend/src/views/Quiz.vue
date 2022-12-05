@@ -57,14 +57,13 @@
                                         | Login
                                     v-spacer
                                     v-btn(color='primary' :disabled="no_food_preferences"
-                                        @click='updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); cur_step = 2')
-                                        //- @click="allergies['Gluten']=true; cur_step = 2")
+                                        @click='updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); filtered_dishes()')
                                         v-icon mdi-chevron-right
                                         | Continue
                     v-stepper-content(step='2').pa-0
                         v-stepper(v-model='cur_step_dishes' tile).mt-0.pt-0
                             v-stepper-header
-                                p #Filtered Dishes: {{ relevantDishes }}
+                                //- p(v-if="relevantDishes") #Filtered Dishes: {{ relevantDishes.length }}
                                 v-stepper-step(:complete='cur_step_dishes > 1' step='1')
                                 v-divider
                                 v-stepper-step(:complete='cur_step_dishes > 2' step='2')
@@ -290,10 +289,11 @@ export default {
     },
     filtered_dishes(){
         let relevantDishes = this.dishes.filter(dish =>
-            this.food_preferences[dish.dish.categories[0].category.name]
+            this.food_preferences[dish.dish.categories[0].category.name]  
         );
-        this.relevantDishes = relevantDishes
-        return relevantDishes
+        this.dishes = relevantDishes
+        this.cur_step = 2
+
         // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
         // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
         // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
@@ -319,6 +319,6 @@ export default {
         this.showError = true;
       }
     },
-  },
+  }
 };
 </script>
