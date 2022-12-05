@@ -9,8 +9,6 @@ div(max-width="450")
         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
             v-img(alt="beef" height="60" max-width="60" contain
                 src="@/assets/dish_icons/food_preferences/Beef.png")
-            //- v-img(alt="beef" height="80" max-width="80" contain
-            //-     src="@/assets/dish_icons/nutri_scores/nutri-b.png")
             v-btn(@click="" rounded)
                 v-icon mdi-navigation-variant-outline
                 | Mensa am Ring
