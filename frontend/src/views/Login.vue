@@ -23,7 +23,7 @@ v-container
             p(v-if="showError") Identifier or password is incorrect
         
         v-card-actions
-            v-btn(@click="this.$router.push('/quiz')" color="primary") 
+            v-btn(@click="$router.push('/quiz')" color="primary") 
                 v-icon mdi-account-plus
                 | Register
             v-spacer

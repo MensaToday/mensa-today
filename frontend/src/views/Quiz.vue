@@ -82,14 +82,16 @@
                                             @click="cur_step_dishes-=1") 
                                             v-icon mdi-chevron-left
                                         v-btn.p-absolute(color='primary' fab style="position: absolute; top: 40%; right: 6%;"
-                                            v-if='cur_step_dishes<3' :disabled="dish.rating == null"
+                                            v-if='cur_step_dishes<dishes.length' :disabled="dish.rating == null"
                                             @click='cur_step_dishes++')
                                             v-icon mdi-chevron-right
                                     div.justify-center
-                                        v-btn.my-2(@click="dish.rating = 0" large width="50%" elevation="1"
+                                        v-btn.my-2(@click="dish.rating = 0; if(cur_step_dishes<dishes.length){cur_step_dishes++}" 
+                                            large width="50%" elevation="1"
                                             :color="(dish.rating != 0) ? 'gray' : 'primary'")
                                             v-icon {{(dish.rating == 0) ? 'mdi-thumb-down' : 'mdi-thumb-down-outline'}} 
-                                        v-btn.my-2(@click="dish.rating = 1" large width="50%" elevation="1"
+                                        v-btn.my-2(@click="dish.rating = 1; if(cur_step_dishes<dishes.length){cur_step_dishes++}" 
+                                            large width="50%" elevation="1"
                                             :color="dish.rating ? 'green' : 'gray'")
                                             v-icon {{(dish.rating == 1) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
                                     
@@ -136,7 +138,6 @@
 
 <script>
 import config from "@/config.js";
-import { JSEncrypt } from 'jsencrypt';
 import { mapActions } from "vuex";
 export default {
     name: "Quiz",
