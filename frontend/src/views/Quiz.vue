@@ -74,20 +74,16 @@
                                     v-for="(dish, index) in dishes"
                                     :key="dish.dish.name"
                                     :step='index+1')
-                                    div.p-relative
-                                    v-row
-                                        v-col.col-8.pb-0
-                                            h3.my-0.d-inline {{ dish.dish.name }}
-                                        v-col.col-4.pb-0
-                                            h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
+                                    h3.my-0 {{ dish.dish.name }}    
                                     v-row.my-0
                                         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                                            v-img(alt="beef" height="60" max-width="60" contain
-                                                src="@/assets/dish_icons/food_preferences/Beef.png")
+                                            h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
+                                            v-img(alt="beef" height="50" max-width="50" contain
+                                                :src="require('@/assets/dish_icons/food_preferences/'+dish.dish.categories[0].category.name+'.png')")
                                             //- TODO: GMaps link here
                                             v-btn(@click="" rounded)
                                                 v-icon mdi-navigation-variant-outline
-                                                | {{ dish.mensa.name }}
+                                                | {{ dish.mensa.name }} 
                                         v-img.mx-auto(:alt="dish.dish.name" 
                                             src='@/assets/quiz_dishes/dish_preview.png')
                                             v-btn(fab style="position: absolute; top: 45%; left: 4%" 
@@ -212,67 +208,6 @@ export default {
     search: null,
     selected_allergies: [],
     selected_additives: [],
-    dishes: [
-      {
-        name: "Burger with Salad",
-        img: "dish_preview.png",
-        rating: null,
-        // TODO: list of additional_ingrediants & allergies: [nuts, ...] + API Call probably needs the dish ID
-        // rating: 1 if the user would eat it (thumbs up), else 0
-        additional_ingrediants_allergies: [
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-        ],
-      },
-      {
-        name: "Burger without Salad",
-        img: "dish_preview.png",
-        rating: null,
-        additional_ingrediants_allergies: [
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-        ],
-      },
-      {
-        name: "Burger",
-        img: "dish_preview.png",
-        rating: null,
-        additional_ingrediants_allergies: [
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-        ],
-      },
-    ],
     dishes: dishes,
     form: {
       email: "",
