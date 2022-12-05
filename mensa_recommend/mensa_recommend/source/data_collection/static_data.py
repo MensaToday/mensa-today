@@ -1,6 +1,7 @@
 from mensa.models import Mensa
 
-categories = ["Vegan", "Vegetarian", "Pork", "Beef", "Poultry", "Alcohol", "Fish"]
+categories = ["Vegan", "Vegetarian", "Pork",
+              "Beef", "Poultry", "Alcohol", "Fish"]
 additives = ["Dyed", "Preservatives", "Antioxidants", "Flavor enhancers", "Sulphurated", "Blackened", "Waxed",
              "Phosphate", "Sweeteners", "Phenylalanine source"]
 allergies = ["Gluten", "Spelt", "Barley", "Oats", "Kamut", "Rye", "Wheat", "Crustaceans", "Egg", "Fish",
@@ -33,3 +34,8 @@ canteens = [
     Mensa(name_id="mensa-bispinghof", name="Mensa Bispinghof", street="Bispinghof", houseNumber="9-14", zipCode=48149,
           city="Münster", startTime="11:00", endTime="14:30", lat=51.960372, lon=7.619707)
 ]
+
+search_params = {
+    'q': None,
+    'num': 10,
+}
