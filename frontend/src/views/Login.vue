@@ -53,25 +53,17 @@ export default {
 
     async login() {
       try {
+        this.overlay = true;
         let User = {
           username: this.form.email,
           password: this.form.password,
         };
         await this.Login(User);
-        // reset form
-        this.form = { email: "", password: "" };
-        // wait 3 seconds before navigating to the displan because the api call takes so long
-        // it is not a best practice 😵‍💫
-        this.overlay = true;
-        setTimeout(() => {
-          if (this.$store.state.dishplan) {
-            this.showError = false;
-            this.$router.push("/");
-          }
-        }, 3000);
       } catch (error) {
         console.log(error);
         this.showError = true;
+      } finally {
+        this.overlay = false;
       }
     },
   },

@@ -1,6 +1,7 @@
 import axios from "axios";
 import Vue from "vue";
 import Vuex from "vuex";
+import router from "../router";
 
 Vue.use(Vuex);
 
@@ -52,10 +53,6 @@ export default new Vuex.Store({
       window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token]);
-      setTimeout(() => {
-        dispatch("GetDishplan");
-        // dispatch("getBalance")
-      }, 1);
 
       if (access_token)
         axios.defaults.headers.common["Authorization"] =
@@ -73,6 +70,8 @@ export default new Vuex.Store({
       // // enable the automatic refresh token cycle
       // // the token needs to be decoded first, so we wait 2 seconds before we begin
       // setTimeout(() => dispatch('AutoRefreshToken'), 2000)
+      await dispatch("GetDishplan");
+      router.push("/");
     },
     // TODO: The following API-calls are in development
     async Logout({ state, commit }) {
