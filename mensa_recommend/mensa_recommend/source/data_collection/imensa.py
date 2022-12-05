@@ -1,12 +1,18 @@
 from datetime import datetime, date, timedelta
 from typing import List, Tuple
 
+from celery import shared_task
 from bs4 import BeautifulSoup, Tag
 from django.db import IntegrityError
 import requests
 import json
 import re
+import time
+import threading
+from tqdm import tqdm
+from google_images_search import GoogleImagesSearch
 
+import global_data
 from mensa.models import Category, Allergy, Additive, Dish, DishCategory, DishAllergy, DishAdditive, DishPlan, Mensa, \
     ExtDishRating
 from . import static_data
@@ -14,7 +20,7 @@ from . import utils
 from .utils import NoAuthURLCollector
 
 
-def _get_dish(name: str, main_meal: bool, image_url: str) -> Dish:
+def _get_dish(name: str, main_meal: bool) -> Dish:
     """Load a dish by a given name or create one if absent. Can later be used to implement some sort of name matching in
     order to get rid of duplicated dishes.
 
@@ -35,16 +41,176 @@ def _get_dish(name: str, main_meal: bool, image_url: str) -> Dish:
     try:
         return Dish.objects.get(name=name)
     except Dish.DoesNotExist:
-        d = Dish(name=name, main=main_meal, url=image_url)
+        d = Dish(name=name, main=main_meal)
 
         # Ignore duplicate errors and just return the dish. Issue only occurs in multithreading context.
         # Using the created instead of the database instance does not change much. The data is the same.
         try:
+            # Get an image for the dish from google
+            # gis = GoogleImagesSearch(
+            #     os.environ.get("GOOGLE_API_KEY"), os.environ.get("GOOGLE_PROJECT_CX"))
+            # image_url = _get_image_url(name, gis)
+            #image_url = _get_image_url(name)
+            #d.image_url = image_url
             d.save()
         except IntegrityError:
             pass
 
         return d
+
+
+@shared_task(name='update_urls')
+def update_urls():
+    """Get all dishes from database and update with image url
+
+    """
+
+    # Get all dishes
+    dishes = Dish.objects.all()
+
+    # Iteratate over each dish
+    for dish in tqdm(dishes):
+
+        # Only dishes without a dish url has to be concidered
+        if dish.url is None:
+
+            # Get the image url
+            image_url = _get_image_url(dish.name)
+
+            # Set new image url and save the updated dish
+            dish.url = image_url
+            dish.save()
+
+            # One have to wait 0.2 seconds to not get a 403
+            time.sleep(0.2)
+
+
+def _get_image_url(name: str) -> str:
+    """ Get the image url from duckduckgo
+
+    Parameters
+    ----------
+    name : str
+        The name of a dish.
+
+    Return
+    ------
+    image_url : str
+        Image url for the dish
+    """
+
+    # Search for the image url
+    results = _search(name)
+
+    image_url: str = None
+
+    # Check if result is empty
+    if results:
+        # Check if result is a dict
+        if type(results) is dict:
+            # Check if results key is int results dict
+            if 'results' in results:
+                # Iterate over each result and check width and height
+                for result in results['results']:
+                    # The first image that fulfills requirement will be chosen
+                    if result['height'] < result['width']:
+                        image_url = result['image']
+                        break
+    return image_url
+
+
+def _search(keywords: str) -> List[dict]:
+    """ Get the image url from duckduckgo
+
+    Parameters
+    ----------
+    keyword : str
+        search keyword
+
+    Return
+    ------
+    data : List[dict]
+        List of dicts of image objects including the image_url
+        Example object:
+        {
+            'height': 240,
+            'image': 'https://img.chefkoch-cdn.de/rezepte/3088441461567943/bilder/950797/crop-360x240/thunfischteilchen-mit-tzatziki.jpg',
+            'image_token': '860193bc9c375156c2ba03211e930fb3a14d12be60957097ff057bef907f31c3',
+            'source': 'Bing',
+            'thumbnail': 'https://tse4.mm.bing.net/th?id=OIP.moTqpt22cMfaoGoOkgEMrgAAAA&pid=Api',
+            'thumbnail_token': 'cc3306afebc3adfdde31678d31cda61f9cd95a22b2da04284dd8ee3c3ccda6fd',
+            'title': 'Thunfischteilchen mit Tzatziki von sii63 | Chefkoch',
+            'url': 'https://www.chefkoch.de/rezepte/3088441461567943/Thunfischteilchen-mit-Tzatziki.html',
+            'width': 360
+        }
+    """
+
+    url = 'https://duckduckgo.com/'
+
+    # Define parameter list
+    params = {
+        'q': keywords
+    }
+
+    #  First make a request to above URL, and parse out the 'vqd'
+    #  This is a special token, which should be used in the subsequent request
+    res = requests.post(url, data=params)
+    searchObj = re.search(r'vqd=([\d-]+)\&', res.text, re.M | re.I)
+
+    if not searchObj:
+        return -1
+
+    # Define headers
+    headers = {
+        'authority': 'duckduckgo.com',
+        'accept': 'application/json, text/javascript, */* q=0.01',
+        'sec-fetch-dest': 'empty',
+        'x-requested-with': 'XMLHttpRequest',
+        'user-agent': 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-mode': 'cors',
+        'referer': 'https://duckduckgo.com/',
+        'accept-language': 'en-US,enq=0.9',
+    }
+
+    # Define additional params
+    params = (
+        ('l', 'de-de'),
+        ('o', 'json'),
+        ('q', keywords),
+        ('vqd', searchObj.group(1)),
+        ('f', ',,,,layaout:Wide,license:Share'),
+        ('p', '1'),
+        ('v7exp', 'a'),
+    )
+
+    # Build request url
+    requestUrl = url + "i.js"
+
+    # make request to duckduckgo
+    data = None
+    try:
+        res = requests.get(requestUrl, headers=headers,
+                           params=params, proxies=global_data.proxies)
+        data = json.loads(res.text)
+    except:
+        print("Failure: ", res.status_code, keywords)
+
+    return data
+
+
+def _get_google_image_url(self, name: str, gis: GoogleImagesSearch) -> str:
+    search_params = static_data.search_params
+    search_params["q"] = name
+
+    result = gis.search(search_params=search_params)
+
+    if len(result) > 0:
+        image_url = result[0].url
+    else:
+        image_url = None
+
+    return image_url
 
 
 class IMensaCollector(NoAuthURLCollector):
@@ -61,6 +227,22 @@ class IMensaCollector(NoAuthURLCollector):
             ]
         }
         self.days = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag"]
+
+    def run(self) -> None:
+        # Make use of threading to improve performance of simultaneous URL requests
+        threads = []
+        for url, options in self._build_urls():
+            t = threading.Thread(
+                target=self._run, args=(url,), kwargs=options)
+            threads.append(t)
+            t.start()
+
+        # Wait until every thread performed its task
+        for t in threads:
+            t.join()
+
+        # Get image urls
+        update_urls.delay()
 
     def prepare(self) -> None:
         # insert static categories, additives and allergies
@@ -94,11 +276,11 @@ class IMensaCollector(NoAuthURLCollector):
                     break
 
                 # get meal information
-                name, price, groups, rating, image_url = self.__scrape_meal(
+                name, price, groups, rating = self.__scrape_meal(
                     meal, mensa, day)
 
                 # either gets an existing dish or creates one
-                d = _get_dish(name, not side_meal, image_url)
+                d = _get_dish(name, not side_meal)
 
                 # save additional meal data to database
                 self.__save_groups(d, groups)
@@ -136,9 +318,6 @@ class IMensaCollector(NoAuthURLCollector):
             str, Tuple[float, float], Tuple[list, list, list], Tuple[int, float]]:
         # load data of actual meal
         name = meal.find(class_="aw-meal-description").text
-
-        # Get an image for the dish from duckduckgo
-        image_url = self.__get_image_url(name)
 
         # The price for employees is not available on http://imensa.de but can be easily calculated at the
         # moment.
@@ -188,7 +367,7 @@ class IMensaCollector(NoAuthURLCollector):
 
         rating = (ratings_count, ratings_avg)
 
-        return name, price, groups, rating, image_url
+        return name, price, groups, rating
 
     def _build_urls(self) -> List[Tuple[str, dict]]:
         urls = []
@@ -208,64 +387,3 @@ class IMensaCollector(NoAuthURLCollector):
         now = datetime.now().date()
         diff = weekday - now.weekday()
         return now + timedelta(days=diff)
-
-    def __get_image_url(self, name: str) -> str:
-        results = self.__search(name)
-        image_url: str = None
-
-        if results:
-            if type(results) is dict:
-                if 'results' in results:
-                    for result in results['results']:
-                        if result['height'] < result['width']:
-                            image_url = result['image']
-                            break
-
-        return image_url
-
-    def __search(self, keywords: str, max_results=None):
-        url = 'https://duckduckgo.com/'
-        params = {
-            'q': keywords
-        }
-
-        #   First make a request to above URL, and parse out the 'vqd'
-        #   This is a special token, which should be used in the subsequent request
-        res = requests.post(url, data=params)
-        searchObj = re.search(r'vqd=([\d-]+)\&', res.text, re.M | re.I)
-
-        if not searchObj:
-            return -1
-
-        headers = {
-            'authority': 'duckduckgo.com',
-            'accept': 'application/json, text/javascript, */* q=0.01',
-            'sec-fetch-dest': 'empty',
-            'x-requested-with': 'XMLHttpRequest',
-            'user-agent': 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-mode': 'cors',
-            'referer': 'https://duckduckgo.com/',
-            'accept-language': 'en-US,enq=0.9',
-        }
-
-        params = (
-            ('l', 'de-de'),
-            ('o', 'json'),
-            ('q', keywords),
-            ('vqd', searchObj.group(1)),
-            ('f', ',,,,layaout:Wide,license:Share'),
-            ('p', '1'),
-            ('v7exp', 'a'),
-        )
-
-        requestUrl = url + "i.js"
-
-        data = None
-        try:
-            res = requests.get(requestUrl, headers=headers, params=params)
-            data = json.loads(res.text)
-        except:
-            print("Failure: ", res.status_code, keywords)
-
-        return data
