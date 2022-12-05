@@ -122,7 +122,9 @@
 </template>
 
 <script>
+import { JSEncrypt } from 'jsencrypt';
 import { mapActions } from "vuex";
+import config from "@/config.js";
 export default {
     name: "Quiz",
     data: () => ({
@@ -197,7 +199,8 @@ export default {
             mensa_card_id: "",
         },
         showError: false,
-        showPassword: false
+        showPassword: false,
+        publicKey: config.publicKey
     }),
     computed: {
         isCheckAll: {
@@ -213,6 +216,11 @@ export default {
         }
     },
     methods: {
+        encrypt(m){
+            let encryptor = new JSEncrypt();
+            encryptor.setPublicKey(this.publicKey);
+            return encryptor.encrypt(m);
+        },
         // import LogInUser action
         ...mapActions(["LogIn"]),
         checkAll(){

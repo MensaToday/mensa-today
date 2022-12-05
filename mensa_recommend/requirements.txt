@@ -11,3 +11,4 @@ djangorestframework == 3.14.0
 djangorestframework-simplejwt == 5.2.2
 numpy == 1.23.5
 sentence_transformers == 2.2.2
+pycryptodome == 3.14.1
