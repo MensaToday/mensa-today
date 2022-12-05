@@ -169,6 +169,6 @@ $btnColor: var(--v-btnColor-base);
 }
 
 .invisible {
-    visibility: hidden !important;
-  }
+  visibility: hidden !important;
+}
 </style>
