@@ -18,7 +18,7 @@ div
               //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
           template(v-slot:default='props')
             v-row
-              v-col(v-for='item in props.items' cols='12' sm='6' md='4' lg='3')
+              v-col(v-for='item in props.items' :key="item.dish.id" cols='12' sm='6' md='4' lg='3')
                 v-card
                   //- v-img(:alt="item.dish.name" height='250'
                   //-   :src="require('@/assets/quiz_dishes/dish_preview.png')")
