@@ -38,8 +38,8 @@ class Command(BaseCommand):
         source: str = options["source"].lower()
         prepare = options["prepare"]
 
-        if source in self.data_collectors.keys():
-            collector: Collector = self.data_collectors[source]
+        if source in data_collectors.keys():
+            collector: Collector = data_collectors[source]
 
             if prepare:
                 collector.prepare()
@@ -53,4 +53,4 @@ class Command(BaseCommand):
             raise CommandError(
                 f"Unknown data source collector: '{source}'. "
                 f"Available collectors: "
-                f"{str.join(', ', list(self.data_collectors.keys()))}")
+                f"{str.join(', ', list(data_collectors.keys()))}")

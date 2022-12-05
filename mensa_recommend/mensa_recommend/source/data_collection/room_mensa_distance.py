@@ -5,13 +5,16 @@ from mensa.models import Mensa
 from ..computations.distance_computation import haversine
 
 
-class RoomMensaDistanceCollector():
+class RoomMensaDistanceCollector(Collector):
     def prepare(self) -> None:
+        pass
+
+    def run(self) -> None:
         self.__mensa_room_distance()
 
     def __mensa_room_distance(self):
-        """Calculate the distance between each room and each mensa and save the result
-        into the database
+        """Calculate the distance between each room and each mensa and save the
+        result into the database
 
         """
         # Get rooms and mensen out of the database
