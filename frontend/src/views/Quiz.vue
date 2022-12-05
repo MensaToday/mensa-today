@@ -153,6 +153,16 @@
 import dishes from "@/assets/quiz_dishes/dishes.json";
 import config from "@/config.js";
 import { mapActions } from "vuex";
+
+// VueJS reactivity (e.g the recomputed values) only observe
+// the existing set of keys. In this case, without adding
+// this "rating" key to the initial object, ratings_incomplete
+// will always return false and won't let the user continue.
+const dishesWithNullRating = dishes.map((dish) => {
+  dish.rating = null;
+  return dish;
+});
+
 export default {
   name: "Quiz",
   data: () => ({
@@ -212,6 +222,7 @@ export default {
     search: null,
     selected_allergies: [],
     selected_additives: [],
+    /*
     dishes: [
       {
         name: "Burger with Salad",
@@ -272,8 +283,8 @@ export default {
           false,
         ],
       },
-    ],
-    dishes: dishes,
+    ],*/
+    dishes: dishesWithNullRating,
     form: {
       email: "",
       password: "",
