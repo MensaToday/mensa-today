@@ -30,9 +30,9 @@ div(max-width="450")
 
 <script>
 export default {
-    name: "SingleDish",
-    data: () => ({
-        suggested_dish_rating: null,
-    }),
+  name: "SingleDish",
+  data: () => ({
+    suggested_dish_rating: null,
+  }),
 };
 </script>

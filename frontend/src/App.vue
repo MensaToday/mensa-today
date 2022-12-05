@@ -39,52 +39,52 @@ v-app
 <script>
 import { mapActions } from "vuex";
 export default {
-  name: 'App',
+  name: "App",
   data: () => ({
     views: [
       {
         tag: "Your Mensa Week",
         to: { name: "Home" },
-        icon: "food"
+        icon: "food",
       },
       {
         tag: "Suggestion (temporary)",
         to: { name: "Suggestion" },
-        icon: "food"
+        icon: "food",
       },
       {
         tag: "Quiz (temporary)",
         to: { name: "Quiz" },
-        icon: "information-outline"
-      }
+        icon: "information-outline",
+      },
     ],
     icons: [
       {
-        "mdi": "mdi-email",
-        "link": "mailto:leo.giesen@uni-muenster.de"
+        mdi: "mdi-email",
+        link: "mailto:leo.giesen@uni-muenster.de",
       },
       {
-        "mdi": "mdi-github",
-        "link": "https://github.com/erikzimmermann/data-integration-recommender"
+        mdi: "mdi-github",
+        link: "https://github.com/erikzimmermann/data-integration-recommender",
       },
-    ]
+    ],
   }),
   methods: {
     ...mapActions(["Logout"]),
-    async logout(){
+    async logout() {
       try {
         await this.Logout();
         // Redirect to login webpage
-        setTimeout(() => { 
-          this.showError = false
-          this.$router.push('/login')
+        setTimeout(() => {
+          this.showError = false;
+          this.$router.push("/login");
         }, 500);
       } catch (error) {
-        console.log(error)
-        this.showError = true
+        console.log(error);
+        this.showError = true;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
