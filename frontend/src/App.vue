@@ -10,7 +10,7 @@ v-app
         v-icon.mr-3 mdi-{{ view.icon }}
         | {{ view.tag }}
       v-spacer
-      .d-flex.align-center.mr-6(v-if="$store.getters.isLoggedIn && $store.state.card_balance")
+      .d-flex.align-center.mr-6(v-bind:class="{ invisible: !$store.getters.isLoggedIn && $store.state.card_balance }")
         v-icon.mr-2 mdi-wallet
         p.my-auto.mr-9 €{{ $store.state.card_balance }}
         v-btn.px-3(outlined @click="logout()")
@@ -167,4 +167,8 @@ $btnColor: var(--v-btnColor-base);
     background-position: right center;
   }
 }
+
+.invisible {
+    visibility: hidden !important;
+  }
 </style>
