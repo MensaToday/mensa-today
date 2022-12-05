@@ -72,19 +72,32 @@
                             v-stepper-items
                                 v-stepper-content(
                                     v-for="(dish, index) in dishes"
-                                    :key="dish.name"
+                                    :key="dish.dish.name"
                                     :step='index+1')
                                     div.p-relative
-                                        v-img.mx-auto(:alt="dish.name" max-width="395"
-                                            :src="require('@/assets/quiz_dishes/' + dish.img)")
-                                        v-btn.p-absolute(fab style="position: absolute; top: 40%; left: 6%" 
-                                            v-if='cur_step_dishes>1'
-                                            @click="cur_step_dishes-=1") 
-                                            v-icon mdi-chevron-left
-                                        v-btn.p-absolute(color='primary' fab style="position: absolute; top: 40%; right: 6%;"
-                                            v-if='cur_step_dishes<dishes.length' :disabled="dish.rating == null"
-                                            @click='cur_step_dishes++')
-                                            v-icon mdi-chevron-right
+                                    v-row
+                                        v-col.col-8.pb-0
+                                            h3.my-0.d-inline {{ dish.dish.name }}
+                                        v-col.col-4.pb-0
+                                            h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
+                                    v-row.my-0
+                                        v-col.align-center.justify-center.d-flex.justify-space-between.py-0
+                                            v-img(alt="beef" height="60" max-width="60" contain
+                                                src="@/assets/dish_icons/food_preferences/Beef.png")
+                                            //- TODO: GMaps link here
+                                            v-btn(@click="" rounded)
+                                                v-icon mdi-navigation-variant-outline
+                                                | {{ dish.mensa.name }}
+                                        v-img.mx-auto(:alt="dish.dish.name" 
+                                            src='@/assets/quiz_dishes/dish_preview.png')
+                                            v-btn(fab style="position: absolute; top: 45%; left: 4%" 
+                                                v-if='cur_step_dishes>1'
+                                                @click="cur_step_dishes-=1") 
+                                                v-icon mdi-chevron-left
+                                            v-btn(fab style="position: absolute; top: 45%; right: 4%;"
+                                                v-if='cur_step_dishes<dishes.length' :disabled="dish.rating == null"
+                                                @click='cur_step_dishes++')
+                                                v-icon mdi-chevron-right
                                     div.justify-center
                                         v-btn.my-2(@click="dish.rating = 0; if(cur_step_dishes<dishes.length){cur_step_dishes++}" 
                                             large width="50%" elevation="1"
@@ -137,12 +150,13 @@
 </template>
 
 <script>
+import dishes from "@/assets/quiz_dishes/dishes.json";
 import config from "@/config.js";
 import { mapActions } from "vuex";
 export default {
     name: "Quiz",
     data: () => ({
-        cur_step: 1,
+        cur_step: 2,
         cur_step_dishes: 1,
         food_preferences: {
             "Vegan": false,
@@ -208,6 +222,7 @@ export default {
             {name: "Burger", img: "dish_preview.png", rating: null,
             additional_ingrediants_allergies: [false, false, false, false, false, false, false, false, false, false, false, false]}
         ],
+        dishes: dishes,
         form: {
             email: "",
             password: "",

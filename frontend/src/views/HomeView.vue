@@ -101,7 +101,7 @@ export default {
       sortDesc: false,
       page: 1,
       itemsPerPage: 5,
-      sortBy: 'dish.id',
+      sortBy: '',
       // TODO: filters: 
       keys: [
         'dish.categories[0].category',
