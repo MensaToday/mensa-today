@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from pathlib import Path
-import os
 import datetime
+import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv(
     "SECRET_KEY", "django-insecure-^&b)bhcd%s+q3!)pxb3t*&b_bgzkz6^3u%9gi9^9rzx)-i749j")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = ['*']
 
@@ -79,17 +79,19 @@ JWT_AUTH = {
 }
 
 CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1',
-    'http://127.0.0.1:8080',
-    'http://127.0.0.1:9999',
     'http://localhost',
     'http://localhost:8080',
     'http://localhost:9999',
     'http://10.14.28.50',
-    'http:///10.14.28.50:8080',
+    'http://10.14.28.50:8080',
     'http://10.14.28.50:9999',
 )
-CORS_ALLOW_CREDENTIALS=True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:9999',
+    'http://localhost:8080',
+    'http://localhost',
+]
+CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -101,6 +103,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 AUTH_USER_MODEL = 'users.User'
 

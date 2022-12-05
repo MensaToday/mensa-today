@@ -1,31 +1,28 @@
 <template lang="pug">
-div 
+div(max-width="450") 
     v-row.mt-4
-        v-col.col-9
+        v-col.col-9.pb-0
             h3.d-inline Burger with Salad
-        v-col.col-3
+        v-col.col-3.pb-0
             h3.ma-0.text-right 3,80€
     v-row.my-0
-        v-col.align-center.justify-center.d-flex.justify-space-between
+        v-col.align-center.justify-center.d-flex.justify-space-between.py-0
             v-img(alt="beef" height="60" max-width="60" contain
-                src="@/assets/dish_icons/food_preferences/rind.png")
-            v-img(alt="beef" height="80" max-width="80" contain
-                src="@/assets/dish_icons/nutri_scores/nutri-b.png")
+                src="@/assets/dish_icons/food_preferences/Beef.png")
             v-btn(@click="" rounded)
                 v-icon mdi-navigation-variant-outline
                 | Mensa am Ring
     //- Dish Image
     v-row.my-0
-        v-col 
-            v-img(alt="Burger with Salad" width="375" max-width="100vw"
+        v-col.pt-0.px-0
+            //- div size = 450px with padding of 6; img size = 450-2*6 = 438
+            v-img(alt="Burger with Salad" width="438" max-width="100vw"
                 src="@/assets/quiz_dishes/dish_preview.png")
     //- Review & Comment Section
-    v-row.justify-space-between.my-6.align-center.justify-center
-        v-col.col-12.col-sm-12.col-md-8
-            p Leave a Review and Feedback:
-            v-rating.mt-4(hover length="5" background-color="gray" 
+    v-row.mt-0.mb-4
+        v-col.d-flex.justify-space-between.py-0
+            v-rating(hover length="5" background-color="gray" 
                 v-model="suggested_dish_rating")
-        v-col.col-12.col-sm-12.col-md-4
             v-btn(@click="") 
                 v-icon mdi-comment-outline
                 | comment

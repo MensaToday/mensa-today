@@ -12,6 +12,7 @@ services:
     command: python manage.py runserver 0.0.0.0:9999
     env_file:
       - database-variables.env
+      - local-variables.env
     environment:
       - CELERY_BROKER=redis://redis:6379/0
       - CELERY_BACKEND=redis://redis:6379/0
@@ -50,6 +51,7 @@ services:
       - ./mensa_recommend/:/usr/src/app
     env_file:
       - database-variables.env
+      - local-variables.env
     environment:
       - CELERY_BROKER=redis://redis:6379/0
       - CELERY_BACKEND=redis://redis:6379/0

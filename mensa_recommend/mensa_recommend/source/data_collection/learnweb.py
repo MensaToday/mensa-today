@@ -395,7 +395,7 @@ class RoomCollector(NoAuthURLCollector):
         threads = []
         for url, options in self._build_urls():
             t = threading.Thread(
-                target=self.__run, args=(url,), kwargs=options)
+                target=self._run, args=(url,), kwargs=options)
             threads.append(t)
             t.start()
 

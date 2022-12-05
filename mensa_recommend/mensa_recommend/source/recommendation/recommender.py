@@ -2,31 +2,11 @@ from datetime import date, timedelta
 from typing import List, Tuple, Dict
 
 import numpy as np
-from numpy import dot
-from numpy.linalg import norm
 from sentence_transformers import SentenceTransformer
 
 from mensa.models import UserDishRating, DishPlan, Dish
+from mensa_recommend.source.computations import distance_computation as dist
 from users.models import User
-
-
-def cosine_similarity(l1: List[float], l2: List[float]) -> float:
-    """Calculate the cosine similarity between two float lists.
-
-    Parameters
-    ----------
-    l1 :  List[float]
-        The first list.
-    l2 :  List[float]
-        The second list.
-
-    Return
-    ------
-    cos_sim : float
-        The resulting similarity between both lists.
-    """
-    cos_sim = dot(l1, l2) / (norm(l1) * norm(l2))
-    return cos_sim
 
 
 def encode_binary(att_list: List[List[int]]) -> List[List[int]]:
@@ -265,7 +245,7 @@ class DishRecommender:
         for dish_id, enc in available_dishes:
             dish_ids.append(dish_id)
 
-            sim = cosine_similarity(profile, enc)
+            sim = dist.cosine_similarity(profile, enc)
             predictions.append(sim)
 
         # selecting the top n results
