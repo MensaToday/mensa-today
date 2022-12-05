@@ -59,7 +59,7 @@ class DishSerializer(serializers.ModelSerializer):
         child=DishAllergySerializer(read_only=True), source='dishallergy_set')
 
     class Meta:
-        fields = ["id", "categories", "additives", "allergies", "main", "name"]
+        fields = ["id", "categories", "additives", "allergies", "main", "name", "url"]
         model = mensa_model.Dish
 
 
