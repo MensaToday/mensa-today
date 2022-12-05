@@ -213,6 +213,7 @@ export default {
             password: "",
             mensa_card_id: "",
         },
+        overlay: true,
         showError: false,
         showPassword: false,
         publicKey: config.publicKey
