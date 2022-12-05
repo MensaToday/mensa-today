@@ -32,12 +32,11 @@ Done now you can connect to your database.
 To run the local as well as production environment specific environment files has to be created. For the local development create a `local-variables.env` file in the root directory that should contain the following:
 
 ```
-VUE_APP_BASE_URL = YOUR_URL
 GOOGLE_API_KEY = YOUR_API_KEY             # currently not required
 GOOGLE_PROJECT_CX = YOUR_PROJECT_CX_KEY   # currently not required
 ```
 
-For development the `VUE_APP_BASE_URL = http://localhost:9999/api/v1/` and for production `VUE_APP_BASE_URL = http://10.14.28.50:9999`
+In the `./frontend/`, initialize an `.env` with `VUE_APP_BASE_URL = http://localhost:9999/api/v1/` for development or `VUE_APP_BASE_URL = http://10.14.28.50:9999` for production.
 For the Production see next section.
 
 ## Production
