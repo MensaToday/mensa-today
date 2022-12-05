@@ -324,7 +324,7 @@ class IMensaCollector(NoAuthURLCollector):
         price_for_students = utils.to_float(
             meal.find(title="Preis für Studierende").text[:-2])
         price_for_non_students = price_for_students * 1.5
-        price = (price_for_non_students, price_for_students)
+        price = (price_for_students, price_for_non_students)
 
         attributes = meal.find(
             class_="small aw-meal-attributes").span.text.replace("\xa0", "").split(" ")
