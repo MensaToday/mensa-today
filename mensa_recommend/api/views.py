@@ -17,7 +17,6 @@ from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, Use
 from users.source.authentication.manual_jwt import get_tokens_for_user
 from mensa_recommend.source.computations.transformer import transform_rating
 
-
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def register(request):
@@ -252,7 +251,7 @@ def get_dishplan(request):
         [
             {
                 "dish": {
-                    "id": 154,
+                    "id": 239,
                     "categories": [
                         {
                             "category": {
@@ -261,29 +260,48 @@ def get_dishplan(request):
                             }
                         }
                     ],
-                    "main": false,
-                    "name": "Kroketten"
+                    "additives": [
+                        {
+                            "additive": {
+                                "id": 1,
+                                "name": "Dyed"
+                            }
+                        }
+                    ],
+                    "allergies": [],
+                    "main": true,
+                    "name": "Steckrübeneintopf"
                 },
-                "mensa": {
-                    "id": 9,
-                    "name": "Mensa am Aasee",
+                "ext_ratings": {
+                    "id": 1678,
+                    "rating_avg": "0.0",
+                    "rating_count": 0
+                },
+                "user_ratings": [
+                    {
+                        "rating": 1.0
+                    }
+                ],
+                "mensa": { 
+                    "id": 4,
+                    "name": "Bistro Durchblick",
                     "city": "Münster",
-                    "street": "Bismarckallee",
-                    "houseNumber": "11",
-                    "zipCode": 48151,
-                    "startTime": "11:45:00",
-                    "endTime": "14:30:00"
+                    "street": "Fliednerstr.",
+                    "houseNumber": "21",
+                    "zipCode": 48149,
+                    "startTime": "11:30:00",
+                    "endTime": "13:30:00"
                 },
-                "date": "2022-11-24",
-                "priceStudent": "0.75",
-                "priceEmployee": "0.50"
-            }
+                "date": "2022-12-01",
+                "priceStudent": "3.08",
+                "priceEmployee": "2.05"
+            },
         ]
     """
 
     last_monday = get_last_monday()
 
-    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday), many=True).data)
+    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday), many=True, context={'user': request.user}).data)
 
 
 @api_view(['GET', 'POST'])
