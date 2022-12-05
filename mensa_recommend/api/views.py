@@ -1,21 +1,21 @@
-from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, run
-from mensa_recommend.source.data_collection.klarna import KlarnaCollector
-from mensa_recommend.source.computations.date_computations import get_last_monday
-
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import DishPlanSerializer, DishSerializer, UserDishRatingSerializer
-
-from users.models import User
-from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, UserDishRating, DishPlan
-
-from users.source.authentication.manual_jwt import get_tokens_for_user
+from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, \
+    UserDishRating, DishPlan
+from mensa_recommend.source.computations.date_computations import \
+    get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
+from mensa_recommend.source.data_collection.klarna import KlarnaCollector
+from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, \
+    run
+from users.models import User
+from users.source.authentication.manual_jwt import get_tokens_for_user
+from .serializers import DishPlanSerializer, UserDishRatingSerializer
+
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
@@ -57,7 +57,7 @@ def register(request):
 
     # check if request parameters were provided
     if 'username' in request.data and 'password' in request.data and \
-        'categories' in request.data and 'allergies' in request.data and \
+            'categories' in request.data and 'allergies' in request.data and \
             'card_id' in request.data and 'ratings' in request.data:
 
         # get request parameters
@@ -84,7 +84,8 @@ def register(request):
 
                 # Check card_id
                 if card_id != -1:
-                    current_balance = KlarnaCollector().get_current_balance(card_id)
+                    current_balance = KlarnaCollector().get_current_balance(
+                        card_id)
                 else:
                     current_balance = 1
 
@@ -141,7 +142,8 @@ def register(request):
 
                                 if dish:
                                     UserDishRating(
-                                        user=user, dish=dish, rating=rating['rating']).save()
+                                        user=user, dish=dish,
+                                        rating=rating['rating']).save()
 
                     # Id data is correct then crawling can be started
                     run.delay(ziv_id, ziv_password, user.id)
@@ -151,17 +153,20 @@ def register(request):
 
                     return Response(token, status=status.HTTP_200_OK)
                 else:
-                    return Response("Card ID wrong", status=status.HTTP_404_NOT_FOUND)
+                    return Response("Card ID wrong",
+                                    status=status.HTTP_404_NOT_FOUND)
 
             else:
                 # If data is not correct send user feedback
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         else:
-            return Response("User already exists", status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response("User already exists",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
 
     else:
-        return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 @api_view(['POST'])
@@ -209,7 +214,8 @@ def check_card_id(request):
         else:
             return Response("Card ID wrong", status=status.HTTP_404_NOT_FOUND)
     else:
-        return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 @api_view(['GET'])
@@ -234,7 +240,8 @@ def get_balance(request):
         balance = KlarnaCollector().get_current_balance(user.card_id)
         return Response(balance, status=status.HTTP_200_OK)
     else:
-        return Response("No card_id in user profile", status=status.HTTP_404_NOT_FOUND)
+        return Response("No card_id in user profile",
+                        status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -301,7 +308,9 @@ def get_dishplan(request):
 
     last_monday = get_last_monday()
 
-    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday), many=True, context={'user': request.user}).data)
+    return Response(
+        DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday),
+                           many=True, context={'user': request.user}).data)
 
 
 @api_view(['GET', 'POST'])
@@ -376,11 +385,15 @@ def user_ratings(request):
 
                     return Response(status=status.HTTP_200_OK)
                 else:
-                    return Response("Rating not a number or not between 1 and 5", status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        "Rating not a number or not between 1 and 5",
+                        status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response("Dish cannot be found in the database", status=status.HTTP_404_NOT_FOUND)
+                return Response("Dish cannot be found in the database",
+                                status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response("Not all fields provided",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
 
     elif request.method == 'GET':
 
@@ -392,7 +405,8 @@ def user_ratings(request):
         except:
             ratings = []
 
-        return Response(UserDishRatingSerializer(ratings, many=True).data, status=status.HTTP_200_OK)
+        return Response(UserDishRatingSerializer(ratings, many=True).data,
+                        status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
