@@ -4,7 +4,8 @@ from typing import List, Tuple, Dict
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from mensa.models import UserDishRating, DishPlan, Dish
+from mensa.models import UserDishRating, DishPlan, Dish, UserAllergy, \
+    UserCategory
 from mensa_recommend.source.computations import distance_computation as dist
 from users.models import User
 
@@ -63,6 +64,8 @@ class DishRecommender:
                 was specified before are generated.
         """
         self._user = user
+        self._user_categories: List[int] = []
+        self._user_allergies: List[int] = []
 
         if entire_week:
             self._date_start = day - timedelta(days=day.weekday())
@@ -89,6 +92,12 @@ class DishRecommender:
         if len(self._dishes) > 0:
             raise Exception("The method load() can only be called once!")
 
+        # load user data
+        self._user_categories = [uc.id for uc in
+                                 UserCategory.objects.filter(user=self._user)]
+        self._user_allergies = [ua.id for ua in
+                                UserAllergy.objects.filter(user=self._user)]
+
         # load data from database
         self._plan = self.__load_dish_plan()
         self._ratings = self.__load_ratings()
@@ -100,6 +109,8 @@ class DishRecommender:
             raise Exception(
                 f"No dishes found! start={self._date_start}, "
                 f"end={self._date_end}")
+
+        self.__filter_dishes()
 
         # computational overhead: calculating the sentence bert embeds takes
         # time
@@ -307,6 +318,31 @@ class DishRecommender:
 
         # important: change dishes back to list to ensure static dish order
         return list(dishes)
+
+    def __apply_hard_filter(self, dish: Dish) -> bool:
+        # TODO: doc-string
+        categories = [c.id for c in dish.categories.all()]
+        for c in categories:
+            if c not in self._user_categories:
+                return False
+
+        if len(self._user_allergies) > 0:
+            allergies = [a.id for a in dish.allergies.all()]
+            for a in allergies:
+                if a in self._user_allergies:
+                    return False
+        return True
+
+    def __filter_dishes(self) -> None:
+        # TODO: doc-string
+        to_be_removed = []
+
+        for d in self._dishes:
+            if not self.__apply_hard_filter(d):
+                to_be_removed.append(d)
+
+        for remove in to_be_removed:
+            self._dishes.remove(remove)
 
     def __compute_user_profile(self) -> List[float]:
         """Compute the user profile by multiplying the ratings with their
