@@ -152,7 +152,7 @@ import { mapActions } from "vuex";
 export default {
   name: "Quiz",
   data: () => ({
-    cur_step: 1,
+    cur_step: 2,
     cur_step_dishes: 1,
     food_preferences: {
       Vegan: false,
@@ -215,7 +215,6 @@ export default {
       password: "",
       mensa_card_id: "",
     },
-    overlay: true,
     showError: false,
     showPassword: false,
     publicKey: config.publicKey,
