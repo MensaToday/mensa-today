@@ -59,5 +59,13 @@ def cosine_similarity(l1: List[float], l2: List[float]) -> float:
     cos_sim : float
         The resulting similarity between both lists.
     """
-    cos_sim = dot(l1, l2) / (norm(l1) * norm(l2))
+    if len(l1) != len(l2):
+        raise ValueError(f"Length of l1 ({len(l1)}) does not match length of "
+                         f"l2 ({len(l2)}).")
+
+    norm_dis = norm(l1) * norm(l2)
+    if norm_dis == 0:
+        return 0
+
+    cos_sim = dot(l1, l2) / norm_dis
     return cos_sim
