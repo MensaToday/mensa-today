@@ -20,13 +20,20 @@
                         prepend-inner-icon='mdi-filter-variant' label='Filter')
                 template(v-slot:default='props')
                   v-row
-                    v-col(v-for='item in props.items' :key="(item.dish.id, item.mensa.name)" cols='12' sm='6' md='4' lg='3')
-                      v-card
+                    v-col(v-for='item in props.items' :key="(item.dish.id, item.mensa.name)" cols='12' sm='6' md='6' lg='4')
+                      v-card(height="100%")
                         //- v-img(:alt="item.dish.name" height='250'
                         //-   :src="require('@/assets/quiz_dishes/dish_preview.png')")
-                        v-card-title.subheading.font-weight-bold(style="word-break: normal")
+                        v-card-title.subheading(style="word-break: normal")
                           | {{ item.dish.name }}
                         v-divider
+                        v-col.align-center.justify-center.d-flex.justify-space-between.py-0
+                            h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
+                            v-img(alt="beef" height="50" max-width="50" contain
+                            :src="require('@/assets/dish_icons/food_preferences/'+dish.dish.categories[0].category.name+'.png')")
+                            v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
+                                v-icon mdi-navigation-variant-outline
+                                | {{ item.mensa.name }}
                         v-list(dense)
                           v-list-item
                             v-icon mdi-food
@@ -43,8 +50,10 @@
                               //- (:class="{ 'primary--text': sortBy === key }")
                               | Mensa
                             v-list-item-content.align-end
-                              //- (:class="{ 'primary--text': sortBy === key }")
-                              | {{ item.mensa.name }}
+                                //- (:class="{ 'primary--text': sortBy === key }")
+                                v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
+                                    v-icon mdi-navigation-variant-outline
+                                    | {{ item.mensa.name }}
                           v-list-item
                             v-icon mdi-cash
                             v-list-item-content
@@ -54,11 +63,7 @@
                               //- make the item price red, if the card balance does not cover the dish
                               span(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
                                 //- (:class="{ 'primary--text': sortBy === key }")
-                                | €{{ item.priceStudent }}
-                              span /
-                              span(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceEmployee)+1) }")
-                                //- (:class="{ 'primary--text': sortBy === key }")
-                                | €{{ item.priceEmployee }}
+                                | €{{ item.priceStudent }} / €{{ item.priceEmployee }}
                           v-list-item
                             v-icon mdi-food-apple
                             v-list-item-content
@@ -156,6 +161,11 @@
           } catch (error) {
             console.log(error);
           }
+        },
+        getGoogleMapsUrl(mensaName) {
+            const url = new URL("https://www.google.com/maps/dir/?api=1");
+            url.searchParams.set("destination", mensaName);
+            return url.toString();
         },
       },
       mounted() {
