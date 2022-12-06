@@ -102,9 +102,9 @@ class DishRecommender:
             raise Exception("The method load() can only be called once!")
 
         # load user data
-        self._user_categories = [uc.id for uc in
+        self._user_categories = [uc.category_id for uc in
                                  UserCategory.objects.filter(user=self._user)]
-        self._user_allergies = [ua.id for ua in
+        self._user_allergies = [ua.allergy_id for ua in
                                 UserAllergy.objects.filter(user=self._user)]
 
         # load data from database
