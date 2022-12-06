@@ -95,6 +95,7 @@ export default {
   data() {
     return {
       items: this.$store.state.dishplan,
+      recommendationItems: this.$store.state.recommendations,
       itemsPerPageArray: [4, 8, 12],
       search: "",
       filter: {},
@@ -122,7 +123,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["GetDishplan", "GetBalance"]),
+    ...mapActions(["GetDishplan", "GetBalance", "GetRecommendations"]),
 
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1;
@@ -143,6 +144,13 @@ export default {
     async getBalance() {
       try {
         await this.GetBalance();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getRecommendations() {
+      try {
+        await this.GetRecommendations();
       } catch (error) {
         console.log(error);
       }
