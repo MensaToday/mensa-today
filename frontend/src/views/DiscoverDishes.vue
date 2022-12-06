@@ -8,7 +8,9 @@
             v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
             template(v-if="loaded")
               v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
-                :search='search' hide-default-footer)
+                :search='search' 
+                hide-default-footer
+                function="searchName()")
                 //- TODO: searches date of dishes 
                 //- :sort-by='sortBy.toLowerCase()'
                 template(v-slot:header)
@@ -27,7 +29,7 @@
                         v-card(height="100%")
                             v-img(v-show="item.dish.url != null" :alt="item.dish.name" height='250'
                             :src="item.dish.url")
-                            div.center-items.green.lighten-3(v-show="item.dish.url == null" height='250')
+                            div.center-items.light-green.lighten-2(v-show="item.dish.url == null" height='250')
                                 h1 {{ item.dish.name[0] }}
                             
                             v-card-title.subheading(style="word-break: normal")
@@ -129,7 +131,7 @@
         },
       },
       methods: {
-        ...mapActions(["GetDishplan", "GetBalance", "GetRecommendations"]),
+        ...mapActions(["GetDishplan", "GetRecommendations"]),
     
         nextPage() {
           if (this.page + 1 <= this.numberOfPages) this.page += 1;
@@ -143,13 +145,6 @@
         async getDishplan() {
           try {
             await this.GetDishplan();
-          } catch (error) {
-            console.log(error);
-          }
-        },
-        async getBalance() {
-          try {
-            await this.GetBalance();
           } catch (error) {
             console.log(error);
           }
