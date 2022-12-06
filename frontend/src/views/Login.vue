@@ -23,7 +23,7 @@ v-container
             p(v-if="showError") Identifier or password is incorrect
         
         v-card-actions
-            v-btn(@click="this.$router.push('/quiz')" color="primary") 
+            v-btn(@click="$router.push('/quiz')" color="primary") 
                 v-icon mdi-account-plus
                 | Register
             v-spacer
@@ -35,45 +35,45 @@ v-container
 <script>
 import { mapActions } from "vuex";
 export default {
-    name: "Login",
-    data () {
+  name: "Login",
+  data() {
     return {
-        form: {
-            email: "",
-            password: ""
-        },
-        showError: false,
-        showPassword: false,
-        absolute: true,
-        overlay: false
-    }
-},
-    methods: {
-        ...mapActions(["Login"]),   
+      form: {
+        email: "",
+        password: "",
+      },
+      showError: false,
+      showPassword: false,
+      absolute: true,
+      overlay: false,
+    };
+  },
+  methods: {
+    ...mapActions(["Login"]),
 
-        async login() {
-            try {
-                let User = {
-                    'username': this.form.email,
-                    'password': this.form.password
-                }
-                await this.Login(User);
-                // reset form
-                this.form = {email: "", password: ""}
-                // wait 3 seconds before navigating to the displan because the api call takes so long
-                // it is not a best practice 😵‍💫
-                this.overlay = true
-                setTimeout(() => { 
-                    if(this.$store.state.dishplan){
-                        this.showError = false
-                        this.$router.push('/')
-                    }
-                }, 3000);
-            } catch (error) {
-                console.log(error)
-                this.showError = true
-            }
-        }
+    async login() {
+      try {
+        let User = {
+          username: this.form.email,
+          password: this.form.password,
+        };
+        await this.Login(User);
+        // reset form
+        this.form = { email: "", password: "" };
+        // wait 3 seconds before navigating to the displan because the api call takes so long
+        // it is not a best practice 😵‍💫
+        this.overlay = true;
+        setTimeout(() => {
+          if (this.$store.state.dishplan) {
+            this.showError = false;
+            this.$router.push("/");
+          }
+        }, 3000);
+      } catch (error) {
+        console.log(error);
+        this.showError = true;
+      }
     },
+  },
 };
 </script>
