@@ -15,7 +15,7 @@ export default new Vuex.Store({
       email: null,
       mensa_card_id: null,
     },
-    card_balance: 4.71,
+    card_balance: null,
     dishplan: null
   },
   getters: {
@@ -55,7 +55,7 @@ export default new Vuex.Store({
       commit("setTokens", [access_token, refresh_token])
       setTimeout(() => { 
         dispatch("GetDishplan")
-        // dispatch("getBalance")
+        dispatch("GetBalance")
       }, 1);
       
       if(access_token) axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token
@@ -84,7 +84,7 @@ export default new Vuex.Store({
     },
     async GetBalance({commit}) {
       let response = await axios.get('user/get_balance')
-      var card_balance = response.data.card_balance
+      var card_balance = response.data.toFixed(2)
       commit("setBalance", card_balance)
     },
     async GetDishplan({commit}) {
