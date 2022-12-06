@@ -48,7 +48,14 @@
                                 span Additives:
                                     //- (:class="{ 'primary--text': sortBy === key }")
                                     span(v-if="item.dish.additives.length == 0")  None
-                                    span(v-for="additive in item.dish.additives" :key="additive")  {{ additive.additive.name }} 
+                                    span(v-for="additive in item.dish.additives" :key="additive")  {{ additive.additive.name }}
+                        //- Review & Comment Section
+                        //- v-col.d-flex.justify-space-between.py-0
+                        //-     v-rating(hover length="5" background-color="gray" 
+                        //-         v-model="suggested_dish_rating")
+                        //-     v-btn(@click="") 
+                        //-         v-icon mdi-comment-outline
+                        //-         | comment 
                 template(v-slot:footer)
                   v-row.mt-2(align='center' justify='center')
                     span.grey--text Items per page
@@ -81,21 +88,23 @@
       name: "Discover",
       data() {
         return {
-          itemsPerPageArray: [4, 8, 12],
-          search: "",
-          filter: {},
-          sortDesc: false,
-          page: 1,
-          itemsPerPage: 4,
-          sortBy: "",
-          // TODO: filters:
-          keys: [
-            "dish.categories[0].category",
-            "dish.main",
-            "mensa.name",
-            "date",
-            "priceStudent",
-          ],
+            // TODO: rating to be implemented
+            // suggested_dish_rating: null,
+            itemsPerPageArray: [4, 8, 12],
+            search: "",
+            filter: {},
+            sortDesc: false,
+            page: 1,
+            itemsPerPage: 4,
+            sortBy: "",
+            // TODO: filters:
+            keys: [
+                "dish.categories[0].category",
+                "dish.main",
+                "mensa.name",
+                "date",
+                "priceStudent",
+            ],
         };
       },
       computed: {
