@@ -5,7 +5,7 @@ div
     v-row 
       v-col
         v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
-        div(v-if="loaded")
+        template(v-if="loaded")
           v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
             :search='search' :sort-by='sortBy.toLowerCase()' hide-default-footer)
             template(v-slot:header)
@@ -50,11 +50,15 @@ div
                         v-list-item-content
                           //- (:class="{ 'primary--text': sortBy === key }")
                           | Price
-                        v-list-item-content.align-end(
-                          :class="{ 'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
+                        v-list-item-content.align-end
                           //- make the item price red, if the card balance does not cover the dish
-                          //- (:class="{ 'primary--text': sortBy === key }")
-                          | €{{ item.priceStudent }}
+                          span(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
+                            //- (:class="{ 'primary--text': sortBy === key }")
+                            | €{{ item.priceStudent }}
+                          span /
+                          span(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceEmployee)+1) }")
+                            //- (:class="{ 'primary--text': sortBy === key }")
+                            | €{{ item.priceEmployee }}
                       v-list-item
                         v-icon mdi-food-apple
                         v-list-item-content
@@ -95,8 +99,6 @@ export default {
   name: "Home",
   data() {
     return {
-      loaded: false,
-      items: this.$store.state.dishplan,
       itemsPerPageArray: [4, 8, 12],
       search: "",
       filter: {},
@@ -115,6 +117,12 @@ export default {
     };
   },
   computed: {
+    items () { return this.$store.state.dishplan },
+    loaded(){
+      // if (typeof this.items !== 'undefined') return true
+      if (this.items != null) return true
+      else return false
+    },
     numberOfPages() {
       if (this.items) return Math.ceil(this.items.length / this.itemsPerPage);
       else return 1;
@@ -136,8 +144,10 @@ export default {
       this.itemsPerPage = number;
     },
     async getDishplan() {
+      console.log("start get dishplan")
       try {
         await this.GetDishplan();
+        console.log("end get dishplan")
       } catch (error) {
         console.log(error);
       }
@@ -151,7 +161,7 @@ export default {
     },
   },
   mounted() {
-    this.getDishplan().then(this.loaded = true)
+    this.getDishplan()
   }
 };
 </script>
