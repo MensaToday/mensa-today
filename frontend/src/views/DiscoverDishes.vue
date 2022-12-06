@@ -28,50 +28,27 @@
                           | {{ item.dish.name }}
                         v-divider
                         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                            h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
-                            v-img(alt="beef" height="50" max-width="50" contain
-                            :src="require('@/assets/dish_icons/food_preferences/'+dish.dish.categories[0].category.name+'.png')")
-                            v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
-                                v-icon mdi-navigation-variant-outline
-                                | {{ item.mensa.name }}
-                        v-list(dense)
-                          v-list-item
-                            v-icon mdi-food
-                            v-list-item-content
-                              //- (:class="{ 'primary--text': sortBy === key }")
-                              | Category
-                            v-list-item-content.align-end
-                              span(v-for="(key, index) in item.dish.categories.length" :key="index")
-                                //- (:class="{ 'primary--text': sortBy === key }" 
-                                | {{ item.dish.categories[index].category.name }}
-                          v-list-item
-                            v-icon mdi-map-marker
-                            v-list-item-content
-                              //- (:class="{ 'primary--text': sortBy === key }")
-                              | Mensa
-                            v-list-item-content.align-end
-                                //- (:class="{ 'primary--text': sortBy === key }")
-                                v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
-                                    v-icon mdi-navigation-variant-outline
-                                    | {{ item.mensa.name }}
-                          v-list-item
-                            v-icon mdi-cash
-                            v-list-item-content
-                              //- (:class="{ 'primary--text': sortBy === key }")
-                              | Price
-                            v-list-item-content.align-end
-                              //- make the item price red, if the card balance does not cover the dish
-                              span(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
+                            h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
                                 //- (:class="{ 'primary--text': sortBy === key }")
                                 | €{{ item.priceStudent }} / €{{ item.priceEmployee }}
-                          v-list-item
-                            v-icon mdi-food-apple
-                            v-list-item-content
-                              //- (:class="{ 'primary--text': sortBy === key }")
-                              | Type
-                            v-list-item-content.align-end
-                              //- (:class="{ 'primary--text': sortBy === key }")
-                              | {{ item.dish.main ? 'Main Dish' : 'Supplement' }}
+                            v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
+                            height="50" max-width="50" contain :key="index"
+                            :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
+                            v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
+                                v-icon mdi-navigation-variant-outline
+                                | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.') }}
+                        v-col.align-center.justify-center.d-flex.justify-space-between
+                            div
+                                span
+                                    //- (:class="{ 'primary--text': sortBy === key }")
+                                    v-icon mdi-food-apple
+                                    | Type: {{ item.dish.main ? 'Main Dish' : 'Supplement' }}
+                            div 
+                                v-icon mdi-shield-plus-outline
+                                span Additives:
+                                    //- (:class="{ 'primary--text': sortBy === key }")
+                                    span(v-if="item.dish.additives.length == 0")  None
+                                    span(v-for="additive in item.dish.additives" :key="additive")  {{ additive.additive.name }} 
                 template(v-slot:footer)
                   v-row.mt-2(align='center' justify='center')
                     span.grey--text Items per page
