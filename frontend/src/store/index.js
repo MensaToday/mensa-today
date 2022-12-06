@@ -89,7 +89,7 @@ export default new Vuex.Store({
       let response = await axios.get('user/get_balance')
       var card_balance = response.data.toFixed(2)
       commit("setBalance", card_balance)
-
+    },
     async GetDishplan({ commit }) {
       let response = await axios.get("mensa/get_dishplan");
       var dishplan = response.data;
