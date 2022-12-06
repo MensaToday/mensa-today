@@ -422,7 +422,7 @@ def getData(request):
         return Response("Hello World v2")
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def get_recommendations(request):
     """Get user recommendations.
@@ -524,8 +524,7 @@ def get_recommendations(request):
     try:
         day: datetime.date = recommender.str_to_date(request.data["day"])
     except ValueError:
-        return Response("Wrong 'day' format. Use: '%Y.%m.%d'. Example: "
-                        "'2022.12.06'",
+        return Response("Wrong 'day' format. Use: %Y.%m.%d",
                         status=status.HTTP_406_NOT_ACCEPTABLE)
 
     entire_week: bool = request.data["entire_week"].lower() == "true"
@@ -537,17 +536,9 @@ def get_recommendations(request):
             return Response("Wrong 'recommendations_per_day' format. "
                             "Use integers only.",
                             status=status.HTTP_406_NOT_ACCEPTABLE)
-        if rec_per_day < 1:
-            return Response("'recommendations_per_day' must be > 0.",
-                            status=status.HTTP_406_NOT_ACCEPTABLE)
     else:
         rec_per_day = 1
 
     r = recommender.DishRecommender(request.user, day, entire_week)
     res = r.predict(rec_per_day, serialize=True)
-
-    num_dishes = len(r.dishes)
-    num_filtered_dishes = len(r.filtered_dishes)
-    # TODO: Maybe add this information for front end?
-
     return Response(res, status=status.HTTP_200_OK)
