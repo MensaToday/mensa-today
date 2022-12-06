@@ -1,4 +1,3 @@
-import logging
 from datetime import date, timedelta, datetime
 from typing import List, Tuple, Dict
 
