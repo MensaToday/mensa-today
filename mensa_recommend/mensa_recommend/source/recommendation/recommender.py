@@ -1,13 +1,22 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import List, Tuple, Dict
 
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+from api.serializers import DishPlanSerializer
 from mensa.models import UserDishRating, DishPlan, Dish, UserAllergy, \
     UserCategory
 from mensa_recommend.source.computations import distance_computation as dist
 from users.models import User
+
+
+def date_to_str(d: date) -> str:
+    return d.strftime("%Y.%m.%d")
+
+
+def str_to_date(s: str) -> date:
+    return datetime.strptime(s, "%Y.%m.%d")
 
 
 def encode_binary(att_list: List[List[int]]) -> List[List[int]]:
@@ -116,7 +125,8 @@ class DishRecommender:
         # time
         self._encoded_dishes = self.__encode_dishes()
 
-    def predict(self, recommendations_per_day: int = 1) -> Dict[date, List[
+    def predict(self, recommendations_per_day: int = 1,
+                serialize: bool = False) -> Dict[date, List[
             Tuple[DishPlan, float]]]:
         """Predicting recommendations for a user. This process is efficient and
         can be executed synchronously without any problems.
@@ -125,6 +135,8 @@ class DishRecommender:
         ----------
         recommendations_per_day : int
             The number of recommendations per day. Must be > 0. Default is 1.
+        serialize: bool
+            Whether DishPlan instances should be directly serialized.
 
         Return
         ------
@@ -154,8 +166,18 @@ class DishRecommender:
             # map the predictions back to DishPlan instances
             mapped = []
             for dish_id, p in pred:
-                mapped.append((self.__find_dish_in_plan(dish_id, day), p))
-            result[day] = mapped
+                dish_plan = self.__find_dish_in_plan(dish_id, day)
+
+                if serialize:
+                    dish_plan = DishPlanSerializer(dish_plan, context={
+                        'user': self._user}).data
+
+                mapped.append((dish_plan, p))
+
+            if serialize:
+                result[date_to_str(day)] = mapped
+            else:
+                result[day] = mapped
 
         return result
 

@@ -1,0 +1,403 @@
+[
+  {
+    "dish": {
+      "id": 239,
+      "categories": [{ "category": { "id": 1, "name": "Vegan" } }],
+      "additives": [],
+      "allergies": [
+        { "allergy": { "id": 1, "name": "Gluten" } },
+        { "allergy": { "id": 7, "name": "Wheat" } }
+      ],
+      "main": true,
+      "name": "Vollkornnudelpfanne mit Gemüse"
+    },
+    "ext_ratings": { "id": 787, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 6,
+      "name": "Bistro KaBu",
+      "city": "Münster",
+      "street": "Domplatz",
+      "houseNumber": "21",
+      "zipCode": 48143,
+      "startTime": "11:00:00",
+      "endTime": "14:00:00"
+    },
+    "date": "2022-12-06",
+    "priceStudent": "1.65",
+    "priceEmployee": "1.10"
+  },
+  {
+    "dish": {
+      "id": 240,
+      "categories": [{ "category": { "id": 1, "name": "Vegan" } }],
+      "additives": [],
+      "allergies": [
+        { "allergy": { "id": 24, "name": "Mustard" } },
+        { "allergy": { "id": 12, "name": "Soy" } }
+      ],
+      "main": true,
+      "name": "Sojagyros mit Zaziki und Krautsalat"
+    },
+    "ext_ratings": { "id": 788, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 4,
+      "name": "Bistro Durchblick",
+      "city": "Münster",
+      "street": "Fliednerstr.",
+      "houseNumber": "21",
+      "zipCode": 48149,
+      "startTime": "11:30:00",
+      "endTime": "13:30:00"
+    },
+    "date": "2022-12-09",
+    "priceStudent": "2.70",
+    "priceEmployee": "1.80"
+  },
+  {
+    "dish": {
+      "id": 241,
+      "categories": [{ "category": { "id": 1, "name": "Vegan" } }],
+      "additives": [{ "additive": { "id": 1, "name": "Dyed" } }],
+      "allergies": [
+        { "allergy": { "id": 23, "name": "Celery" } },
+        { "allergy": { "id": 24, "name": "Mustard" } }
+      ],
+      "main": true,
+      "name": "Veganer Erbseneintopf"
+    },
+    "ext_ratings": { "id": 790, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 4,
+      "name": "Bistro Durchblick",
+      "city": "Münster",
+      "street": "Fliednerstr.",
+      "houseNumber": "21",
+      "zipCode": 48149,
+      "startTime": "11:30:00",
+      "endTime": "13:30:00"
+    },
+    "date": "2022-12-06",
+    "priceStudent": "1.65",
+    "priceEmployee": "1.10"
+  },
+  {
+    "dish": {
+      "id": 243,
+      "categories": [{ "category": { "id": 2, "name": "Vegetarian" } }],
+      "additives": [],
+      "allergies": [{ "allergy": { "id": 13, "name": "Milk" } }],
+      "main": true,
+      "name": "Kartoffelrösti mit mediterranem Gemüse"
+    },
+    "ext_ratings": { "id": 789, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 6,
+      "name": "Bistro KaBu",
+      "city": "Münster",
+      "street": "Domplatz",
+      "houseNumber": "21",
+      "zipCode": 48143,
+      "startTime": "11:00:00",
+      "endTime": "14:00:00"
+    },
+    "date": "2022-12-09",
+    "priceStudent": "4.65",
+    "priceEmployee": "3.10"
+  },
+
+  {
+    "dish": {
+      "id": 262,
+      "categories": [{ "category": { "id": 7, "name": "Fish" } }],
+      "additives": [{ "additive": { "id": 2, "name": "Preservatives" } }],
+      "allergies": [
+        { "allergy": { "id": 9, "name": "Egg" } },
+        { "allergy": { "id": 10, "name": "Fish" } },
+        { "allergy": { "id": 1, "name": "Gluten" } },
+        { "allergy": { "id": 13, "name": "Milk" } },
+        { "allergy": { "id": 24, "name": "Mustard" } },
+        { "allergy": { "id": 7, "name": "Wheat" } }
+      ],
+      "main": true,
+      "name": "Gebackenes Alaska Seelachsfilet mit fruchtig-scharfem Senf Dip"
+    },
+    "ext_ratings": { "id": 828, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 6,
+      "name": "Bistro KaBu",
+      "city": "Münster",
+      "street": "Domplatz",
+      "houseNumber": "21",
+      "zipCode": 48143,
+      "startTime": "11:00:00",
+      "endTime": "14:00:00"
+    },
+    "date": "2022-12-09",
+    "priceStudent": "4.28",
+    "priceEmployee": "2.85"
+  },
+  {
+    "dish": {
+      "id": 266,
+      "categories": [{ "category": { "id": 4, "name": "Beef" } }],
+      "additives": [{ "additive": { "id": 3, "name": "Antioxidants" } }],
+      "allergies": [
+        { "allergy": { "id": 1, "name": "Gluten" } },
+        { "allergy": { "id": 6, "name": "Rye" } },
+        { "allergy": { "id": 25, "name": "Sesame" } },
+        { "allergy": { "id": 7, "name": "Wheat" } }
+      ],
+      "main": true,
+      "name": "Chili con Carne mit Fladenbrot"
+    },
+    "ext_ratings": { "id": 834, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 6,
+      "name": "Bistro KaBu",
+      "city": "Münster",
+      "street": "Domplatz",
+      "houseNumber": "21",
+      "zipCode": 48143,
+      "startTime": "11:00:00",
+      "endTime": "14:00:00"
+    },
+    "date": "2022-12-07",
+    "priceStudent": "4.65",
+    "priceEmployee": "3.10"
+  },
+  {
+    "dish": {
+      "id": 249,
+      "categories": [{ "category": { "id": 2, "name": "Vegetarian" } }],
+      "additives": [],
+      "allergies": [{ "allergy": { "id": 13, "name": "Milk" } }],
+      "main": true,
+      "name": "Backkartoffel mit Kräuter-Quark"
+    },
+    "ext_ratings": { "id": 798, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 7,
+      "name": "Bistro Oeconomicum",
+      "city": "Münster",
+      "street": "Universitätsstr.",
+      "houseNumber": "14",
+      "zipCode": 48143,
+      "startTime": "07:30:00",
+      "endTime": "18:00:00"
+    },
+    "date": "2022-12-06",
+    "priceStudent": "2.48",
+    "priceEmployee": "1.65"
+  },
+  {
+    "dish": {
+      "id": 324,
+      "categories": [{ "category": { "id": 7, "name": "Fish" } }],
+      "additives": [],
+      "allergies": [
+        { "allergy": { "id": 10, "name": "Fish" } },
+        { "allergy": { "id": 1, "name": "Gluten" } },
+        { "allergy": { "id": 13, "name": "Milk" } },
+        { "allergy": { "id": 7, "name": "Wheat" } }
+      ],
+      "main": true,
+      "name": "Lachs-Spinat-Lasagne mit Tomatensauce"
+    },
+    "ext_ratings": { "id": 968, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 11,
+      "name": "Mensa Bispinghof",
+      "city": "Münster",
+      "street": "Bispinghof",
+      "houseNumber": "9-14",
+      "zipCode": 48149,
+      "startTime": "11:00:00",
+      "endTime": "14:30:00"
+    },
+    "date": "2022-12-05",
+    "priceStudent": "5.48",
+    "priceEmployee": "3.65"
+  },
+  {
+    "dish": {
+      "id": 76,
+      "categories": [{ "category": { "id": 5, "name": "Poultry" } }],
+      "additives": [],
+      "allergies": [
+        { "allergy": { "id": 1, "name": "Gluten" } },
+        { "allergy": { "id": 13, "name": "Milk" } },
+        { "allergy": { "id": 7, "name": "Wheat" } }
+      ],
+      "main": true,
+      "name": "Hähnchen Piccata mit Tomatensauce"
+    },
+    "ext_ratings": { "id": 899, "rating_avg": "4.0", "rating_count": 14 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 11,
+      "name": "Mensa Bispinghof",
+      "city": "Münster",
+      "street": "Bispinghof",
+      "houseNumber": "9-14",
+      "zipCode": 48149,
+      "startTime": "11:00:00",
+      "endTime": "14:30:00"
+    },
+    "date": "2022-12-05",
+    "priceStudent": "5.10",
+    "priceEmployee": "3.40"
+  },
+  {
+    "dish": {
+      "id": 245,
+      "categories": [{ "category": { "id": 5, "name": "Poultry" } }],
+      "additives": [{ "additive": { "id": 2, "name": "Preservatives" } }],
+      "allergies": [
+        { "allergy": { "id": 1, "name": "Gluten" } },
+        { "allergy": { "id": 7, "name": "Wheat" } }
+      ],
+      "main": true,
+      "name": "Hähnchennuggets in Knusperpanade mit süß-saurer Sauce"
+    },
+    "ext_ratings": { "id": 797, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 6,
+      "name": "Bistro KaBu",
+      "city": "Münster",
+      "street": "Domplatz",
+      "houseNumber": "21",
+      "zipCode": 48143,
+      "startTime": "11:00:00",
+      "endTime": "14:00:00"
+    },
+    "date": "2022-12-06",
+    "priceStudent": "4.65",
+    "priceEmployee": "3.10"
+  },
+  {
+    "dish": {
+      "id": 267,
+      "categories": [{ "category": { "id": 5, "name": "Poultry" } }],
+      "additives": [{ "additive": { "id": 2, "name": "Preservatives" } }],
+      "allergies": [
+        { "allergy": { "id": 9, "name": "Egg" } },
+        { "allergy": { "id": 1, "name": "Gluten" } },
+        { "allergy": { "id": 13, "name": "Milk" } },
+        { "allergy": { "id": 24, "name": "Mustard" } },
+        { "allergy": { "id": 7, "name": "Wheat" } }
+      ],
+      "main": true,
+      "name": "Hähnchennuggets in Knusperpanade mit Kartoffelcreme"
+    },
+    "ext_ratings": { "id": 835, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 3,
+      "name": "Bistro Katholische Hochschule",
+      "city": "Münster",
+      "street": "Piusallee",
+      "houseNumber": "89",
+      "zipCode": 48147,
+      "startTime": "11:30:00",
+      "endTime": "13:45:00"
+    },
+    "date": "2022-12-05",
+    "priceStudent": "4.65",
+    "priceEmployee": "3.10"
+  },
+  {
+    "dish": {
+      "id": 283,
+      "categories": [{ "category": { "id": 4, "name": "Beef" } }],
+      "additives": [{ "additive": { "id": 1, "name": "Dyed" } }],
+      "allergies": [
+        { "allergy": { "id": 9, "name": "Egg" } },
+        { "allergy": { "id": 1, "name": "Gluten" } },
+        { "allergy": { "id": 13, "name": "Milk" } },
+        { "allergy": { "id": 23, "name": "Celery" } },
+        { "allergy": { "id": 7, "name": "Wheat" } }
+      ],
+      "main": true,
+      "name": "Lasagne Bolognese"
+    },
+    "ext_ratings": { "id": 869, "rating_avg": "3.5", "rating_count": 2 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 2,
+      "name": "Mensa Da Vinci",
+      "city": "Münster",
+      "street": "Leonardo-Campus",
+      "houseNumber": "8",
+      "zipCode": 48149,
+      "startTime": "11:30:00",
+      "endTime": "14:00:00"
+    },
+    "date": "2022-12-08",
+    "priceStudent": "7.05",
+    "priceEmployee": "4.70"
+  },
+  {
+    "dish": {
+      "id": 281,
+      "categories": [{ "category": { "id": 3, "name": "Pork" } }],
+      "additives": [{ "additive": { "id": 1, "name": "Dyed" } }],
+      "allergies": [
+        { "allergy": { "id": 9, "name": "Egg" } },
+        { "allergy": { "id": 1, "name": "Gluten" } },
+        { "allergy": { "id": 13, "name": "Milk" } },
+        { "allergy": { "id": 7, "name": "Wheat" } }
+      ],
+      "main": true,
+      "name": "Paniertes Schweineschnitzel mit Champignonsauce"
+    },
+    "ext_ratings": { "id": 860, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 3,
+      "name": "Bistro Katholische Hochschule",
+      "city": "Münster",
+      "street": "Piusallee",
+      "houseNumber": "89",
+      "zipCode": 48147,
+      "startTime": "11:30:00",
+      "endTime": "13:45:00"
+    },
+    "date": "2022-12-08",
+    "priceStudent": "5.10",
+    "priceEmployee": "3.40"
+  },
+  {
+    "dish": {
+      "id": 254,
+      "categories": [{ "category": { "id": 3, "name": "Pork" } }],
+      "additives": [],
+      "allergies": [{ "allergy": { "id": 24, "name": "Mustard" } }],
+      "main": true,
+      "name": "3 Stück Rostbratwürstchen nach Nürnberger Art mir Bratensauce"
+    },
+    "ext_ratings": { "id": 800, "rating_avg": "0.0", "rating_count": 0 },
+    "user_ratings": [],
+    "mensa": {
+      "id": 1,
+      "name": "Bistro Denkpause",
+      "city": "Münster",
+      "street": "Corrensstr.",
+      "houseNumber": "25",
+      "zipCode": 48149,
+      "startTime": "11:30:00",
+      "endTime": "14:15:00"
+    },
+    "date": "2022-12-05",
+    "priceStudent": "3.90",
+    "priceEmployee": "2.60"
+  }
+]

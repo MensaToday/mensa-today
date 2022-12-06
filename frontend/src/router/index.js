@@ -11,7 +11,7 @@ const routes = [
     name: "Home",
     component: HomeView,
     // check if user is logged in. If yes, redirect user to user-specific page
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: "/about",
@@ -25,8 +25,7 @@ const routes = [
   {
     path: "/quiz",
     name: "Quiz",
-    component: () =>
-      import(/* webpackChunkName: "quiz" */ "../views/Quiz.vue"),
+    component: () => import(/* webpackChunkName: "quiz" */ "../views/Quiz.vue"),
   },
   {
     path: "/login",
@@ -39,8 +38,8 @@ const routes = [
     name: "Suggestion",
     component: () =>
       import(/* webpackChunkName: "suggestion" */ "../views/Suggestion.vue"),
-    meta: { requiresAuth: true }
-  }
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = new VueRouter({
@@ -49,7 +48,7 @@ const router = new VueRouter({
   routes,
 });
 
-// check if a user is logged in and hence, is allowed to visit a page requiring authorization 
+// check if a user is logged in and hence, is allowed to visit a page requiring authorization
 router.beforeEach((to, from, next) => {
   // check if authorization is required (cf. meta tags in routes)
   if (to.matched.some((record) => record.meta.requiresAuth)) {
