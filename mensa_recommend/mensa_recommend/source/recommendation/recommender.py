@@ -5,7 +5,8 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from api.serializers import DishPlanSerializer
-from mensa.models import UserDishRating, DishPlan, Dish
+from mensa.models import UserDishRating, DishPlan, Dish, UserAllergy, \
+    UserCategory
 from mensa_recommend.source.computations import distance_computation as dist
 from users.models import User
 
@@ -34,7 +35,14 @@ def encode_binary(att_list: List[List[int]]) -> List[List[int]]:
         The binary encoded attribute list. All items now have same
         attribute-list lengths and binary values only.
     """
-    max_val = max(att_list)[0]
+    if len(att_list) == 0:
+        return []
+
+    max_val = max(att_list)
+    if len(max_val) == 0:
+        return []
+    max_val = max_val[0]
+
     res = []
 
     for obj in att_list:
@@ -72,6 +80,8 @@ class DishRecommender:
                 was specified before are generated.
         """
         self._user = user
+        self._user_categories: List[int] = []
+        self._user_allergies: List[int] = []
 
         if entire_week:
             self._date_start = day - timedelta(days=day.weekday())
@@ -82,7 +92,8 @@ class DishRecommender:
 
         self._plan: Dict[date, List[DishPlan]] = {}
         self._ratings: List[UserDishRating] = []
-        self._dishes: List[Dish] = []
+        self.dishes: List[Dish] = []
+        self.filtered_dishes: List[Dish] = []
         self._encoded_dishes: List[Tuple[int, List[int]]] = []
 
     def load(self) -> None:
@@ -95,24 +106,34 @@ class DishRecommender:
             The binary encoded attribute list. All items now have same
             attribute-list lengths and binary values only.
         """
-        if len(self._dishes) > 0:
+        if len(self.dishes) > 0:
             raise Exception("The method load() can only be called once!")
+
+        # load user data
+        self._user_categories = [uc.category_id for uc in
+                                 UserCategory.objects.filter(user=self._user)]
+        self._user_allergies = [ua.allergy_id for ua in
+                                UserAllergy.objects.filter(user=self._user)]
 
         # load data from database
         self._plan = self.__load_dish_plan()
         self._ratings = self.__load_ratings()
 
         # extracting dishes for further encoding
-        self._dishes = self.__extract_distinct_dishes()
+        self.dishes = self.__extract_distinct_dishes()
 
-        if len(self._dishes) == 0:
+        if len(self.dishes) == 0:
             raise Exception(
                 f"No dishes found! start={self._date_start}, "
                 f"end={self._date_end}")
 
-        # computational overhead: calculating the sentence bert embeds takes
-        # time
-        self._encoded_dishes = self.__encode_dishes()
+        self.filtered_dishes = self.__filter_dishes()
+
+        # only 0 if hard filters are too strict
+        if len(self.filtered_dishes) > 0:
+            # computational overhead: calculating the sentence bert embeds
+            # takes time
+            self._encoded_dishes = self.__encode_dishes(self.filtered_dishes)
 
     def predict(self, recommendations_per_day: int = 1,
                 serialize: bool = False) -> Dict[date, List[
@@ -137,7 +158,7 @@ class DishRecommender:
         """
         # Load the data if it has not been done yet. The data will be loaded
         # synchronously in this case.
-        if len(self._dishes) == 0:
+        if len(self.dishes) == 0:
             self.load()
 
         if recommendations_per_day <= 0:
@@ -256,6 +277,9 @@ class DishRecommender:
             The predictions in a DESC order. Structured by a list of tuples
             combining the dish_id and the prediction value.
         """
+        if len(available_dishes) == 0:
+            return []
+
         # computes the user profile for the comparison
         profile = self.__compute_user_profile()
 
@@ -330,6 +354,47 @@ class DishRecommender:
         # important: change dishes back to list to ensure static dish order
         return list(dishes)
 
+    def __apply_hard_filter(self, dish: Dish) -> bool:
+        """Apply hard filters of the specified user. Hard filters contain
+        selected food categories and allergies.
+
+        Parameters
+        ----------
+        dish : Dish
+            The dish the should be checked.
+
+        Return
+        ------
+        result : bool
+            True, if this dish is applicable. False, if this dish should be
+            removed in further computations.
+        """
+        categories = [c.id for c in dish.categories.all()]
+        for c in categories:
+            if c not in self._user_categories:
+                return False
+
+        if len(self._user_allergies) > 0:
+            allergies = [a.id for a in dish.allergies.all()]
+            for a in allergies:
+                if a in self._user_allergies:
+                    return False
+        return True
+
+    def __filter_dishes(self) -> List[Dish]:
+        """Filter dishes by using predefined filters.
+
+        Return
+        ------
+        filtered : List[Dish]
+            The filtered dishes.
+        """
+        filtered = []
+        for d in self.dishes:
+            if self.__apply_hard_filter(d):
+                filtered.append(d)
+        return filtered
+
     def __compute_user_profile(self) -> List[float]:
         """Compute the user profile by multiplying the ratings with their
         corresponding dish characteristic vectors.
@@ -346,11 +411,13 @@ class DishRecommender:
         X = [0] * data_vector_length
 
         for rating in self._ratings:
-            data = mapped[rating.dish.id]
-            X += np.multiply(rating.rating, data)
+            # consider only ratings that are not hard filtered
+            if rating.dish.id in mapped:
+                data = mapped[rating.dish.id]
+                X += np.multiply(rating.rating, data)
         return X
 
-    def __encode_dishes(self) -> List[Tuple[int, List[float]]]:
+    def __encode_dishes(self, dishes: List[Dish]) -> List[Tuple[int, List[float]]]:
         """Encode all available dishes. Requires them to be already loaded.
 
         Return
@@ -372,8 +439,8 @@ class DishRecommender:
         enc_names = self.__encode_names()
 
         # combine all encodings
-        for i in range(len(self._dishes)):
-            d = self._dishes[i]
+        for i in range(len(dishes)):
+            d = dishes[i]
             data = enc_cat[i] + enc_add[i] + enc_all[i] + list(enc_names[i])
             enc.append((d.id, data))
 
@@ -389,7 +456,7 @@ class DishRecommender:
         """
         categories = []
 
-        for d in self._dishes:
+        for d in self.dishes:
             categories.append([c.id for c in d.categories.all()])
 
         return encode_binary(categories)
@@ -404,7 +471,7 @@ class DishRecommender:
         """
         additives = []
 
-        for d in self._dishes:
+        for d in self.dishes:
             additives.append([a.id for a in d.additives.all()])
 
         return encode_binary(additives)
@@ -419,7 +486,7 @@ class DishRecommender:
         """
         allergies = []
 
-        for d in self._dishes:
+        for d in self.dishes:
             allergies.append([a.id for a in d.allergies.all()])
 
         return encode_binary(allergies)
@@ -433,5 +500,5 @@ class DishRecommender:
         embdes : numpy.ndarray[numpy.ndarray[float]]
             The encoded categories.
         """
-        names = [d.name for d in self._dishes]
+        names = [d.name for d in self.dishes]
         return self.sentence_transformer.encode(names)
