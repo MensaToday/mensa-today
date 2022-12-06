@@ -42,7 +42,8 @@ div
                         | Mensa
                       v-list-item-content.align-end
                         //- (:class="{ 'primary--text': sortBy === key }")
-                        | {{ item.mensa.name }}
+                        a(:href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
+                          | {{ item.mensa.name }}
                     v-list-item
                       v-icon mdi-cash
                       v-list-item-content
@@ -146,6 +147,11 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    getGoogleMapsUrl(mensaName) {
+      const url = new URL("https://www.google.com/maps/dir/?api=1");
+      url.searchParams.set("destination", mensaName);
+      return url.toString();
     },
   },
   // created() {
