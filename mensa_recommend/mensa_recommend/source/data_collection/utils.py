@@ -144,7 +144,7 @@ class NoAuthURLCollector(Collector):
         threads = []
         for url, options in self._build_urls():
             t = threading.Thread(
-                target=self.__run, args=(url,), kwargs=options)
+                target=self._run, args=(url,), kwargs=options)
             threads.append(t)
             t.start()
 
@@ -152,7 +152,7 @@ class NoAuthURLCollector(Collector):
         for t in threads:
             t.join()
 
-    def __run(self, url: str, **options) -> None:
+    def _run(self, url: str, **options) -> None:
         # Create soup document; This is the part with the blocking URL request
         soup = url_to_soup(url)
 

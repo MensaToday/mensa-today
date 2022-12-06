@@ -69,12 +69,6 @@
                                 v-divider
                                 v-stepper-step(step='3')
                             v-stepper-items
-                              //- v-stepper-content(step='1')
-                              //-   h3.my-0 step 1
-                              //- v-stepper-content(step='2')
-                              //-   h3.my-0 step 2
-                              //-   v-stepper-content(step='3')
-                              //-   h3.my-0 step 3
                               v-stepper-content(
                                 v-for="(dish, index) in relevantDishes.slice(0,3)"
                                 :key="dish.dish.name"
