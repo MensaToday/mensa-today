@@ -47,15 +47,20 @@ export default {
         to: { name: "Home" },
         icon: "food",
       },
+      // {
+      //   tag: "Suggestion (temporary)",
+      //   to: { name: "Suggestion" },
+      //   icon: "food",
+      // },
+      // {
+      //   tag: "Quiz (temporary)",
+      //   to: { name: "Quiz" },
+      //   icon: "information-outline",
+      // },
       {
-        tag: "Suggestion (temporary)",
-        to: { name: "Suggestion" },
-        icon: "food",
-      },
-      {
-        tag: "Quiz (temporary)",
-        to: { name: "Quiz" },
-        icon: "information-outline",
+        tag: "Discover",
+        to: { name: "Discover" },
+        icon: "magnify",
       },
     ],
     icons: [
