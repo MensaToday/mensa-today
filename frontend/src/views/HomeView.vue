@@ -1,7 +1,7 @@
 <template lang="pug">
 div  
   v-container
-    h1.text-center.my-6 Your Mensa Week
+    h1.text-center.my-6 Discover Dishes
     v-row 
       v-col
         v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
@@ -11,13 +11,13 @@ div
             template(v-slot:header)
               v-toolbar.mb-1(color='primary' dark)
                 h3 Recommendations for Today: {{ $store.state.dishplan[0].date }} 
-                //- v-spacer
-                //- v-text-field(v-model='search' clearable flat solo-inverted hide-details 
-                //-   prepend-inner-icon='mdi-magnify' label='Search')
-                //- template(v-if='$vuetify.breakpoint.mdAndUp')
-                //-   v-spacer
-                //-   v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
-                //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
+                v-spacer
+                v-text-field(v-model='search' clearable flat solo-inverted hide-details 
+                  prepend-inner-icon='mdi-magnify' label='Search')
+                template(v-if='$vuetify.breakpoint.mdAndUp')
+                  v-spacer
+                  v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
+                    prepend-inner-icon='mdi-filter-variant' label='Filter')
             template(v-slot:default='props')
               v-row
                 v-col(v-for='item in props.items' :key="(item.dish.id, item.mensa.name)" cols='12' sm='6' md='4' lg='3')
@@ -104,7 +104,7 @@ export default {
       filter: {},
       sortDesc: false,
       page: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 4,
       sortBy: "",
       // TODO: filters:
       keys: [
