@@ -4,6 +4,7 @@ from django.db import models
 class Dish(models.Model):
     name = models.CharField(max_length=200, unique=True)
     main = models.BooleanField()
+    url = models.CharField(max_length=300, null=True)
     categories = models.ManyToManyField('Category', through='DishCategory')
     additives = models.ManyToManyField('Additive', through='DishAdditive')
     allergies = models.ManyToManyField('Allergy', through='DishAllergy')
@@ -137,4 +138,4 @@ class ExtDishRating(models.Model):
 class UserDishRating(models.Model):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
-    rating = models.FloatField()
+    rating = models.FloatField()  # range: 0.0 .. 1.0

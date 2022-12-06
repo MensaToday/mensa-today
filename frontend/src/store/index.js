@@ -52,10 +52,6 @@ export default new Vuex.Store({
       window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token]);
-      // setTimeout(() => {
-      //   dispatch("GetDishplan");
-      //   // dispatch("GetBalance")
-      // }, 1);
 
       if (access_token)
         axios.defaults.headers.common["Authorization"] =

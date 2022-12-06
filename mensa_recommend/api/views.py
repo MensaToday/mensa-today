@@ -1,21 +1,25 @@
-from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, run
-from mensa_recommend.source.data_collection.klarna import KlarnaCollector
-from mensa_recommend.source.computations.date_computations import get_last_monday
+import datetime
+from datetime import datetime
 
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import DishPlanSerializer, DishSerializer, UserDishRatingSerializer
-
-from users.models import User
-from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, UserDishRating, DishPlan
-
-from users.source.authentication.manual_jwt import get_tokens_for_user
+from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, \
+    UserDishRating, DishPlan
+from mensa_recommend.source.computations.date_computations import \
+    get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
+from mensa_recommend.source.data_collection.klarna import KlarnaCollector
+from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, \
+    run
+from mensa_recommend.source.recommendation import recommender
+from users.models import User
+from users.source.authentication.manual_jwt import get_tokens_for_user
+from .serializers import DishPlanSerializer, UserDishRatingSerializer
+
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
@@ -57,7 +61,7 @@ def register(request):
 
     # check if request parameters were provided
     if 'username' in request.data and 'password' in request.data and \
-        'categories' in request.data and 'allergies' in request.data and \
+            'categories' in request.data and 'allergies' in request.data and \
             'card_id' in request.data and 'ratings' in request.data:
 
         # get request parameters
@@ -84,7 +88,8 @@ def register(request):
 
                 # Check card_id
                 if card_id != -1:
-                    current_balance = KlarnaCollector().get_current_balance(card_id)
+                    current_balance = KlarnaCollector().get_current_balance(
+                        card_id)
                 else:
                     current_balance = 1
 
@@ -141,7 +146,8 @@ def register(request):
 
                                 if dish:
                                     UserDishRating(
-                                        user=user, dish=dish, rating=rating['rating']).save()
+                                        user=user, dish=dish,
+                                        rating=rating['rating']).save()
 
                     # Id data is correct then crawling can be started
                     run.delay(ziv_id, ziv_password, user.id)
@@ -151,17 +157,20 @@ def register(request):
 
                     return Response(token, status=status.HTTP_200_OK)
                 else:
-                    return Response("Card ID wrong", status=status.HTTP_404_NOT_FOUND)
+                    return Response("Card ID wrong",
+                                    status=status.HTTP_404_NOT_FOUND)
 
             else:
                 # If data is not correct send user feedback
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         else:
-            return Response("User already exists", status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response("User already exists",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
 
     else:
-        return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 @api_view(['POST'])
@@ -209,7 +218,8 @@ def check_card_id(request):
         else:
             return Response("Card ID wrong", status=status.HTTP_404_NOT_FOUND)
     else:
-        return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 @api_view(['GET'])
@@ -234,7 +244,8 @@ def get_balance(request):
         balance = KlarnaCollector().get_current_balance(user.card_id)
         return Response(balance, status=status.HTTP_200_OK)
     else:
-        return Response("No card_id in user profile", status=status.HTTP_404_NOT_FOUND)
+        return Response("No card_id in user profile",
+                        status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -282,7 +293,7 @@ def get_dishplan(request):
                         "rating": 1.0
                     }
                 ],
-                "mensa": { 
+                "mensa": {
                     "id": 4,
                     "name": "Bistro Durchblick",
                     "city": "Münster",
@@ -301,7 +312,9 @@ def get_dishplan(request):
 
     last_monday = get_last_monday()
 
-    return Response(DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday), many=True, context={'user': request.user}).data)
+    return Response(
+        DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday),
+                           many=True, context={'user': request.user}).data)
 
 
 @api_view(['GET', 'POST'])
@@ -376,11 +389,15 @@ def user_ratings(request):
 
                     return Response(status=status.HTTP_200_OK)
                 else:
-                    return Response("Rating not a number or not between 1 and 5", status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        "Rating not a number or not between 1 and 5",
+                        status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response("Dish cannot be found in the database", status=status.HTTP_404_NOT_FOUND)
+                return Response("Dish cannot be found in the database",
+                                status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response("Not all fields provided", status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response("Not all fields provided",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
 
     elif request.method == 'GET':
 
@@ -392,7 +409,8 @@ def user_ratings(request):
         except:
             ratings = []
 
-        return Response(UserDishRatingSerializer(ratings, many=True).data, status=status.HTTP_200_OK)
+        return Response(UserDishRatingSerializer(ratings, many=True).data,
+                        status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -402,3 +420,125 @@ def getData(request):
         return Response("Hello World v1")
     else:
         return Response("Hello World v2")
+
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def get_recommendations(request):
+    """Get user recommendations.
+
+        Route: api/v1/mensa/get_recommendations
+        Authorization: Authenticated
+        Methods: Get
+
+        GET
+        ---
+
+        Input
+        ------
+        {
+            "day": "2022.12.05",
+            "entire_week": "False",
+            "recommendations_per_day": 1
+        }
+
+        Output
+        -------
+        {
+            "2022.12.05": [
+                [
+                    {
+                        "dish": {
+                            "id": 85,
+                            "categories": [
+                                {
+                                    "category": {
+                                        "id": 2,
+                                        "name": "Vegetarian"
+                                    }
+                                }
+                            ],
+                            "additives": [],
+                            "allergies": [
+                                {
+                                    "allergy": {
+                                        "id": 9,
+                                        "name": "Egg"
+                                    }
+                                },
+                                {
+                                    "allergy": {
+                                        "id": 1,
+                                        "name": "Gluten"
+                                    }
+                                },
+                                {
+                                    "allergy": {
+                                        "id": 13,
+                                        "name": "Milk"
+                                    }
+                                },
+                                {
+                                    "allergy": {
+                                        "id": 7,
+                                        "name": "Wheat"
+                                    }
+                                }
+                            ],
+                            "main": true,
+                            "name": "Ricotta-Spinat-Cannelloni mit Tomatensauce"
+                        },
+                        "ext_ratings": {
+                            "id": 153,
+                            "rating_avg": "5.0",
+                            "rating_count": 1
+                        },
+                        "user_ratings": [],
+                        "mensa": {
+                            "id": 11,
+                            "name": "Mensa Bispinghof",
+                            "city": "Münster",
+                            "street": "Bispinghof",
+                            "houseNumber": "9-14",
+                            "zipCode": 48149,
+                            "startTime": "11:00:00",
+                            "endTime": "14:30:00"
+                        },
+                        "date": "2022-12-05",
+                        "priceStudent": "2.05",
+                        "priceEmployee": "3.08"
+                    },
+                    0.7345052573194639
+                ]
+            ]
+        }
+
+        200-OK if inputs are valid
+        406 when not all fields were provided or the inputs were malformed
+    """
+    if "day" not in request.data \
+            or "entire_week" not in request.data:
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    try:
+        day: datetime.date = recommender.str_to_date(request.data["day"])
+    except ValueError:
+        return Response("Wrong 'day' format. Use: %Y.%m.%d",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    entire_week: bool = request.data["entire_week"].lower() == "true"
+
+    if "recommendations_per_day" in request.data:
+        try:
+            rec_per_day = int(request.data["recommendations_per_day"])
+        except ValueError:
+            return Response("Wrong 'recommendations_per_day' format. "
+                            "Use integers only.",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+    else:
+        rec_per_day = 1
+
+    r = recommender.DishRecommender(request.user, day, entire_week)
+    res = r.predict(rec_per_day, serialize=True)
+    return Response(res, status=status.HTTP_200_OK)

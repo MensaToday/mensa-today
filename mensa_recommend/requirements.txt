@@ -9,4 +9,7 @@ tqdm == 4.64.1
 django-cors-headers == 3.13.0
 djangorestframework == 3.14.0
 djangorestframework-simplejwt == 5.2.2
+Google-Images-Search == 1.4.6
 pycryptodome == 3.14.1
+numpy == 1.23.5
+sentence_transformers == 2.2.2

@@ -144,10 +144,8 @@ export default {
       this.itemsPerPage = number;
     },
     async getDishplan() {
-      console.log("start get dishplan")
       try {
         await this.GetDishplan();
-        console.log("end get dishplan")
       } catch (error) {
         console.log(error);
       }

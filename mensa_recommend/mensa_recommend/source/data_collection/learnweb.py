@@ -395,7 +395,7 @@ class RoomCollector(NoAuthURLCollector):
         threads = []
         for url, options in self._build_urls():
             t = threading.Thread(
-                target=self.__run, args=(url,), kwargs=options)
+                target=self._run, args=(url,), kwargs=options)
             threads.append(t)
             t.start()
 
@@ -403,10 +403,10 @@ class RoomCollector(NoAuthURLCollector):
         for t in threads:
             t.join()
 
-    def _build_urls(self) -> List[str]:
-        return [('https://studium.uni-muenster.de/qisserver/rds?state=change&type=6&moduleParameter=raumSelect&nextdir=change&next=SearchSelect.vm&target=raumSearch&subdir=raum&source=state%3Dchange%26type%3D5%26moduleParameter%3DraumSearch%26nextdir%3Dchange%26next%3Dsearch.vm%26subdir%3Draum%26_form%3Ddisplay%26topitem%3Dfacilities%26subitem%3DsearchFacilities%26function%3Dnologgedin%26field%3Ddtxt&targetfield=dtxt&_form=display&noDBAction=y&init=y', None)]
+    def _build_urls(self) -> List[Tuple[str, dict]]:
+        return [('https://studium.uni-muenster.de/qisserver/rds?state=change&type=6&moduleParameter=raumSelect&nextdir=change&next=SearchSelect.vm&target=raumSearch&subdir=raum&source=state%3Dchange%26type%3D5%26moduleParameter%3DraumSearch%26nextdir%3Dchange%26next%3Dsearch.vm%26subdir%3Draum%26_form%3Ddisplay%26topitem%3Dfacilities%26subitem%3DsearchFacilities%26function%3Dnologgedin%26field%3Ddtxt&targetfield=dtxt&_form=display&noDBAction=y&init=y', {})]
 
-    def _scrape(self, document: BeautifulSoup) -> None:
+    def _scrape(self, document: BeautifulSoup, **options) -> None:
         """method to format the qis table data
 
             Parameters

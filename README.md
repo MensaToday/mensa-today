@@ -27,6 +27,32 @@ After creating the file start docker:
 
 Done now you can connect to your database.
 
+## Environment files
+
+To run the local as well as production environment specific environment files has to be created. For the local development create a `local-variables.env` file in the root directory that should contain the following:
+
+```
+VUE_APP_BASE_URL = YOUR_URL
+GOOGLE_API_KEY = YOUR_API_KEY             # currently not required
+GOOGLE_PROJECT_CX = YOUR_PROJECT_CX_KEY   # currently not required
+```
+
+For development the `VUE_APP_BASE_URL = http://localhost:9999/api/v1/` and for production `VUE_APP_BASE_URL = http://10.14.28.50:9999`
+For the Production see next section.
+
+## Production
+
+To deploy the django app use the `docker-compose-prod.yaml` file. This file requires a `prod-variables.env` file which have to be create:
+
+```
+SECRET_KEY = foo
+DEBUG = False
+JWT_EXPIRATION_DETLA = 10800
+PRODUCTION = True
+GOOGLE_API_KEY = YOUR_API_KEY             # currently not required
+GOOGLE_PROJECT_CX = YOUR_PROJECT_CX_KEY   # currently not required
+```
+
 ## Notebooks
 
 Jupyter notebooks for testing purposes can be created at the notbooks folder. Please follow the naming convetion: `initials-dd-mm-yyy-name_of_the_notebook`
@@ -38,16 +64,6 @@ Celery is an open source asynchronous task queue or job queue which is based on 
 ## Data Structure
 
 ![erm](ERM.png)
-
-## Production
-
-To deploy the django app use the `docker-compose-prod.yaml` file. This file requires a `prod-variables.env` file which have to be create:
-
-```
-SECRET_KEY = foo
-DEBUG = False
-JWT_EXPIRATION_DETLA = 10800
-```
 
 ## Contribution
 
