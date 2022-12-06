@@ -10,7 +10,7 @@ div
             :search='search' :sort-by='sortBy.toLowerCase()' hide-default-footer)
             template(v-slot:header)
               v-toolbar.mb-1(color='primary' dark)
-                h3 Recommendations for Today: {{ $store.state.dishplan[0].date }} 
+                h3 Dishes for {{ $store.state.dishplan[0].date }} 
                 v-spacer
                 v-text-field(v-model='search' clearable flat solo-inverted hide-details 
                   prepend-inner-icon='mdi-magnify' label='Search')
