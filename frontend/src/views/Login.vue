@@ -54,7 +54,6 @@ export default {
   methods: {
     ...mapActions(["Login"]),
     encrypt(m) {
-      console.log(process.env.VUE_APP_PRIVATE_KEY)
       if(process.env.VUE_APP_PRIVATE_KEY){
         let encryptor = new JSEncrypt();
         encryptor.setPublicKey(this.publicKey);
