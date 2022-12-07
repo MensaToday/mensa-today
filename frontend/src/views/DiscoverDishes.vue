@@ -13,7 +13,13 @@
                 //- TODO: searches only first layer of json (date, price)
                 //- :sort-by='sortBy.toLowerCase()'
                 template(v-slot:header)
-                    p {{Object.keys(filters.food_preferences)}}
+                    
+                    
+                    p {{ selectedCategories }} 
+
+
+
+
                     v-toolbar.mb-1(color='primary' dark)
                         h3 All Dishes
                         v-spacer
@@ -174,15 +180,17 @@
       computed: {
         items: {
             get() {
-                let relevantDishes = this.$store.state.dishplan.filter(dish => dish.dish.name.includes(this.search)
-                // // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
-                // // use a separate function (checkRelevance) instead - left to be finalized
-                // // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
-                // // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
-                // // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
-                // this.food_preferences[dish.dish.categories[0].category.name] 
-                // // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
-                // // & ! this.food_preferences[dish.dish.additives[0].additive.name]
+                let relevantDishes = this.$store.state.dishplan.filter(dish =>
+                  // filter by search term 
+                  dish.dish.name.includes(this.search)
+                  // & this.checkCategory(dish)
+                // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
+                // use a separate function (checkRelevance) instead - left to be finalized
+                // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
+                // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
+                // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
+                // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
+                // & ! this.food_preferences[dish.dish.additives[0].additive.name]
                 );
                 return relevantDishes
             },
@@ -202,17 +210,20 @@
       methods: {
         ...mapActions(["GetDishplan"]),
         
+        checkCategory(dish){
+          if(dish.dish.categories != undefined){
+            for(let i = 0; i < dish.dish.categories.length; i++){
+              if(this.selectedCategories.includes(dish.dish.categories[i].category.name)) return false
+            }
+            return true
+            // ! this.filters.food_preferences[dish.dish.categories[0].category.name]
+          } return true
+          // this.filters.food_preferences[dish.dish.categories[0].category.name] 
+        },
         filterItems(item, search) {
           // console.log(item)
           return item.dish.name.includes(search)
           // console.log(this.filters.food_preferences[item.dish.categories[0].category.name])
-          // if(item.dish.categories != undefined){
-          //   for(let i = 0; i < item.dish.categories.length; i++){
-          //     if(this.selectedCategories.includes(item.dish.categories[i].category.name)) return false
-          //   }
-          //   return true
-          //   // ! this.filters.food_preferences[item.dish.categories[0].category.name]
-          // } return true
         },
         filter (items, search) {
           // filter category/food preference
@@ -249,7 +260,7 @@
             url.searchParams.set("destination", mensaName);
             return url.toString();
         },
- async getDishplan() {
+        async getDishplan() {
           try {
             await this.GetDishplan();
           } catch (error) {
