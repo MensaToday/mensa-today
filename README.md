@@ -52,6 +52,8 @@ PRODUCTION = True
 GOOGLE_API_KEY = YOUR_API_KEY             # currently not required
 GOOGLE_PROJECT_CX = YOUR_PROJECT_CX_KEY   # currently not required
 PRIVATE_KEY = YOUR_PRIVATE_KEY
+HTTP_PROXY=http://wwwproxy.uni-muenster.de:3128
+HTTPS_PROXY=http://wwwproxy.uni-muenster.de:3128
 ```
 
 ## Notebooks
