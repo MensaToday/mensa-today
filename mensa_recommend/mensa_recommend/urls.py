@@ -29,7 +29,7 @@ urlpatterns = [
     path('mensa/', include('mensa.urls')),
     path('courses/', include('courses.urls')),
     re_path(r'api/v1/', include(('api.urls', 'api'), namespace='v1')),
-    path('api/v1/user/login', TokenObtainPairView.as_view(),
+    path('api/v1/user/login_alternative', TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
     path('api/v1/user/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/v1/user/verify/', TokenVerifyView.as_view(), name='token_verify'),
