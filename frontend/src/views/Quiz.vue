@@ -147,6 +147,7 @@
 <script>
 import dishes from "@/assets/quiz_dishes/dishes.json";
 import config from "@/config.js";
+import JSEncrypt from "jsencrypt";
 import { mapActions } from "vuex";
 export default {
   name: "Quiz",
@@ -263,6 +264,15 @@ export default {
   methods: {
     // import Register action
     ...mapActions(["Register"]),
+    encrypt(m) {
+      if(process.env.VUE_APP_PRIVATE_KEY){
+        let encryptor = new JSEncrypt();
+        encryptor.setPublicKey(this.publicKey);
+        return encryptor.encrypt(m);
+      } else{
+        return m;
+      }
+    },
     checkAll() {
       Object.keys(this.food_preferences).forEach((key) => {
         this.food_preferences[key] = true;
@@ -298,7 +308,7 @@ export default {
       try {
         let User = {
           username: this.form.email,
-          password: this.form.password,
+          password: this.encrypt(this.form.password),
           card_id: this.form.mensa_card_id ? this.form.mensa_card_id : -1,
           categories: this.food_preferences,
           allergies: this.allergies,

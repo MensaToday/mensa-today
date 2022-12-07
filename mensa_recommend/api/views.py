@@ -1,10 +1,17 @@
 import datetime
 from datetime import datetime
 
-from rest_framework import permissions
-from rest_framework import status
+from mensa.models import (Allergy, Category, Dish, DishPlan, UserAllergy,
+                          UserCategory, UserDishRating)
+from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from users.models import User
+from users.source.authentication.manual_jwt import get_tokens_for_user
+
+
+from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, \
@@ -13,11 +20,14 @@ from mensa_recommend.source.computations.date_computations import \
     get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
 from mensa_recommend.source.data_collection.klarna import KlarnaCollector
-from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, \
-    run
+from mensa_recommend.source.data_collection.learnweb import (LearnWebCollector,
+                                                             run)
 from mensa_recommend.source.recommendation import recommender
+
 from users.models import User
 from users.source.authentication.manual_jwt import get_tokens_for_user
+from mensa_recommend.source.computations.decryption import decrypt
+
 from .serializers import DishPlanSerializer, UserDishRatingSerializer
 
 
@@ -67,6 +77,7 @@ def register(request):
         # get request parameters
         ziv_id = request.data['username']
         ziv_password = request.data['password']
+        ziv_password = decrypt(ziv_password)
         categories = request.data['categories']
         allergies = request.data['allergies']
         card_id = request.data['card_id']
@@ -171,6 +182,60 @@ def register(request):
     else:
         return Response("Not all fields provided",
                         status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.AllowAny,))
+def login(request):
+    """Login a user.
+
+        Route: api/v1/user/register
+        Authorization: Any
+        Methods: POST
+
+        Input
+        ------
+        {
+            "username": str,
+            "password": str,
+        }
+
+        Output
+        -------
+        If the credentials are valid:
+            {
+                "refresh": str
+                "access": str
+            }
+        If the credentials are wrong:
+            401 UNAUTHORIZED
+        If not all fields were provided:
+            406 NOT ACCEPTABLE
+        If something in the login process fails:
+            400 BAD REQUEST
+    """
+    try:
+        if 'username' in request.data and 'password' in request.data:
+            username = request.data["username"]
+            password = decrypt(request.data["password"])
+
+            user = authenticate(username=username, password=password)
+
+            if user:
+                refresh = RefreshToken.for_user(user)
+                tokens = {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                }
+                return Response(tokens, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response("Not all fields provided",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -422,7 +487,7 @@ def getData(request):
         return Response("Hello World v2")
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def get_recommendations(request):
     """Get user recommendations.

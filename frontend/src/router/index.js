@@ -14,6 +14,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    // currently empty
     path: "/about",
     name: "about",
     // route level code-splitting
@@ -23,6 +24,7 @@ const routes = [
       import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
   },
   {
+    // quiz = register page
     path: "/quiz",
     name: "Quiz",
     component: () => import(/* webpackChunkName: "quiz" */ "../views/Quiz.vue"),
@@ -43,6 +45,12 @@ const routes = [
   {
     path: '/register',
     redirect: '/quiz'
+  },
+  {
+    path: "/discover",
+    name: "Discover",
+    component: () => import(/* webpackChunkName: "discover" */ "../views/DiscoverDishes.vue"),
+    meta: { requiresAuth: true },
   },
 ];
 

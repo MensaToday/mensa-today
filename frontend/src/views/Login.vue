@@ -34,6 +34,8 @@ v-container
 
 <script>
 import { mapActions } from "vuex";
+import config from "@/config.js";
+import JSEncrypt from "jsencrypt";
 export default {
   name: "Login",
   data() {
@@ -46,29 +48,32 @@ export default {
       showPassword: false,
       absolute: true,
       overlay: false,
+      publicKey: config.publicKey,
     };
   },
   methods: {
     ...mapActions(["Login"]),
-
+    encrypt(m) {
+      if(process.env.VUE_APP_PRIVATE_KEY){
+        let encryptor = new JSEncrypt();
+        encryptor.setPublicKey(this.publicKey);
+        return encryptor.encrypt(m);
+      } else{
+        return m;
+      }
+    },
     async login() {
       try {
         let User = {
           username: this.form.email,
-          password: this.form.password,
+          password: this.encrypt(this.form.password),
         };
         await this.Login(User);
         // reset form
         this.form = { email: "", password: "" };
-        // wait 3 seconds before navigating to the displan because the api call takes so long
-        // it is not a best practice 😵‍💫
         this.overlay = true;
-        setTimeout(() => {
-          if (this.$store.state.dishplan) {
-            this.showError = false;
-            this.$router.push("/");
-          }
-        }, 3000);
+        this.showError = false;
+        this.$router.push("/");
       } catch (error) {
         console.log(error);
         this.showError = true;
