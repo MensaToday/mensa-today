@@ -11,21 +11,24 @@
                 hide-default-footer 
                 :sort-desc="sortDesc")
                 template(v-slot:header)
-                    v-toolbar.mb-1(color='primary' dark)
-                        //- h3 All Dishes
-                        //- v-spacer
-                        v-text-field(v-model='search' clearable flat solo-inverted hide-details 
-                          prepend-inner-icon='mdi-magnify' label='Search')
-                        template(v-if='$vuetify.breakpoint.mdAndUp')
-                        v-spacer
-                        v-checkbox.mx-3.mt-6(
-                          v-model="filters.affordable"
-                          label="Affordable")
-                        v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
-                            prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple 
-                            v-model='selectedCategories')
-                        //- v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
-                        //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
+                  v-toolbar(color='primary' dark)
+                    //- h3 All Dishes
+                    //- v-spacer
+                    v-text-field(v-model='search' clearable flat solo-inverted hide-details 
+                      prepend-inner-icon='mdi-magnify' label='Search')
+                    v-spacer
+                    v-checkbox.mx-3.mt-6(
+                      v-model="filters.affordable"
+                      label="Affordable")
+                    v-checkbox.mx-3.mt-6(
+                      v-model="filters.main_dish"
+                      label="Main Dish")
+                    template(v-if='$vuetify.breakpoint.mdAndUp')
+                      v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
+                          prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple 
+                          v-model='selectedCategories')
+                      //- v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
+                      //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
                 template(v-slot:default='props')
                   v-row
                     v-col(v-for='(item, index) in props.items' :key="index" cols='12' sm='6' md='6' lg='4')
@@ -119,7 +122,7 @@ export default {
           // array of mensas
           mensa_name: null,
           // boolean
-          main_dish: null,
+          main_dish: false,
           food_preferences: {
               Vegan: false,
               Vegetarian: false,
@@ -199,6 +202,7 @@ export default {
                 dish.dish.name.includes(this.search)
                 & this.checkCategory(dish)
                 & (this.filters.affordable ? this.$store.state.card_balance >= parseFloat(dish.priceStudent) : true)
+                & (this.filters.main_dish ? dish.dish.main : true)
             );
         },
         set() {
