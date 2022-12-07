@@ -10,7 +10,7 @@
                 hide-default-footer 
                 :sort-desc="sortDesc")
                 template(v-slot:header)
-                  v-toolbar(color='primary' dark height='130px')
+                  v-toolbar.mb-2(color='primary' dark height='130px')
                       v-col.py-0.mt-0(cols='12')
                         v-card(color="primary" flat)
                           v-col.d-flex.justify-space-between.py-0
@@ -34,7 +34,7 @@
                         v-card(height="100%")
                             v-img(v-show="item.dish.url != null" :alt="item.dish.name" height='250'
                             :src="item.dish.url")
-                            div.center-items.light-green.lighten-2(v-show="item.dish.url == null" height='250')
+                            v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250')
                                 h1 {{ item.dish.name[0] }}
                             
                             v-card-title.subheading(style="word-break: normal")
