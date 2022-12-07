@@ -2,17 +2,18 @@
     div  
       v-container
         h1.text-center.my-6 Discover Dishes
-        //- v-btn(@click="getRecommendations()") Get Recommendations
         v-row 
           v-col
             v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
             template(v-if="loaded")
               v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
-                :search='search' hide-default-footer 
+                hide-default-footer 
                 :sort-desc="sortDesc")
+                //- :search='search' 
                 //- TODO: searches only first layer of json (date, price)
                 //- :sort-by='sortBy.toLowerCase()'
                 template(v-slot:header)
+                    p {{Object.keys(filters.food_preferences)}}
                     v-toolbar.mb-1(color='primary' dark)
                         h3 All Dishes
                         v-spacer
@@ -20,8 +21,11 @@
                         prepend-inner-icon='mdi-magnify' label='Search')
                         template(v-if='$vuetify.breakpoint.mdAndUp')
                         v-spacer
-                        v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
-                            prepend-inner-icon='mdi-filter-variant' label='Filter')
+                        v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' max-width='200'
+                            prepend-inner-icon='mdi-filter-variant' label='Filter' persistent-hint multiple 
+                            v-model='selectedCategories')
+                        //- v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
+                        //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
                 template(v-slot:default='props')
                   v-row
                     v-col(v-for='item in props.items' :key="item.dish.id" cols='12' sm='6' md='6' lg='4')
@@ -96,35 +100,81 @@
             // TODO: rating to be implemented
             // suggested_dish_rating: null,
             itemsPerPageArray: [3, 6, 9],
-            search: "",
-            filter: {},
+            search: '',
+            filters: {
+              // date: {
+              //   start_date: null,
+              //   end_date: null
+              // },
+              // float - reformat response with parseFloat()
+              max_price: null,
+              // array of mensas
+              mensa_name: null,
+              // boolean
+              main_dish: null,
+              food_preferences: {
+                  Vegan: false,
+                  Vegetarian: false,
+                  Pork: false,
+                  Beef: false,
+                  Poultry: false,
+                  Alcohol: false,
+                  Fish: false
+              },
+              additives: {
+                Dyed: false,
+                Preservatives: false,
+                Antioxidants: false,
+                "Flavor enhancers": false,
+                Sulphurated: false,
+                Blackened: false,
+                Waxed: false,
+                Phosphate: false,
+                Sweeteners: false,
+                "Phenylalanine source": false,
+              },
+              allergies: {
+                Gluten: false,
+                Spelt: false,
+                Barles: false,
+                Oats: false,
+                Kamut: false,
+                Rye: false,
+                Wheat: false,
+                Crustaceans: false,
+                Egg: false,
+                Fish: false,
+                Peanuts: false,
+                Soy: false,
+                Milk: false,
+                Nuts: false,
+                Almonds: false,
+                Hazelnuts: false,
+                Walnuts: false,
+                Cashews: false,
+                Pecans: false,
+                "Brazil nuts": false,
+                Pistachios: false,
+                Macadamias: false,
+                Celerey: false,
+                Mustard: false,
+                Sesame: false,
+                Lupines: false,
+                Molluscs: false,
+                "Sulfur dioxide": false,
+              },
+            },
             sortDesc: false,
             page: 1,
             itemsPerPage: 3,
             sortBy: "",
-            // TODO: filters:
-            food_preferences: {
-                Vegan: false,
-                Vegetarian: false,
-                Pork: false,
-                Beef: false,
-                Poultry: false,
-                Alcohol: false,
-                Fish: false,
-            },
-            keys: [
-                "dish.categories[0].category",
-                "dish.main",
-                "mensa.name",
-                "date",
-                "priceStudent",
-            ],
+            selectedCategories: []
         };
       },
       computed: {
         items: {
             get() {
-                // let relevantDishes = this.$store.state.dishplan.filter(dish => {
+                let relevantDishes = this.$store.state.dishplan.filter(dish => dish.dish.name.includes(this.search)
                 // // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
                 // // use a separate function (checkRelevance) instead - left to be finalized
                 // // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
@@ -133,9 +183,8 @@
                 // this.food_preferences[dish.dish.categories[0].category.name] 
                 // // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
                 // // & ! this.food_preferences[dish.dish.additives[0].additive.name]
-                // });
-                // return relevantDishes
-                return this.$store.state.dishplan;
+                );
+                return relevantDishes
             },
             set() {
                 return this.$store.state.dishplan;
@@ -149,13 +198,43 @@
           if (this.items) return Math.ceil(this.items.length / this.itemsPerPage);
           else return 1;
         },
-        filteredKeys() {
-          return this.keys.filter((key) => key !== "Name");
-        },
       },
       methods: {
-        ...mapActions(["GetDishplan", "GetRecommendations"]),
+        ...mapActions(["GetDishplan"]),
+        
+        filterItems(item, search) {
+          // console.log(item)
+          return item.dish.name.includes(search)
+          // console.log(this.filters.food_preferences[item.dish.categories[0].category.name])
+          // if(item.dish.categories != undefined){
+          //   for(let i = 0; i < item.dish.categories.length; i++){
+          //     if(this.selectedCategories.includes(item.dish.categories[i].category.name)) return false
+          //   }
+          //   return true
+          //   // ! this.filters.food_preferences[item.dish.categories[0].category.name]
+          // } return true
+        },
+        filter (items, search) {
+          // filter category/food preference
+          // console.log(item)
 
+          // console.log(items[0].dish.categories[0].category.name);
+          items.filter(item => 
+            true)
+          // this.filterItems(item, search))
+          // {
+          // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
+          // use a separate function (checkRelevance) instead - left to be finalized
+          // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
+          // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
+          // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
+
+          // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
+          // & ! this.food_preferences[dish.dish.additives[0].additive.name]
+          // }
+          // );
+
+        },
         nextPage() {
           if (this.page + 1 <= this.numberOfPages) this.page += 1;
         },
@@ -165,29 +244,20 @@
         updateItemsPerPage(number) {
           this.itemsPerPage = number;
         },
-        async getDishplan() {
+        getGoogleMapsUrl(mensaName) {
+            const url = new URL("https://www.google.com/maps/dir/?api=1");
+            url.searchParams.set("destination", mensaName);
+            return url.toString();
+        },
+ async getDishplan() {
           try {
             await this.GetDishplan();
           } catch (error) {
             console.log(error);
           }
         },
-        async getRecommendations(){
-            try {
-                var request_data = JSON.stringify({day: "2022.12.06", entire_week: "False"})
-                await this.GetRecommendations(request_data);
-            } catch (error) {
-                console.log(error);
-            }
-        },
-        getGoogleMapsUrl(mensaName) {
-            const url = new URL("https://www.google.com/maps/dir/?api=1");
-            url.searchParams.set("destination", mensaName);
-            return url.toString();
-        },
       },
       mounted() {
-        this.getRecommendations()
         // if items not set, query dishplan
         if(!this.items) this.getDishplan()
       }
