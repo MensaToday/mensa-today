@@ -34,6 +34,8 @@ v-container
 
 <script>
 import { mapActions } from "vuex";
+import config from "@/config.js";
+import JSEncrypt from "jsencrypt";
 export default {
   name: "Login",
   data() {
@@ -46,16 +48,25 @@ export default {
       showPassword: false,
       absolute: true,
       overlay: false,
+      publicKey: config.publicKey,
     };
   },
   methods: {
     ...mapActions(["Login"]),
-
+    encrypt(m) {
+      if(process.env.VUE_APP_PRIVATE_KEY){
+        let encryptor = new JSEncrypt();
+        encryptor.setPublicKey(this.publicKey);
+        return encryptor.encrypt(m);
+      } else{
+        return m;
+      }
+    },
     async login() {
       try {
         let User = {
           username: this.form.email,
-          password: this.form.password,
+          password: this.encrypt(this.form.password),
         };
         await this.Login(User);
         // reset form
