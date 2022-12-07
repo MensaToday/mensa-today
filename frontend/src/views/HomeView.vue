@@ -118,9 +118,10 @@ export default {
   },
   computed: {
     items () { return this.$store.state.dishplan },
+    recommendationItems () { return this.$store.state.recommendations },
     loaded(){
       // if (typeof this.items !== 'undefined') return true
-      if (this.items != null) return true
+      if (this.items != null && this.recommendationItems != null) return true
       else return false
     },
     numberOfPages() {
@@ -172,7 +173,8 @@ export default {
   },
   mounted() {
     // TODO: exchange with getRecommendations
-    // this.getDishplan()
+    //this.getDishplan()
+    //this.getRecommendations()
   }
 };
 </script>
