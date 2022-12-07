@@ -71,15 +71,9 @@ export default {
         await this.Login(User);
         // reset form
         this.form = { email: "", password: "" };
-        // wait 3 seconds before navigating to the displan because the api call takes so long
-        // it is not a best practice 😵‍💫
         this.overlay = true;
-        setTimeout(() => {
-          if (this.$store.state.dishplan) {
-            this.showError = false;
-            this.$router.push("/");
-          }
-        }, 3000);
+        this.showError = false;
+        this.$router.push("/");
       } catch (error) {
         console.log(error);
         this.showError = true;
