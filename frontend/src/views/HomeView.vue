@@ -149,19 +149,17 @@ export default {
         console.log(error);
       }
     },
-<<<<<<< HEAD
     async getRecommendations() {
       try {
         await this.GetRecommendations();
       } catch (error) {
         console.log(error);
       }
-=======
+    },
     getGoogleMapsUrl(mensaName) {
       const url = new URL("https://www.google.com/maps/dir/?api=1");
       url.searchParams.set("destination", mensaName);
       return url.toString();
->>>>>>> development
     },
   },
   // created() {

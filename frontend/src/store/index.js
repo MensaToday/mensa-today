@@ -15,7 +15,7 @@ export default new Vuex.Store({
       mensa_card_id: null,
     },
     card_balance: null,
-    dishplan: null
+    dishplan: null,
     recommendations: null
   },
   getters: {
