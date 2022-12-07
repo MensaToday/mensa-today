@@ -74,14 +74,13 @@
                                 v-row.my-0
                                   v-col.align-center.justify-center.d-flex.justify-space-between.py-0
                                     h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
-                                    v-img(alt="beef" height="50" max-width="50" contain
+                                    v-img(:alt="dish.dish.categories[0].category.nam" height="50" max-width="50" contain
                                       :src="require('@/assets/dish_icons/food_preferences/'+dish.dish.categories[0].category.name+'.png')")
-                                    //- TODO: GMaps link here
                                     v-btn(@click="" rounded)
                                       v-icon mdi-navigation-variant-outline
-                                      | {{ dish.mensa.name }} 
+                                      | {{ dish.mensa.name }}
                                   v-img.mx-auto(:alt="dish.dish.name" 
-                                    src='@/assets/quiz_dishes/dish_preview.png')
+                                    :src="dish.dish.url")
                                     v-btn(fab style="position: absolute; top: 45%; left: 4%" 
                                       v-if='cur_step_dishes>1'
                                       @click="cur_step_dishes-=1") 
