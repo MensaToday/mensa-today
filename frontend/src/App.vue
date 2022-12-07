@@ -12,7 +12,7 @@ v-app
       v-spacer
       .d-flex.align-center.mr-6(v-if="$store.getters.isLoggedIn && $store.state.card_balance")
         v-icon.mr-2 mdi-wallet
-        p.my-auto.mr-9 €{{ $store.state.card_balance }}
+        p.my-auto.mr-9 €{{ $store.state.card_balance.replace('.',',') }}
         v-btn.px-3(outlined @click="logout()")
           v-icon mdi-logout
           | Logout

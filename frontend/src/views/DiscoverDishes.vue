@@ -8,10 +8,9 @@
             v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
             template(v-if="loaded")
               v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
-                :search='search' 
-                hide-default-footer
-                function="searchName()")
-                //- TODO: searches date of dishes 
+                :search='search' hide-default-footer 
+                :sort-desc="sortDesc")
+                //- TODO: searches only first layer of json (date, price)
                 //- :sort-by='sortBy.toLowerCase()'
                 template(v-slot:header)
                     v-toolbar.mb-1(color='primary' dark)
@@ -38,25 +37,28 @@
                             v-col.align-center.justify-center.d-flex.justify-space-between.py-0
                                 h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
                                     //- (:class="{ 'primary--text': sortBy === key }")
-                                    | €{{ item.priceStudent }} / €{{ item.priceEmployee }}
+                                    | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
                                 v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
                                     height="50" max-width="50" contain :key="category"
                                     :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
                                 v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
                                     v-icon mdi-navigation-variant-outline
-                                    | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.') }}
+                                    | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
                             v-col.align-center.justify-center.d-flex.justify-space-between
                                 div
                                     span
                                         //- (:class="{ 'primary--text': sortBy === key }")
                                         v-icon mdi-food-apple
-                                        | Type: {{ item.dish.main ? 'Main Dish' : 'Supplement' }}
+                                        | {{ item.dish.main ? 'Main Dish' : 'Supplement' }}
                                 div 
                                     v-icon mdi-shield-plus-outline
-                                    span Additives:
+                                    span
                                         //- (:class="{ 'primary--text': sortBy === key }")
                                         span(v-if="item.dish.additives.length == 0")  None
                                         span(v-for="additive in item.dish.additives" :key="additive.additive.name")  {{ additive.additive.name }}
+                                div 
+                                    v-icon mdi-calendar
+                                    span {{ new Date(item.date).toLocaleDateString('de-DE') }}
                         //- Review & Comment Section
                         //- v-col.d-flex.justify-space-between.py-0
                         //-     v-rating(hover length="5" background-color="gray" 
@@ -66,7 +68,7 @@
                         //-         | comment 
                 template(v-slot:footer)
                   v-row.mt-2(align='center' justify='center')
-                    span.grey--text Items per page
+                    span.grey--text Items Per Page
                     v-menu(offset-y)
                       template(v-slot:activator='{ on, attrs }')
                         v-btn.ml-2(dark text color='primary' v-bind='attrs' v-on='on')
@@ -98,14 +100,23 @@
         return {
             // TODO: rating to be implemented
             // suggested_dish_rating: null,
-            itemsPerPageArray: [4, 8, 12],
+            itemsPerPageArray: [3, 6, 9],
             search: "",
             filter: {},
             sortDesc: false,
             page: 1,
-            itemsPerPage: 4,
+            itemsPerPage: 3,
             sortBy: "",
             // TODO: filters:
+            category_filter: {
+                Vegan: false,
+                Vegetarian: false,
+                Pork: false,
+                Beef: false,
+                Poultry: false,
+                Alcohol: false,
+                Fish: false,
+            },
             keys: [
                 "dish.categories[0].category",
                 "dish.main",
@@ -118,7 +129,6 @@
       computed: {
         items () { return this.$store.state.dishplan },
         loaded(){
-          // if (typeof this.items !== 'undefined') return true
           if (this.items != null) return true
           else return false
         },
@@ -165,7 +175,8 @@
       },
       mounted() {
         // this.getRecommendations()
-        this.getDishplan()
+        // if items not set, query dishplan
+        if(!this.items) this.getDishplan()
       }
     };
     </script>
