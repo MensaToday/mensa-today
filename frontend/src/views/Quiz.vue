@@ -2,15 +2,13 @@
     div
         v-container.center-items
             h1.text-center.my-8 Tell Us About Yourself - Intro-Quiz
-
             v-stepper(v-model='cur_step' width="500")
                 v-stepper-header
-                    v-stepper-step(:complete='cur_step > 1' step='1') Food Preferences
-                    v-divider
-                    v-stepper-step(:complete='cur_step > 2' step='2') Select Dishes
-                        //- Which You Would Like to Eat
-                    v-divider
-                    v-stepper-step(step='3') Sign In
+                  v-stepper-step(:complete='cur_step > 1' step='1') Food Preferences
+                  v-divider
+                  v-stepper-step(:complete='cur_step > 2' step='2') Select Dishes
+                  v-divider
+                  v-stepper-step(step='3') Sign In
                 v-stepper-items
                     v-stepper-content(step='1')
                         v-card.mb-4(max-width='800' flat)
@@ -28,8 +26,7 @@
                                 v-row
                                     v-col(cols="6")
                                         v-combobox(v-model='selected_allergies' :items='Object.keys(allergies)' 
-                                            :search-input.sync='search' hide-selected 
-                                            label='Specify Allergies' 
+                                            :search-input.sync='search' hide-selected label='Specify Allergies' 
                                             multiple persistent-hint small-chips clearable)
                                             template(v-slot:no-data)
                                                 v-list-item
@@ -57,8 +54,7 @@
                                         | Login
                                     v-spacer
                                     v-btn(color='primary' :disabled="no_food_preferences"
-                                        @click='updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); cur_step = 2')
-                                        //- @click="allergies['Gluten']=true; cur_step = 2")
+                                        @click='updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); cur_step = 2; cur_step_dishes = 1')
                                         v-icon mdi-chevron-right
                                         | Continue
                     v-stepper-content(step='2').pa-0
@@ -70,51 +66,49 @@
                                 v-divider
                                 v-stepper-step(step='3')
                             v-stepper-items
-                                v-stepper-content(
-                                    v-for="(dish, index) in dishes"
-                                    :key="dish.dish.name"
-                                    :step='index+1')
-                                    div.p-relative
-                                    v-row
-                                        v-col.col-8.pb-0
-                                            h3.my-0.d-inline {{ dish.dish.name }}
-                                        v-col.col-4.pb-0
-                                            h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
-                                    v-row.my-0
-                                        v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                                            v-img(alt="beef" height="60" max-width="60" contain
-                                                src="@/assets/dish_icons/food_preferences/Beef.png")
-                                            //- TODO: GMaps link here
-                                            v-btn(@click="" rounded)
-                                                v-icon mdi-navigation-variant-outline
-                                                | {{ dish.mensa.name }}
-                                        v-img.mx-auto(:alt="dish.dish.name" 
-                                            src='@/assets/quiz_dishes/dish_preview.png')
-                                            v-btn(fab style="position: absolute; top: 45%; left: 4%" 
-                                                v-if='cur_step_dishes>1'
-                                                @click="cur_step_dishes-=1") 
-                                                v-icon mdi-chevron-left
-                                            v-btn(fab style="position: absolute; top: 45%; right: 4%;"
-                                                v-if='cur_step_dishes<dishes.length' :disabled="dish.rating == null"
-                                                @click='cur_step_dishes++')
-                                                v-icon mdi-chevron-right
-                                    div.justify-center
-                                        v-btn.my-2(@click="dish.rating = 0; if(cur_step_dishes<dishes.length){cur_step_dishes++}" 
-                                            large width="50%" elevation="1"
-                                            :color="(dish.rating != 0) ? 'gray' : 'primary'")
-                                            v-icon {{(dish.rating == 0) ? 'mdi-thumb-down' : 'mdi-thumb-down-outline'}} 
-                                        v-btn.my-2(@click="dish.rating = 1; if(cur_step_dishes<dishes.length){cur_step_dishes++}" 
-                                            large width="50%" elevation="1"
-                                            :color="dish.rating ? 'green' : 'gray'")
-                                            v-icon {{(dish.rating == 1) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
-                                    
+                              v-stepper-content(
+                                v-for="(dish, index) in relevantDishes.slice(0,3)"
+                                :key="dish.dish.name"
+                                :step='index+1')
+                                h3.my-0 {{ dish.dish.name }}
+                                v-row.my-0
+                                  v-col.align-center.justify-center.d-flex.justify-space-between.py-0
+                                    h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
+                                    v-img(alt="beef" height="50" max-width="50" contain
+                                      :src="require('@/assets/dish_icons/food_preferences/'+dish.dish.categories[0].category.name+'.png')")
+                                    //- TODO: GMaps link here
+                                    v-btn(@click="" rounded)
+                                      v-icon mdi-navigation-variant-outline
+                                      | {{ dish.mensa.name }} 
+                                  v-img.mx-auto(:alt="dish.dish.name" 
+                                    src='@/assets/quiz_dishes/dish_preview.png')
+                                    v-btn(fab style="position: absolute; top: 45%; left: 4%" 
+                                      v-if='cur_step_dishes>1'
+                                      @click="cur_step_dishes-=1") 
+                                      v-icon mdi-chevron-left
+                                    v-btn(fab style="position: absolute; top: 45%; right: 4%;"
+                                      v-if='cur_step_dishes<3' 
+                                      :disabled="dish_ratings[index].rating == null"
+                                      @click='cur_step_dishes+=1')
+                                      v-icon mdi-chevron-right
+                                div.justify-center
+                                  v-btn.my-2(@click="addRating(cur_step_dishes-1, dish.dish.id, 0)" 
+                                    large width="50%" elevation="1"
+                                    :color="dish_ratings[index].rating != 0 ? 'gray' : 'primary'"
+                                    )
+                                    v-icon {{(dish_ratings[index].rating == 0) ? 'mdi-thumb-down' : 'mdi-thumb-down-outline'}} 
+                                  v-btn.my-2(@click="addRating(cur_step_dishes-1, dish.dish.id, 1)" 
+                                    large width="50%" elevation="1"
+                                    :color="dish_ratings[index].rating ? 'green' : 'gray'"
+                                    )
+                                    v-icon {{(dish_ratings[index].rating == 1) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
                                     
                         v-card-actions
                             v-btn(@click="cur_step-=1") 
                                 v-icon mdi-chevron-left
                                 | Back
                             v-spacer
-                            v-btn(color='primary' @click='cur_step = 3' :disabled='ratings_incomplete')
+                            v-btn(color='primary' @click='cur_step = 3' :disabled='dish_ratings[2].rating == null')
                                 v-icon mdi-chevron-right
                                 | Continue
                     v-stepper-content(step='3')
@@ -133,6 +127,7 @@
                                         :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" 
                                         @click:append="showPassword = !showPassword")
                                     v-text-field(
+                                        type="number"
                                         label="Mensa Card Number"
                                         prepend-icon="mdi-card-account-details"
                                         v-model="form.mensa_card_id")
@@ -157,8 +152,8 @@ import { mapActions } from "vuex";
 export default {
   name: "Quiz",
   data: () => ({
-    cur_step: 2,
-    cur_step_dishes: 1,
+    cur_step: 1,
+    cur_step_dishes:0,
     food_preferences: {
       Vegan: false,
       Vegetarian: false,
@@ -213,74 +208,13 @@ export default {
     search: null,
     selected_allergies: [],
     selected_additives: [],
-    dishes: [
-      {
-        name: "Burger with Salad",
-        img: "dish_preview.png",
-        rating: null,
-        // TODO: list of additional_ingrediants & allergies: [nuts, ...] + API Call probably needs the dish ID
-        // rating: 1 if the user would eat it (thumbs up), else 0
-        additional_ingrediants_allergies: [
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-        ],
-      },
-      {
-        name: "Burger without Salad",
-        img: "dish_preview.png",
-        rating: null,
-        additional_ingrediants_allergies: [
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-        ],
-      },
-      {
-        name: "Burger",
-        img: "dish_preview.png",
-        rating: null,
-        additional_ingrediants_allergies: [
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-        ],
-      },
-    ],
     dishes: dishes,
+    dish_ratings: [{"id": null, "rating": null},{"id": null, "rating": null},{"id": null, "rating": null}],
     form: {
       email: "",
       password: "",
-      mensa_card_id: "",
+      mensa_card_id: null,
     },
-    overlay: true,
     showError: false,
     showPassword: false,
     publicKey: config.publicKey,
@@ -308,15 +242,22 @@ export default {
         return false;
       },
     },
-    ratings_incomplete: {
+    relevantDishes: {
       get: function () {
-        for (let idx = 0; idx < this.dishes.length; idx++) {
-          if (this.dishes[idx]["rating"] == null) return true;
-        }
-        return false;
+        let relevantDishes = this.dishes.filter(dish =>
+          // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
+          // use a separate function (checkRelevance) instead - left to be finalized
+          // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
+          // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
+          // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
+          this.food_preferences[dish.dish.categories[0].category.name] &
+          ! this.food_preferences[dish.dish.allergies[0].allergy.name]
+          // ! this.food_preferences[dish.dish.additives[0].additive.name]
+        );
+        return relevantDishes
       },
       set: function () {
-        return true;
+        return this.dishes;
       },
     },
   },
@@ -347,16 +288,33 @@ export default {
         obj[values[idx]] = true;
       }
     },
+    // TODO: To be finalized
+    // checkRelevance(user_attribute, dish_attribute, attribute_name){
+    //     for(let idx = 0; idx < dishes.length; idx++){
+    //         attribute = String(dish_attribute[idx])+"."+attribute_name + ".name"
+    //         console.log(attribute)
+    //         console.log(user_attribute[attribute])
+    //         if(!user_attribute[attribute]) return false
+    //     }
+    //     return true
+    // },
+    addRating(index, dish_id, rating){
+      this.dish_ratings[index] = {"id": dish_id, "rating": rating}
+      if(this.cur_step_dishes < 3){ this.cur_step_dishes++ }
+      // update to consider updated rating data
+      this.$forceUpdate()
+    },
     async register() {
       try {
         let User = {
           username: this.form.email,
           password: this.encrypt(this.form.password),
-          card_id: this.form.mensa_card_id,
+          card_id: this.form.mensa_card_id ? this.form.mensa_card_id : -1,
           categories: this.food_preferences,
           allergies: this.allergies,
-          ratings: this.dishes,
+          ratings: this.dish_ratings,
         };
+        console.log(User)
         await this.Register(User);
         // Redirect to homepage
         setTimeout(() => {
@@ -368,6 +326,6 @@ export default {
         this.showError = true;
       }
     },
-  },
+  }
 };
 </script>

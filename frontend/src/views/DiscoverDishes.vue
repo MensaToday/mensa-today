@@ -2,7 +2,7 @@
     div  
       v-container
         h1.text-center.my-6 Discover Dishes
-        v-btn(@click="getRecommendations()") Get Recommendations
+        //- v-btn(@click="getRecommendations()") Get Recommendations
         v-row 
           v-col
             v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")

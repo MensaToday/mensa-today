@@ -43,6 +43,10 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/register',
+    redirect: '/quiz'
+  },
+  {
     path: "/discover",
     name: "Discover",
     component: () => import(/* webpackChunkName: "discover" */ "../views/DiscoverDishes.vue"),
