@@ -61,8 +61,9 @@
                                         | Continue
                     v-stepper-content(step='2').pa-0
                         v-stepper(v-model='cur_step_dishes' tile).mt-0.pt-0
+                            p(v-if="relevantDishes") #Filtered Dishes: {{ relevantDishes.length }} => {{ relevantDishes.slice(0,3).length }}
+                            //- p Ratings: {{ dish_ratings[1] }}
                             v-stepper-header
-                                p(v-if="relevantDishes") #Filtered Dishes: {{ relevantDishes.length }} => {{ relevantDishes.slice(0,3).length }}
                                 v-stepper-step(:complete='cur_step_dishes > 1' step='1')
                                 v-divider
                                 v-stepper-step(:complete='cur_step_dishes > 2' step='2')
@@ -90,28 +91,29 @@
                                       @click="cur_step_dishes-=1") 
                                       v-icon mdi-chevron-left
                                     v-btn(fab style="position: absolute; top: 45%; right: 4%;"
-                                      v-if='cur_step_dishes<relevantDishes.length' 
-                                      :disabled="dish.rating == null"
+                                      v-if='cur_step_dishes<3' 
+                                      :disabled="dish_ratings[index].rating == null"
                                       @click='cur_step_dishes+=1')
                                       v-icon mdi-chevron-right
+                                p Rating of current dish {{ dish_ratings.length }} || {{ dish_ratings }}
                                 div.justify-center
                                   v-btn.my-2(@click="addRating(cur_step_dishes-1, dish.dish.id, 0)" 
-                                    large width="50%" elevation="1")
-                                    //- :color="(dish.rating != 0) ? 'gray' : 'primary'"
-                                    //- v-icon {{(dish_ratings[index].rating == 0) ? 'mdi-thumb-down' : 'mdi-thumb-down-outline'}} 
-                                    v-icon mdi-thumb-down-outline
+                                    large width="50%" elevation="1"
+                                    :color="dish_ratings[index].rating != 0 ? 'gray' : 'primary'"
+                                    )
+                                    v-icon {{(dish_ratings[index].rating == 0) ? 'mdi-thumb-down' : 'mdi-thumb-down-outline'}} 
                                   v-btn.my-2(@click="addRating(cur_step_dishes-1, dish.dish.id, 1)" 
-                                    large width="50%" elevation="1")
-                                    //- :color="dish_ratings[index].rating ? 'green' : 'gray'"
-                                    //- v-icon {{(dish_ratings[index].rating == 1) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
-                                    v-icon mdi-thumb-up-outline
+                                    large width="50%" elevation="1"
+                                    :color="dish_ratings[index].rating ? 'green' : 'gray'"
+                                    )
+                                    v-icon {{(dish_ratings[index].rating == 1) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
                                     
                         v-card-actions
                             v-btn(@click="cur_step-=1") 
                                 v-icon mdi-chevron-left
                                 | Back
                             v-spacer
-                            v-btn(color='primary' @click='cur_step = 3' :disabled='ratings_incomplete')
+                            v-btn(color='primary' @click='cur_step = 3' :disabled='dish_ratings[2].rating == null')
                                 v-icon mdi-chevron-right
                                 | Continue
                     v-stepper-content(step='3')
@@ -211,7 +213,7 @@ export default {
     selected_allergies: [],
     selected_additives: [],
     dishes: dishes,
-    dish_ratings: [],
+    dish_ratings: [{"id": null, "rating": null},{"id": null, "rating": null},{"id": null, "rating": null}],
     form: {
       email: "",
       password: "",
@@ -262,11 +264,6 @@ export default {
         return this.dishes;
       },
     },
-    ratings_incomplete() {
-      if (this.dish_ratings.length < 3){
-        return false
-      } else return true
-    },
   },
   methods: {
     // import Register action
@@ -304,6 +301,8 @@ export default {
     addRating(index, dish_id, rating){
       this.dish_ratings[index] = {"id": dish_id, "rating": rating}
       if(this.cur_step_dishes < 3){ this.cur_step_dishes++ }
+      // update to consider updated rating data
+      this.$forceUpdate()
     },
     async register() {
       try {
