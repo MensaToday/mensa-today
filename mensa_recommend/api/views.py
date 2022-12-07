@@ -1,23 +1,23 @@
 import datetime
 from datetime import datetime
 
-from rest_framework import permissions
-from rest_framework import status
+from mensa.models import (Allergy, Category, Dish, DishPlan, UserAllergy,
+                          UserCategory, UserDishRating)
+from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from users.models import User
+from users.source.authentication.manual_jwt import get_tokens_for_user
 
-from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, \
-    UserDishRating, DishPlan
 from mensa_recommend.source.computations.date_computations import \
     get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
 from mensa_recommend.source.data_collection.klarna import KlarnaCollector
-from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, \
-    run
+from mensa_recommend.source.data_collection.learnweb import (LearnWebCollector,
+                                                             run)
 from mensa_recommend.source.recommendation import recommender
-from users.models import User
-from users.source.authentication.manual_jwt import get_tokens_for_user
+
 from .serializers import DishPlanSerializer, UserDishRatingSerializer
 
 
@@ -422,7 +422,7 @@ def getData(request):
         return Response("Hello World v2")
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def get_recommendations(request):
     """Get user recommendations.
