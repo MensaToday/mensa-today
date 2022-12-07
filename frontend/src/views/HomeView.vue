@@ -1,5 +1,5 @@
 <template lang="pug">
-div  
+div
   v-container
     h1.text-center.my-6 Your Mensa Week
     v-row 

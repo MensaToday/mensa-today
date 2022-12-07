@@ -107,7 +107,7 @@ export default new Vuex.Store({
       var yyyy = today.getFullYear();
       today = yyyy + '.' + mm + '.' + dd;
       
-      let response = await axios.post("mensa/get_recommendations", {"day": "2022.12.06", "entire_week": "False", "recommendations_per_day": 1})
+      let response = await axios.post("mensa/get_recommendations", {"day": today, "entire_week": "True", "recommendations_per_day": 1})
   
       console.log(response)
       var recommendations = response.data
