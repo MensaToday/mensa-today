@@ -62,13 +62,6 @@
                                     span {{ new Date(item.date).toLocaleDateString('de-DE') }}
                                 v-rating(hover length="5" background-color="gray" readonly size="24" half-increments 
                                   v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0")
-                        //- Review & Comment Section
-                        //- v-col.d-flex.justify-space-between.py-0
-                        //-     v-rating(hover length="5" background-color="gray" 
-                        //-         v-model="suggested_dish_rating")
-                        //-     v-btn(@click="") 
-                        //-         v-icon mdi-comment-outline
-                        //-         | comment 
                 template(v-slot:footer)
                   v-row.mt-2(align='center' justify='center')
                     span.grey--text Items Per Page
@@ -89,10 +82,9 @@
                     v-btn.ml-1(fab dark color='primary' @click='nextPage')
                       v-icon mdi-chevron-right
               
-                //- info button with ingredients
                 //- browse section for all dishes on all days 
                 //- -> filter out for day, location, food preference, allergies
-                //- sort by rating
+                //- sort by main dish, rating?
     </template>
     
     <script>
@@ -187,9 +179,6 @@
             } catch (error) {
                 console.log(error);
             }
-        },
-        ratingAsFloat(ratingAsString) {
-          return parseFloat(ratingAsString)
         },
         getGoogleMapsUrl(mensaName) {
             const url = new URL("https://www.google.com/maps/dir/?api=1");
