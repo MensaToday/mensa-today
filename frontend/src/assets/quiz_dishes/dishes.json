@@ -9,7 +9,8 @@
         { "allergy": { "id": 7, "name": "Wheat" } }
       ],
       "main": true,
-      "name": "Vollkornnudelpfanne mit Gemüse"
+      "name": "Vollkornnudelpfanne mit Gemüse",
+      "url": "https://img.hellofresh.com/f_auto,fl_lossy,q_auto,w_1200/hellofresh_s3/image/5bcddf3c30006c356c51e702-5a143ae9.jpg"
     },
     "ext_ratings": { "id": 787, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -37,7 +38,8 @@
         { "allergy": { "id": 12, "name": "Soy" } }
       ],
       "main": true,
-      "name": "Sojagyros mit Zaziki und Krautsalat"
+      "name": "Sojagyros mit Zaziki und Krautsalat",
+      "url": "https://veganz.de/wp-content/uploads/2022/02/veganes-gyros-mit-veganz-soja-schnetzeln-2.jpg"
     },
     "ext_ratings": { "id": 788, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -65,7 +67,8 @@
         { "allergy": { "id": 24, "name": "Mustard" } }
       ],
       "main": true,
-      "name": "Veganer Erbseneintopf"
+      "name": "Veganer Erbseneintopf",
+      "url": "https://eat.de/wp-content/uploads/2022/01/vegetarischer-erbseneintopf-7154.jpg"
     },
     "ext_ratings": { "id": 790, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -90,7 +93,8 @@
       "additives": [],
       "allergies": [{ "allergy": { "id": 13, "name": "Milk" } }],
       "main": true,
-      "name": "Kartoffelrösti mit mediterranem Gemüse"
+      "name": "Kartoffelrösti mit mediterranem Gemüse",
+      "url": "https://bilderspeiseplan.studentenwerk-dresden.de/m32/202110/260294.jpg"
     },
     "ext_ratings": { "id": 789, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -123,7 +127,8 @@
         { "allergy": { "id": 7, "name": "Wheat" } }
       ],
       "main": true,
-      "name": "Gebackenes Alaska Seelachsfilet mit fruchtig-scharfem Senf Dip"
+      "name": "Gebackenes Alaska Seelachsfilet mit fruchtig-scharfem Senf Dip",
+      "url": "https://image.essen-und-trinken.de/11917138/t/ac/v8/w1440/r1.7778/-/seelachs-mit-senfsauce-51bc56047fc3f9fa41047dbd7854d9f3-fjt2012120661-jpg--6227-.jpg"
     },
     "ext_ratings": { "id": 828, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -153,7 +158,8 @@
         { "allergy": { "id": 7, "name": "Wheat" } }
       ],
       "main": true,
-      "name": "Chili con Carne mit Fladenbrot"
+      "name": "Chili con Carne mit Fladenbrot",
+      "url": "https://images.eatsmarter.de/sites/default/files/styles/1600x1200/public/chili-con-carne-mit-mexikanischem-fladenbrot-tortillas-47477.jpg"
     },
     "ext_ratings": { "id": 834, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -178,7 +184,8 @@
       "additives": [],
       "allergies": [{ "allergy": { "id": 13, "name": "Milk" } }],
       "main": true,
-      "name": "Backkartoffel mit Kräuter-Quark"
+      "name": "Backkartoffel mit Kräuter-Quark",
+      "url": "https://cdn.gutekueche.de/upload/rezept/5727/1600x1200_folienkartoffeln-mit-kraeuterquark.jpg"
     },
     "ext_ratings": { "id": 798, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -208,7 +215,8 @@
         { "allergy": { "id": 7, "name": "Wheat" } }
       ],
       "main": true,
-      "name": "Lachs-Spinat-Lasagne mit Tomatensauce"
+      "name": "Lachs-Spinat-Lasagne mit Tomatensauce",
+      "url": "https://images.eatsmarter.de/sites/default/files/styles/1600x1200/public/lasagne-mit-spinat-und-tomatensosse-56167.jpg"
     },
     "ext_ratings": { "id": 968, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -237,7 +245,8 @@
         { "allergy": { "id": 7, "name": "Wheat" } }
       ],
       "main": true,
-      "name": "Hähnchen Piccata mit Tomatensauce"
+      "name": "Hähnchen Piccata mit Tomatensauce",
+      "url": "https://image.brigitte.de/11797130/t/yt/v3/w960/r1/-/haehnchen-piccata-mit-tomatensosse-bild.jpg"
     },
     "ext_ratings": { "id": 899, "rating_avg": "4.0", "rating_count": 14 },
     "user_ratings": [],
@@ -265,7 +274,8 @@
         { "allergy": { "id": 7, "name": "Wheat" } }
       ],
       "main": true,
-      "name": "Hähnchennuggets in Knusperpanade mit süß-saurer Sauce"
+      "name": "Hähnchennuggets in Knusperpanade mit süß-saurer Sauce",
+      "url": "https://i.ytimg.com/vi/Z79EDcDjHc8/maxresdefault.jpg"
     },
     "ext_ratings": { "id": 797, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -296,7 +306,8 @@
         { "allergy": { "id": 7, "name": "Wheat" } }
       ],
       "main": true,
-      "name": "Hähnchennuggets in Knusperpanade mit Kartoffelcreme"
+      "name": "Hähnchennuggets in Knusperpanade mit Kartoffelcreme",
+      "url": "https://www.tila-lachenmaier.de/shop/files/imageupload//207300.jpg"
     },
     "ext_ratings": { "id": 835, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -357,7 +368,8 @@
         { "allergy": { "id": 7, "name": "Wheat" } }
       ],
       "main": true,
-      "name": "Paniertes Schweineschnitzel mit Champignonsauce"
+      "name": "Paniertes Schweineschnitzel mit Champignonsauce",
+      "url": "https://www.lidl-kochen.de/images/recipe-wide/890046/klassisches-jaegerschnitzel-mit-spaetzle-150861.jpg"
     },
     "ext_ratings": { "id": 860, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
@@ -382,7 +394,8 @@
       "additives": [],
       "allergies": [{ "allergy": { "id": 24, "name": "Mustard" } }],
       "main": true,
-      "name": "3 Stück Rostbratwürstchen nach Nürnberger Art mir Bratensauce"
+      "name": "3 Stück Rostbratwürstchen nach Nürnberger Art mit Bratensauce",
+      "url": "https://www.alltagskitchen.com/wp-content/uploads/2020/03/bratwurst-mit-zwiebelsauce-bild-2.jpg"
     },
     "ext_ratings": { "id": 800, "rating_avg": "0.0", "rating_count": 0 },
     "user_ratings": [],
