@@ -5,30 +5,31 @@
         v-row 
           v-col
             v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
-            p {{ filters.affordable }} 
             template(v-if="loaded")
               v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
                 hide-default-footer 
                 :sort-desc="sortDesc")
                 template(v-slot:header)
-                  v-toolbar(color='primary' dark)
-                    //- h3 All Dishes
-                    //- v-spacer
-                    v-text-field(v-model='search' clearable flat solo-inverted hide-details 
-                      prepend-inner-icon='mdi-magnify' label='Search')
-                    v-spacer
-                    v-checkbox.mx-3.mt-6(
-                      v-model="filters.affordable"
-                      label="Affordable")
-                    v-checkbox.mx-3.mt-6(
-                      v-model="filters.main_dish"
-                      label="Main Dish")
-                    template(v-if='$vuetify.breakpoint.mdAndUp')
-                      v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
-                          prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple 
-                          v-model='selectedCategories')
-                      //- v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
-                      //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
+                  v-toolbar(color='primary' dark height='130px')
+                      v-col.py-0.mt-0(cols='12')
+                        v-card(color="primary" flat)
+                          v-col.d-flex.justify-space-between.py-0
+                            v-text-field(v-model='search' clearable flat solo-inverted hide-details 
+                              prepend-inner-icon='mdi-magnify' label='Search')
+                            v-checkbox.mx-3.pt-3(
+                              v-model="filters.affordable"
+                              label="Affordable")
+                            v-checkbox.mx-3.pt-3(
+                              v-model="filters.main_dish"
+                              label="Main Dish")
+                        v-card(color="primary" flat)
+                          v-col.align-center.justify-center.d-flex.justify-space-between.py-0
+                            template(v-if='$vuetify.breakpoint.mdAndUp')
+                              v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
+                                  prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple 
+                                  v-model='selectedCategories')
+                              //- v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
+                              //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
                 template(v-slot:default='props')
                   v-row
                     v-col(v-for='(item, index) in props.items' :key="index" cols='12' sm='6' md='6' lg='4')
@@ -174,23 +175,7 @@ export default {
             Molluscs: false,
             "Sulfur dioxide": false,
           },
-        },
-        food_preferences: {
-            Vegan: true,
-            Vegetarian: true,
-            Pork: true,
-            Beef: true,
-            Poultry: true,
-            Alcohol: true,
-            Fish: true,
-        },
-        keys: [
-            "dish.categories[0].category",
-            "dish.main",
-            "mensa.name",
-            "date",
-            "priceStudent",
-        ],
+        }
     };
   },
   computed: {
