@@ -97,7 +97,6 @@ export default {
   name: "Home",
   data() {
     return {
-      items: this.$store.state.dishplan,
       recommendationItems: this.$store.state.recommendations,
       itemsPerPageArray: [4, 8, 12],
       search: "",
