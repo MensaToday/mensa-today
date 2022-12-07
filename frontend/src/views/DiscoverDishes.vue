@@ -108,7 +108,7 @@
             page: 1,
             itemsPerPage: 3,
             sortBy: "",
-            selectedCategories: [],
+            selectedCategories: ["Vegan", "Vegetarian", "Pork", "Beef", "Poultry", "Alcohol", "Fish"],
             filters: {
               // date: {
               //   start_date: null,
@@ -173,13 +173,13 @@
               },
             },
             food_preferences: {
-                Vegan: false,
-                Vegetarian: false,
-                Pork: false,
-                Beef: false,
-                Poultry: false,
-                Alcohol: false,
-                Fish: false,
+                Vegan: true,
+                Vegetarian: true,
+                Pork: true,
+                Beef: true,
+                Poultry: true,
+                Alcohol: true,
+                Fish: true,
             },
             keys: [
                 "dish.categories[0].category",
@@ -197,6 +197,7 @@
                 return this.$store.state.dishplan.filter(dish =>
                     // filter by search term 
                     dish.dish.name.includes(this.search)
+                    & this.checkCategory(dish)
                 );
             },
             set() {
@@ -221,7 +222,7 @@
         checkCategory(dish){
           if(dish.dish.categories != undefined){
             for(let i = 0; i < dish.dish.categories.length; i++){
-              if(this.selectedCategories.includes(dish.dish.categories[i].category.name)) return false
+              if(!this.selectedCategories.includes(dish.dish.categories[i].category.name)) return false
             }
             // ! this.filters.food_preferences[dish.dish.categories[0].category.name]
           } return true
