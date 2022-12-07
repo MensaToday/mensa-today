@@ -60,16 +60,13 @@
                                         //- (:class="{ 'primary--text': sortBy === key }")
                                         span(v-if="item.dish.additives.length == 0")  None
                                         span(v-for="additive in item.dish.additives" :key="additive.additive.name")  {{ additive.additive.name }}
+                            v-col.align-center.justify-center.d-flex.justify-space-between
                                 div 
                                     v-icon mdi-calendar
                                     span {{ new Date(item.date).toLocaleDateString('de-DE') }}
-                        //- Review & Comment Section
-                        //- v-col.d-flex.justify-space-between.py-0
-                        //-     v-rating(hover length="5" background-color="gray" 
-                        //-         v-model="suggested_dish_rating")
-                        //-     v-btn(@click="") 
-                        //-         v-icon mdi-comment-outline
-                        //-         | comment 
+                                v-rating(hover length="5" background-color="gray" readonly size="24" half-increments 
+                                  v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0")
+
                 template(v-slot:footer)
                   v-row.mt-2(align='center' justify='center')
                     span.grey--text Items Per Page
@@ -220,7 +217,16 @@
       },
       methods: {
         ...mapActions(["GetDishplan"]),
-
+        
+        checkCategory(dish){
+          if(dish.dish.categories != undefined){
+            for(let i = 0; i < dish.dish.categories.length; i++){
+              if(this.selectedCategories.includes(dish.dish.categories[i].category.name)) return false
+            }
+            // ! this.filters.food_preferences[dish.dish.categories[0].category.name]
+          } return true
+          // this.filters.food_preferences[dish.dish.categories[0].category.name] 
+        },
         nextPage() {
           if (this.page + 1 <= this.numberOfPages) this.page += 1;
         },
@@ -229,6 +235,11 @@
         },
         updateItemsPerPage(number) {
           this.itemsPerPage = number;
+        },
+        getGoogleMapsUrl(mensaName) {
+            const url = new URL("https://www.google.com/maps/dir/?api=1");
+            url.searchParams.set("destination", mensaName);
+            return url.toString();
         },
         async getDishplan() {
           try {
@@ -244,11 +255,6 @@
             } catch (error) {
                 console.log(error);
             }
-        },
-        getGoogleMapsUrl(mensaName) {
-            const url = new URL("https://www.google.com/maps/dir/?api=1");
-            url.searchParams.set("destination", mensaName);
-            return url.toString();
         },
       },
       mounted() {
