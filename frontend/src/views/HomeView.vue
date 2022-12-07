@@ -98,6 +98,7 @@ export default {
   data() {
     return {
       recommendationItems: this.$store.state.recommendations,
+      recommendationItemsDaily: this.$store.state.dailyRecommendations,
       itemsPerPageArray: [4, 8, 12],
       search: "",
       filter: {},
@@ -116,7 +117,7 @@ export default {
     };
   },
   computed: {
-    items () { return this.$store.state.dishplan },
+    items () { return this.$store.state.dailyRecommendations },
     loaded(){
       // if (typeof this.items !== 'undefined') return true
       if (this.items != null) return true
@@ -131,7 +132,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["GetDishplan", "GetBalance", "GetRecommendations"]),
+    ...mapActions(["GetDishplan", "GetRecommendations", "GetOneRecommendation"]),
 
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1;
@@ -149,16 +150,16 @@ export default {
         console.log(error);
       }
     },
-    async getBalance() {
+    async getRecommendations() {
       try {
-        await this.GetBalance();
+        await this.GetRecommendations();
       } catch (error) {
         console.log(error);
       }
     },
-    async getRecommendations() {
+    async getOneRecommendation() {
       try {
-        await this.GetRecommendations();
+        await this.GetOneRecommendation();
       } catch (error) {
         console.log(error);
       }
@@ -171,7 +172,9 @@ export default {
   },
   mounted() {
     // TODO: exchange with getRecommendations
+    this.getOneRecommendation()
     // this.getDishplan()
+    // this.getRecommendations()
   }
 };
 </script>

@@ -16,7 +16,8 @@ export default new Vuex.Store({
     },
     card_balance: null,
     dishplan: null,
-    recommendations: null
+    recommendations: null,
+    dailyRecommendations: null
   },
   getters: {
     isLoggedIn: (state) => state.access_token != null,
@@ -41,7 +42,10 @@ export default new Vuex.Store({
     },
     setRecommendations(state, recommendations) {
       state.recommendations = recommendations;
-    }
+    },
+    setRecommendationsDaily(state, recommendations) {
+      state.dailyRecommendations = recommendations;
+    },
   },
   actions: {
     async Register({ commit }, User) {
@@ -108,6 +112,13 @@ export default new Vuex.Store({
       let response = await axios.post("mensa/get_recommendations", {"day": today, "entire_week": "True", "recommendations_per_day": 1})
   
       console.log(response)
+      var recommendations = response.data
+      commit("setRecommendations", recommendations)
+    },
+    async GetOneRecommendation({commit}) {
+  
+      let response = await axios.get("mensa/get_week_recommendation")
+      
       var recommendations = response.data
       commit("setRecommendations", recommendations)
     }
