@@ -56,9 +56,12 @@
                                         //- (:class="{ 'primary--text': sortBy === key }")
                                         span(v-if="item.dish.additives.length == 0")  None
                                         span(v-for="additive in item.dish.additives" :key="additive.additive.name")  {{ additive.additive.name }}
+                            v-col.align-center.justify-center.d-flex.justify-space-between
                                 div 
                                     v-icon mdi-calendar
                                     span {{ new Date(item.date).toLocaleDateString('de-DE') }}
+                                v-rating(hover length="5" background-color="gray" readonly size="24" half-increments 
+                                  v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0")
                         //- Review & Comment Section
                         //- v-col.d-flex.justify-space-between.py-0
                         //-     v-rating(hover length="5" background-color="gray" 
@@ -184,6 +187,9 @@
             } catch (error) {
                 console.log(error);
             }
+        },
+        ratingAsFloat(ratingAsString) {
+          return parseFloat(ratingAsString)
         },
         getGoogleMapsUrl(mensaName) {
             const url = new URL("https://www.google.com/maps/dir/?api=1");
