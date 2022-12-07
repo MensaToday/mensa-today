@@ -5,7 +5,7 @@
         v-row 
           v-col
             v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
-            p {{ selectedCategories }} 
+            p {{ selectedCategories }} - {{ search }}
             template(v-if="loaded")
               v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
                 hide-default-footer 
@@ -200,7 +200,7 @@
                 );
             },
             set() {
-                return this.$store.state.dishplan;
+                null;
             }
         },
         loaded(){
