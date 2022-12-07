@@ -487,6 +487,85 @@ def getData(request):
         return Response("Hello World v2")
 
 
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def get_week_recommendation(request):
+    """Get simple week recommendation without extra information.
+
+            Route: api/v1/mensa/get_week_recommendation
+            Authorization: Authenticated
+            Methods: Get
+
+            GET
+            ---
+
+            Output
+            -------
+            [
+                {
+                    "dish": {
+                        "id": 77,
+                        "categories": [
+                            {
+                                "category": {
+                                    "id": 1,
+                                    "name": "Vegan"
+                                }
+                            }
+                        ],
+                        "additives": [
+                            {
+                                "additive": {
+                                    "id": 4,
+                                    "name": "Flavor enhancers"
+                                }
+                            }
+                        ],
+                        "allergies": [
+                            {
+                                "allergy": {
+                                    "id": 23,
+                                    "name": "Celery"
+                                }
+                            }
+                        ],
+                        "main": true,
+                        "name": "Süßkartoffelcurry mit Paprika und Pilzen",
+                        "url": "https://live.staticflickr.com/3552/3467142312_ca85ae1b27_b.jpg"
+                    },
+                    "ext_ratings": {
+                        "id": 127,
+                        "rating_avg": "3.8",
+                        "rating_count": 9
+                    },
+                    "user_ratings": [],
+                    "mensa": {
+                        "id": 2,
+                        "name": "Mensa Da Vinci",
+                        "city": "Münster",
+                        "street": "Leonardo-Campus",
+                        "houseNumber": "8",
+                        "zipCode": 48149,
+                        "startTime": "11:30:00",
+                        "endTime": "14:00:00"
+                    },
+                    "date": "2022-12-05",
+                    "priceStudent": "3.40",
+                    "priceEmployee": "5.10"
+                },
+                ...
+            ]
+
+            200-OK if inputs are valid
+            406 when not all fields were provided or the inputs were malformed
+        """
+    r = recommender.DishRecommender(request.user, datetime.today(), True)
+    res = r.predict(1, serialize=True)
+
+    recommendations = [day[0][0] for day in res.values()]
+    return Response(recommendations, status=status.HTTP_200_OK)
+
+
 @api_view(['GET', 'POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def get_recommendations(request):
