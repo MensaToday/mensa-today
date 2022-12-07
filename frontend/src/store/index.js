@@ -15,7 +15,8 @@ export default new Vuex.Store({
       mensa_card_id: null,
     },
     card_balance: null,
-    dishplan: null
+    dishplan: null,
+    recommendations: null
   },
   getters: {
     isLoggedIn: (state) => state.access_token != null,
@@ -38,6 +39,9 @@ export default new Vuex.Store({
     setDishplan(state, dishplan) {
       state.dishplan = dishplan;
     },
+    setRecommendations(state, recommendations) {
+      state.recommendations = recommendations;
+    }
   },
   actions: {
     async Register({ commit }, User) {
@@ -52,7 +56,7 @@ export default new Vuex.Store({
       window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token])
-      setTimeout(() => { 
+      setTimeout(() => {
         dispatch("GetBalance")
       }, 1);
 
@@ -94,14 +98,18 @@ export default new Vuex.Store({
       var dishplan = response.data;
       commit("setDishplan", dishplan);
     },
-    async GetRecommendations(Request_data) {      
-      console.log("mensa/get_recommendations")
-      console.log(Request_data)
-      let response = await axios.post("mensa/get_recommendations", Request_data)
-      console.log(response.data.args)
+    async GetRecommendations({commit}) {
+      var today = new Date();
+      var dd = String(today.getDate()).padStart(2, '0');
+      var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+      var yyyy = today.getFullYear();
+      today = yyyy + '.' + mm + '.' + dd;
+      
+      let response = await axios.post("mensa/get_recommendations", {"day": today, "entire_week": "True", "recommendations_per_day": 1})
   
       console.log(response)
       var recommendations = response.data
+      commit("setRecommendations", recommendations)
     }
   },
 });
