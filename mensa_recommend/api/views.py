@@ -1,23 +1,23 @@
 import datetime
 from datetime import datetime
 
-from rest_framework import permissions
-from rest_framework import status
+from mensa.models import (Allergy, Category, Dish, DishPlan, UserAllergy,
+                          UserCategory, UserDishRating)
+from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from users.models import User
+from users.source.authentication.manual_jwt import get_tokens_for_user
 
-from mensa.models import Category, Allergy, UserAllergy, UserCategory, Dish, \
-    UserDishRating, DishPlan
 from mensa_recommend.source.computations.date_computations import \
     get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
 from mensa_recommend.source.data_collection.klarna import KlarnaCollector
-from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, \
-    run
+from mensa_recommend.source.data_collection.learnweb import (LearnWebCollector,
+                                                             run)
 from mensa_recommend.source.recommendation import recommender
-from users.models import User
-from users.source.authentication.manual_jwt import get_tokens_for_user
+
 from .serializers import DishPlanSerializer, UserDishRatingSerializer
 
 
@@ -524,7 +524,8 @@ def get_recommendations(request):
     try:
         day: datetime.date = recommender.str_to_date(request.data["day"])
     except ValueError:
-        return Response("Wrong 'day' format. Use: %Y.%m.%d",
+        return Response("Wrong 'day' format. Use: '%Y.%m.%d'. Example: "
+                        "'2022.12.06'",
                         status=status.HTTP_406_NOT_ACCEPTABLE)
 
     entire_week: bool = request.data["entire_week"].lower() == "true"
@@ -536,9 +537,17 @@ def get_recommendations(request):
             return Response("Wrong 'recommendations_per_day' format. "
                             "Use integers only.",
                             status=status.HTTP_406_NOT_ACCEPTABLE)
+        if rec_per_day < 1:
+            return Response("'recommendations_per_day' must be > 0.",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
     else:
         rec_per_day = 1
 
     r = recommender.DishRecommender(request.user, day, entire_week)
     res = r.predict(rec_per_day, serialize=True)
+
+    num_dishes = len(r.dishes)
+    num_filtered_dishes = len(r.filtered_dishes)
+    # TODO: Maybe add this information for front end?
+
     return Response(res, status=status.HTTP_200_OK)
