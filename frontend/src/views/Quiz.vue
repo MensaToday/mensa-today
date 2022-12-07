@@ -265,11 +265,6 @@ export default {
   methods: {
     // import Register action
     ...mapActions(["Register"]),
-    encrypt(m) {
-      let encryptor = new JSEncrypt();
-      encryptor.setPublicKey(this.publicKey);
-      return encryptor.encrypt(m);
-    },
     checkAll() {
       Object.keys(this.food_preferences).forEach((key) => {
         this.food_preferences[key] = true;
