@@ -6,19 +6,15 @@ div
       v-col
         v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
         template(v-if="loaded")
-              v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
-                hide-default-footer 
-                :sort-desc="sortDesc")
-                template(v-slot:header)
-                  v-toolbar.mb-2(color='primary' dark height='130px')
-                    h3 Recommendations for This Week 
+              v-data-iterator(:items='items' hide-default-footer)
                 template(v-slot:default='props')
                   v-row
                     v-col(v-for='(item, index) in props.items' :key="index" cols='12' sm='6' md='6' lg='4')
                       v-card(height="100%")
+                          v-card-title.align-center {{ item.date }} 
                           v-img(v-show="item.dish.url != null" :alt="item.dish.name" height='250'
                           :src="item.dish.url")
-                          v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250')
+                          v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250' elevation="0")
                               h1 {{ item.dish.name[0] }}
                           
                           v-card-title.subheading(style="word-break: normal")
@@ -62,21 +58,6 @@ export default {
     return {
       recommendationItems: this.$store.state.recommendations,
       recommendationItemsDaily: this.$store.state.dailyRecommendations,
-      itemsPerPageArray: [4, 8, 12],
-      search: "",
-      filter: {},
-      sortDesc: false,
-      page: 1,
-      itemsPerPage: 4,
-      sortBy: "",
-      // TODO: filters:
-      keys: [
-        "dish.categories[0].category",
-        "dish.main",
-        "mensa.name",
-        "date",
-        "priceStudent",
-      ],
     };
   },
   computed: {
@@ -86,33 +67,10 @@ export default {
       if (this.items != null) return true
       else return false
     },
-    numberOfPages() {
-      if (this.items) return Math.ceil(this.items.length / this.itemsPerPage);
-      else return 1;
-    },
-    filteredKeys() {
-      return this.keys.filter((key) => key !== "Name");
-    },
   },
   methods: {
-    ...mapActions(["GetDishplan", "GetRecommendations", "GetOneRecommendation"]),
+    ...mapActions(["GetRecommendations", "GetOneRecommendation"]),
 
-    nextPage() {
-      if (this.page + 1 <= this.numberOfPages) this.page += 1;
-    },
-    formerPage() {
-      if (this.page - 1 >= 1) this.page -= 1;
-    },
-    updateItemsPerPage(number) {
-      this.itemsPerPage = number;
-    },
-    async getDishplan() {
-      try {
-        await this.GetDishplan();
-      } catch (error) {
-        console.log(error);
-      }
-    },
     async getRecommendations() {
       try {
         await this.GetRecommendations();
@@ -136,7 +94,6 @@ export default {
   mounted() {
     // TODO: exchange with getRecommendations
     this.getOneRecommendation()
-    // this.getDishplan()
     // this.getRecommendations()
   }
 };
