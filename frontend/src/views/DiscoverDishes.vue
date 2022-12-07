@@ -21,14 +21,14 @@
                         prepend-inner-icon='mdi-magnify' label='Search')
                         template(v-if='$vuetify.breakpoint.mdAndUp')
                         v-spacer
-                        v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' max-width='200'
+                        v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
                             prepend-inner-icon='mdi-filter-variant' label='Filter' multiple 
                             v-model='selectedCategories')
                         //- v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
                         //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
                 template(v-slot:default='props')
                   v-row
-                    v-col(v-for='item in props.items' :key="item.dish.id" cols='12' sm='6' md='6' lg='4')
+                    v-col(v-for='(item, index) in props.items' :key="index" cols='12' sm='6' md='6' lg='4')
                         v-card(height="100%")
                             v-img(v-show="item.dish.url != null" :alt="item.dish.name" height='250'
                             :src="item.dish.url")
@@ -196,21 +196,11 @@
       computed: {
         items: {
             get() {
+                if(!this.$store.state.dishplan) return null
                 return this.$store.state.dishplan.filter(dish =>
                     // filter by search term 
                     dish.dish.name.includes(this.search)
                 );
-                // let relevantDishes = this.$store.state.dishplan.filter(dish => {
-                // // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
-                // // use a separate function (checkRelevance) instead - left to be finalized
-                // // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
-                // // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
-                // // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
-                // this.food_preferences[dish.dish.categories[0].category.name] 
-                // // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
-                // // & ! this.food_preferences[dish.dish.additives[0].additive.name]
-                // });
-                // return relevantDishes
             },
             set() {
                 return this.$store.state.dishplan;
@@ -229,7 +219,7 @@
         },
       },
       methods: {
-        ...mapActions(["GetDishplan", "GetRecommendations"]),
+        ...mapActions(["GetDishplan"]),
 
         nextPage() {
           if (this.page + 1 <= this.numberOfPages) this.page += 1;
