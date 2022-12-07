@@ -68,9 +68,11 @@ services:
       - '8080:8080'
     command: npm run serve
     container_name: vue-ui
+    env_file:
+      - prod-variables.env
     volumes:
       - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
+      - /usr/src/app/node_modules/
 
 volumes:
   postgres_data:
