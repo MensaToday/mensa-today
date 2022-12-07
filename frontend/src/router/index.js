@@ -40,6 +40,10 @@ const routes = [
       import(/* webpackChunkName: "suggestion" */ "../views/Suggestion.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/register',
+    redirect: '/quiz'
+  },
 ];
 
 const router = new VueRouter({
