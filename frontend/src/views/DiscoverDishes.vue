@@ -26,10 +26,8 @@
                           v-col.align-center.justify-center.d-flex.justify-space-between.py-0
                             template(v-if='$vuetify.breakpoint.mdAndUp')
                               v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
-                                  prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple 
+                                  prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple
                                   v-model='selectedCategories')
-                              //- v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
-                              //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
                 template(v-slot:default='props')
                   v-row
                     v-col(v-for='(item, index) in props.items' :key="index" cols='12' sm='6' md='6' lg='4')
