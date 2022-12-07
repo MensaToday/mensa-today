@@ -556,8 +556,7 @@ def get_week_recommendation(request):
                 ...
             ]
 
-            200-OK if inputs are valid
-            406 when not all fields were provided or the inputs were malformed
+            200-OK if successful
         """
     r = recommender.DishRecommender(request.user, datetime.today(), True)
     res = r.predict(1, serialize=True)
