@@ -56,9 +56,7 @@ export default new Vuex.Store({
       window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token])
-      setTimeout(() => { 
-        dispatch("GetDishplan")
-        dispatch("GetRecommendations");
+      setTimeout(() => {
         dispatch("GetBalance")
       }, 1);
 
