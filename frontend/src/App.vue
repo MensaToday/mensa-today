@@ -4,13 +4,12 @@ v-app
     .d-flex.align-center(@click="$router.push('/').catch(()=>{})")
       v-img.shrink.mr-2(alt='MensaToday Logo' contain src='@/assets/logo.png' transition='scale-transition' width='40')
       h2 MensaToday
-    v-tabs(align-with-title)
-      v-spacer
+    v-tabs(align-with-title v-if="$store.getters.isLoggedIn")
       v-tab.white--text(v-for="view in views" :key="view.to.name" :to="view.to") 
         v-icon.mr-3 mdi-{{ view.icon }}
         | {{ view.tag }}
       v-spacer
-      .d-flex.align-center.mr-6(v-if="$store.getters.isLoggedIn && $store.state.card_balance")
+      .d-flex.align-center.mr-6(v-if="$store.state.card_balance")
         v-icon.mr-2 mdi-wallet
         p.my-auto.mr-9 €{{ $store.state.card_balance.replace('.',',') }}
         v-btn.px-3(outlined @click="logout()")
@@ -28,8 +27,7 @@ v-app
           v-btn.mx-4.white--text(v-for='icon in icons' :key='icon.mdi' icon target="_blank" :href="icon.link")
             v-icon(size='24px' elevation='15')
                 | {{ icon.mdi }}
-          //- v-card-text.white--text.pt-0
-          //-   | Phasellus feugiat arcu sapien, et iaculis ipsum elementum sit amet. Mauris cursus commodo interdum. Praesent ut risus eget metus luctus accumsan id ultrices nunc. Sed at orci sed massa consectetur dignissim a sit amet dui. Duis commodo vitae velit et faucibus. Morbi vehicula lacinia malesuada. Nulla placerat augue vel ipsum ultrices, cursus iaculis dui sollicitudin. Vestibulum eu ipsum vel diam elementum tempor vel ut orci. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+          //- v-card-text.white--text.pt-0 Lorem ipsum
           v-divider
           v-card-text.white--text
             | {{ new Date().getFullYear() }} &mdash; 
