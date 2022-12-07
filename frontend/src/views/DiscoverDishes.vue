@@ -5,24 +5,24 @@
         v-row 
           v-col
             v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
-            p {{ selectedCategories }} - {{ search }}
+            p {{ filters.affordable }} 
             template(v-if="loaded")
               v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
                 hide-default-footer 
                 :sort-desc="sortDesc")
-                //- :search='search' 
-                //- TODO: searches only first layer of json (date, price)
-                //- :sort-by='sortBy.toLowerCase()'
                 template(v-slot:header)
                     v-toolbar.mb-1(color='primary' dark)
-                        h3 All Dishes
-                        v-spacer
+                        //- h3 All Dishes
+                        //- v-spacer
                         v-text-field(v-model='search' clearable flat solo-inverted hide-details 
-                        prepend-inner-icon='mdi-magnify' label='Search')
+                          prepend-inner-icon='mdi-magnify' label='Search')
                         template(v-if='$vuetify.breakpoint.mdAndUp')
                         v-spacer
+                        v-checkbox.mx-3.mt-6(
+                          v-model="filters.affordable"
+                          label="Affordable")
                         v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
-                            prepend-inner-icon='mdi-filter-variant' label='Filter' multiple 
+                            prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple 
                             v-model='selectedCategories')
                         //- v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
                         //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
@@ -93,175 +93,175 @@
                 //- sort by rating
     </template>
     
-    <script>
-    import { mapActions } from "vuex";
-    export default {
-      name: "Discover",
-      data() {
-        return {
-            // TODO: rating to be implemented
-            // suggested_dish_rating: null,
-            itemsPerPageArray: [3, 6, 9],
-            search: "",
-            filter: {},
-            sortDesc: false,
-            page: 1,
-            itemsPerPage: 3,
-            sortBy: "",
-            selectedCategories: ["Vegan", "Vegetarian", "Pork", "Beef", "Poultry", "Alcohol", "Fish"],
-            filters: {
-              // date: {
-              //   start_date: null,
-              //   end_date: null
-              // },
-              // float - reformat response with parseFloat()
-              max_price: null,
-              // array of mensas
-              mensa_name: null,
-              // boolean
-              main_dish: null,
-              food_preferences: {
-                  Vegan: false,
-                  Vegetarian: false,
-                  Pork: false,
-                  Beef: false,
-                  Poultry: false,
-                  Alcohol: false,
-                  Fish: false
-              },
-              additives: {
-                Dyed: false,
-                Preservatives: false,
-                Antioxidants: false,
-                "Flavor enhancers": false,
-                Sulphurated: false,
-                Blackened: false,
-                Waxed: false,
-                Phosphate: false,
-                Sweeteners: false,
-                "Phenylalanine source": false,
-              },
-              allergies: {
-                Gluten: false,
-                Spelt: false,
-                Barles: false,
-                Oats: false,
-                Kamut: false,
-                Rye: false,
-                Wheat: false,
-                Crustaceans: false,
-                Egg: false,
-                Fish: false,
-                Peanuts: false,
-                Soy: false,
-                Milk: false,
-                Nuts: false,
-                Almonds: false,
-                Hazelnuts: false,
-                Walnuts: false,
-                Cashews: false,
-                Pecans: false,
-                "Brazil nuts": false,
-                Pistachios: false,
-                Macadamias: false,
-                Celerey: false,
-                Mustard: false,
-                Sesame: false,
-                Lupines: false,
-                Molluscs: false,
-                "Sulfur dioxide": false,
-              },
-            },
-            food_preferences: {
-                Vegan: true,
-                Vegetarian: true,
-                Pork: true,
-                Beef: true,
-                Poultry: true,
-                Alcohol: true,
-                Fish: true,
-            },
-            keys: [
-                "dish.categories[0].category",
-                "dish.main",
-                "mensa.name",
-                "date",
-                "priceStudent",
-            ],
-        };
-      },
-      computed: {
-        items: {
-            get() {
-                if(!this.$store.state.dishplan) return null
-                return this.$store.state.dishplan.filter(dish =>
-                    // filter by search term 
-                    dish.dish.name.includes(this.search)
-                    & this.checkCategory(dish)
-                );
-            },
-            set() {
-                null;
-            }
+<script>
+import { mapActions } from "vuex";
+export default {
+  name: "Discover",
+  data() {
+    return {
+        // TODO: rating to be implemented
+        // suggested_dish_rating: null,
+        itemsPerPageArray: [3, 6, 9],
+        search: "",
+        filter: {},
+        sortDesc: false,
+        page: 1,
+        itemsPerPage: 3,
+        sortBy: "",
+        selectedCategories: ["Vegan", "Vegetarian", "Pork", "Beef", "Poultry", "Alcohol", "Fish"],
+        filters: {
+          // date: {
+          //   start_date: null,
+          //   end_date: null
+          // },
+          // float - reformat response with parseFloat()
+          affordable: false,
+          // array of mensas
+          mensa_name: null,
+          // boolean
+          main_dish: null,
+          food_preferences: {
+              Vegan: false,
+              Vegetarian: false,
+              Pork: false,
+              Beef: false,
+              Poultry: false,
+              Alcohol: false,
+              Fish: false
+          },
+          additives: {
+            Dyed: false,
+            Preservatives: false,
+            Antioxidants: false,
+            "Flavor enhancers": false,
+            Sulphurated: false,
+            Blackened: false,
+            Waxed: false,
+            Phosphate: false,
+            Sweeteners: false,
+            "Phenylalanine source": false,
+          },
+          allergies: {
+            Gluten: false,
+            Spelt: false,
+            Barles: false,
+            Oats: false,
+            Kamut: false,
+            Rye: false,
+            Wheat: false,
+            Crustaceans: false,
+            Egg: false,
+            Fish: false,
+            Peanuts: false,
+            Soy: false,
+            Milk: false,
+            Nuts: false,
+            Almonds: false,
+            Hazelnuts: false,
+            Walnuts: false,
+            Cashews: false,
+            Pecans: false,
+            "Brazil nuts": false,
+            Pistachios: false,
+            Macadamias: false,
+            Celerey: false,
+            Mustard: false,
+            Sesame: false,
+            Lupines: false,
+            Molluscs: false,
+            "Sulfur dioxide": false,
+          },
         },
-        loaded(){
-          if (this.items != null) return true
-          else return false
+        food_preferences: {
+            Vegan: true,
+            Vegetarian: true,
+            Pork: true,
+            Beef: true,
+            Poultry: true,
+            Alcohol: true,
+            Fish: true,
         },
-        numberOfPages() {
-          if (this.items) return Math.ceil(this.items.length / this.itemsPerPage);
-          else return 1;
-        },
-        filteredKeys() {
-          return this.keys.filter((key) => key !== "Name");
-        },
-      },
-      methods: {
-        ...mapActions(["GetDishplan"]),
-        
-        checkCategory(dish){
-          if(dish.dish.categories != undefined){
-            for(let i = 0; i < dish.dish.categories.length; i++){
-              if(!this.selectedCategories.includes(dish.dish.categories[i].category.name)) return false
-            }
-            // ! this.filters.food_preferences[dish.dish.categories[0].category.name]
-          } return true
-          // this.filters.food_preferences[dish.dish.categories[0].category.name] 
-        },
-        nextPage() {
-          if (this.page + 1 <= this.numberOfPages) this.page += 1;
-        },
-        formerPage() {
-          if (this.page - 1 >= 1) this.page -= 1;
-        },
-        updateItemsPerPage(number) {
-          this.itemsPerPage = number;
-        },
-        getGoogleMapsUrl(mensaName) {
-            const url = new URL("https://www.google.com/maps/dir/?api=1");
-            url.searchParams.set("destination", mensaName);
-            return url.toString();
-        },
-        async getDishplan() {
-          try {
-            await this.GetDishplan();
-          } catch (error) {
-            console.log(error);
-          }
-        },
-        async getRecommendations(){
-            try {
-                var request_data = JSON.stringify({day: "2022.12.06", entire_week: "False"})
-                await this.GetRecommendations(request_data);
-            } catch (error) {
-                console.log(error);
-            }
-        },
-      },
-      mounted() {
-        // if items not set, query dishplan
-        if(!this.items) this.getDishplan()
-      }
+        keys: [
+            "dish.categories[0].category",
+            "dish.main",
+            "mensa.name",
+            "date",
+            "priceStudent",
+        ],
     };
-    </script>
+  },
+  computed: {
+    items: {
+        get() {
+            if(!this.$store.state.dishplan) return null
+            return this.$store.state.dishplan.filter(dish =>
+                // filter by search term 
+                dish.dish.name.includes(this.search)
+                & this.checkCategory(dish)
+                & (this.filters.affordable ? this.$store.state.card_balance >= parseFloat(dish.priceStudent) : true)
+            );
+        },
+        set() {
+            null;
+        }
+    },
+    loaded(){
+      if (this.items != null) return true
+      else return false
+    },
+    numberOfPages() {
+      if (this.items) return Math.ceil(this.items.length / this.itemsPerPage);
+      else return 1;
+    },
+    filteredKeys() {
+      return this.keys.filter((key) => key !== "Name");
+    },
+  },
+  methods: {
+    ...mapActions(["GetDishplan"]),
     
+    checkCategory(dish){
+      if(dish.dish.categories != undefined){
+        for(let i = 0; i < dish.dish.categories.length; i++){
+          if(!this.selectedCategories.includes(dish.dish.categories[i].category.name)) return false
+        }
+        // ! this.filters.food_preferences[dish.dish.categories[0].category.name]
+      } return true
+      // this.filters.food_preferences[dish.dish.categories[0].category.name] 
+    },
+    nextPage() {
+      if (this.page + 1 <= this.numberOfPages) this.page += 1;
+    },
+    formerPage() {
+      if (this.page - 1 >= 1) this.page -= 1;
+    },
+    updateItemsPerPage(number) {
+      this.itemsPerPage = number;
+    },
+    getGoogleMapsUrl(mensaName) {
+        const url = new URL("https://www.google.com/maps/dir/?api=1");
+        url.searchParams.set("destination", mensaName);
+        return url.toString();
+    },
+    async getDishplan() {
+      try {
+        await this.GetDishplan();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getRecommendations(){
+        try {
+            var request_data = JSON.stringify({day: "2022.12.06", entire_week: "False"})
+            await this.GetRecommendations(request_data);
+        } catch (error) {
+            console.log(error);
+        }
+    },
+  },
+  mounted() {
+    // if items not set, query dishplan
+    if(!this.items) this.getDishplan()
+  }
+};
+</script>
