@@ -2,14 +2,13 @@
     div  
       v-container
         h1.text-center.my-6 Discover Dishes
-        //- v-btn(@click="getRecommendations()") Get Recommendations
+        v-btn(@click="getRecommendations()") Get Recommendations
         v-row 
           v-col
             v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
             template(v-if="loaded")
               v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
                 :search='search' hide-default-footer 
-                :custom-filter="customFilter"
                 :sort-desc="sortDesc")
                 //- TODO: searches only first layer of json (date, price)
                 //- :sort-by='sortBy.toLowerCase()'
@@ -130,17 +129,18 @@
       computed: {
         items: {
             get() {
-                let relevantDishes = this.$store.state.dishplan.filter(dish => {
-                // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
-                // use a separate function (checkRelevance) instead - left to be finalized
-                // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
-                // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
-                // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
-                this.food_preferences[dish.dish.categories[0].category.name] 
-                // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
-                // & ! this.food_preferences[dish.dish.additives[0].additive.name]
-                });
-                return relevantDishes
+                // let relevantDishes = this.$store.state.dishplan.filter(dish => {
+                // // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
+                // // use a separate function (checkRelevance) instead - left to be finalized
+                // // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
+                // // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
+                // // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
+                // this.food_preferences[dish.dish.categories[0].category.name] 
+                // // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
+                // // & ! this.food_preferences[dish.dish.additives[0].additive.name]
+                // });
+                // return relevantDishes
+                return this.$store.state.dishplan;
             },
             set() {
                 return this.$store.state.dishplan;
@@ -177,14 +177,14 @@
             console.log(error);
           }
         },
-        // async getRecommendations(){
-        //     try {
-        //         var request_data = JSON.stringify({day: "2022.12.06", entire_week: "False"})
-        //         await this.GetRecommendations(request_data);
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        // },
+        async getRecommendations(){
+            try {
+                var request_data = JSON.stringify({day: "2022.12.06", entire_week: "False"})
+                await this.GetRecommendations(request_data);
+            } catch (error) {
+                console.log(error);
+            }
+        },
         getGoogleMapsUrl(mensaName) {
             const url = new URL("https://www.google.com/maps/dir/?api=1");
             url.searchParams.set("destination", mensaName);
@@ -192,7 +192,7 @@
         },
       },
       mounted() {
-        // this.getRecommendations()
+        this.getRecommendations()
         // if items not set, query dishplan
         if(!this.items) this.getDishplan()
       }

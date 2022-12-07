@@ -94,15 +94,14 @@ export default new Vuex.Store({
       var dishplan = response.data;
       commit("setDishplan", dishplan);
     },
-    // async GetRecommendations(request_data) {      
-    //   console.log(request_data)
-    //   let response = await axios.get("mensa/get_recommendations", {params: request_data}, {
-    //     headers: {"content-type": "application/json"}
-    //   })
-    //   console.log(response.data.args)
+    async GetRecommendations(Request_data) {      
+      console.log("mensa/get_recommendations")
+      console.log(Request_data)
+      let response = await axios.post("mensa/get_recommendations", Request_data)
+      console.log(response.data.args)
   
-    //   console.log(response)
-    //   var recommendations = response.data
-    // }
+      console.log(response)
+      var recommendations = response.data
+    }
   },
 });
