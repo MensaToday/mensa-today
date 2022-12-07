@@ -9,6 +9,7 @@
             template(v-if="loaded")
               v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
                 :search='search' hide-default-footer 
+                :custom-filter="customFilter"
                 :sort-desc="sortDesc")
                 //- TODO: searches only first layer of json (date, price)
                 //- :sort-by='sortBy.toLowerCase()'
@@ -108,7 +109,7 @@
             itemsPerPage: 3,
             sortBy: "",
             // TODO: filters:
-            category_filter: {
+            food_preferences: {
                 Vegan: false,
                 Vegetarian: false,
                 Pork: false,
@@ -127,7 +128,24 @@
         };
       },
       computed: {
-        items () { return this.$store.state.dishplan },
+        items: {
+            get() {
+                let relevantDishes = this.$store.state.dishplan.filter(dish => {
+                // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
+                // use a separate function (checkRelevance) instead - left to be finalized
+                // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
+                // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
+                // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
+                this.food_preferences[dish.dish.categories[0].category.name] 
+                // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
+                // & ! this.food_preferences[dish.dish.additives[0].additive.name]
+                });
+                return relevantDishes
+            },
+            set() {
+                return this.$store.state.dishplan;
+            }
+        },
         loaded(){
           if (this.items != null) return true
           else return false
@@ -142,7 +160,7 @@
       },
       methods: {
         ...mapActions(["GetDishplan", "GetRecommendations"]),
-    
+
         nextPage() {
           if (this.page + 1 <= this.numberOfPages) this.page += 1;
         },
