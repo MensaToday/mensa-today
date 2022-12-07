@@ -14,8 +14,8 @@ export default new Vuex.Store({
       email: null,
       mensa_card_id: null,
     },
-    card_balance: 4.71,
-    dishplan: null,
+    card_balance: null,
+    dishplan: null
     recommendations: null
   },
   getters: {
@@ -55,11 +55,11 @@ export default new Vuex.Store({
       window.localStorage.setItem("access_token", access_token);
       window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
-      commit("setTokens", [access_token, refresh_token]);
-      setTimeout(() => {
-        dispatch("GetDishplan");
+      commit("setTokens", [access_token, refresh_token])
+      setTimeout(() => { 
+        dispatch("GetDishplan")
         dispatch("GetRecommendations");
-        // dispatch("getBalance")
+        dispatch("GetBalance")
       }, 1);
 
       if (access_token)
@@ -90,10 +90,10 @@ export default new Vuex.Store({
       // commit("setTokens", [access_token, refresh_token])
       commit("rmTokens");
     },
-    async GetBalance({ commit }) {
-      let response = await axios.get("user/get_balance");
-      var card_balance = response.data.card_balance;
-      commit("setBalance", card_balance);
+    async GetBalance({commit}) {
+      let response = await axios.get('user/get_balance')
+      var card_balance = response.data.toFixed(2)
+      commit("setBalance", card_balance)
     },
     async GetDishplan({ commit }) {
       let response = await axios.get("mensa/get_dishplan");
