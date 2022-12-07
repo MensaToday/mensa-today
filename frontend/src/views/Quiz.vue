@@ -61,8 +61,6 @@
                                         | Continue
                     v-stepper-content(step='2').pa-0
                         v-stepper(v-model='cur_step_dishes' tile).mt-0.pt-0
-                            p(v-if="relevantDishes") #Filtered Dishes: {{ relevantDishes.length }} => {{ relevantDishes.slice(0,3).length }}
-                            //- p Ratings: {{ dish_ratings[1] }}
                             v-stepper-header
                                 v-stepper-step(:complete='cur_step_dishes > 1' step='1')
                                 v-divider
@@ -95,7 +93,6 @@
                                       :disabled="dish_ratings[index].rating == null"
                                       @click='cur_step_dishes+=1')
                                       v-icon mdi-chevron-right
-                                p Rating of current dish {{ dish_ratings.length }} || {{ dish_ratings }}
                                 div.justify-center
                                   v-btn.my-2(@click="addRating(cur_step_dishes-1, dish.dish.id, 0)" 
                                     large width="50%" elevation="1"
