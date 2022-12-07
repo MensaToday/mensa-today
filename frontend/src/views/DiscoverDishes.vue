@@ -2,14 +2,15 @@
     div  
       v-container
         h1.text-center.my-6 Discover Dishes
-        //- v-btn(@click="getRecommendations()") Get Recommendations
         v-row 
           v-col
             v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
+            p {{ selectedCategories }} 
             template(v-if="loaded")
               v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
-                :search='search' hide-default-footer 
+                hide-default-footer 
                 :sort-desc="sortDesc")
+                //- :search='search' 
                 //- TODO: searches only first layer of json (date, price)
                 //- :sort-by='sortBy.toLowerCase()'
                 template(v-slot:header)
@@ -20,8 +21,11 @@
                         prepend-inner-icon='mdi-magnify' label='Search')
                         template(v-if='$vuetify.breakpoint.mdAndUp')
                         v-spacer
-                        v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
-                            prepend-inner-icon='mdi-filter-variant' label='Filter')
+                        v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' max-width='200'
+                            prepend-inner-icon='mdi-filter-variant' label='Filter' multiple 
+                            v-model='selectedCategories')
+                        //- v-select(v-model='sortBy' flat solo-inverted hide-details :items='keys' 
+                        //-     prepend-inner-icon='mdi-filter-variant' label='Filter')
                 template(v-slot:default='props')
                   v-row
                     v-col(v-for='item in props.items' :key="item.dish.id" cols='12' sm='6' md='6' lg='4')
@@ -107,7 +111,70 @@
             page: 1,
             itemsPerPage: 3,
             sortBy: "",
-            // TODO: filters:
+            selectedCategories: [],
+            filters: {
+              // date: {
+              //   start_date: null,
+              //   end_date: null
+              // },
+              // float - reformat response with parseFloat()
+              max_price: null,
+              // array of mensas
+              mensa_name: null,
+              // boolean
+              main_dish: null,
+              food_preferences: {
+                  Vegan: false,
+                  Vegetarian: false,
+                  Pork: false,
+                  Beef: false,
+                  Poultry: false,
+                  Alcohol: false,
+                  Fish: false
+              },
+              additives: {
+                Dyed: false,
+                Preservatives: false,
+                Antioxidants: false,
+                "Flavor enhancers": false,
+                Sulphurated: false,
+                Blackened: false,
+                Waxed: false,
+                Phosphate: false,
+                Sweeteners: false,
+                "Phenylalanine source": false,
+              },
+              allergies: {
+                Gluten: false,
+                Spelt: false,
+                Barles: false,
+                Oats: false,
+                Kamut: false,
+                Rye: false,
+                Wheat: false,
+                Crustaceans: false,
+                Egg: false,
+                Fish: false,
+                Peanuts: false,
+                Soy: false,
+                Milk: false,
+                Nuts: false,
+                Almonds: false,
+                Hazelnuts: false,
+                Walnuts: false,
+                Cashews: false,
+                Pecans: false,
+                "Brazil nuts": false,
+                Pistachios: false,
+                Macadamias: false,
+                Celerey: false,
+                Mustard: false,
+                Sesame: false,
+                Lupines: false,
+                Molluscs: false,
+                "Sulfur dioxide": false,
+              },
+            },
             food_preferences: {
                 Vegan: false,
                 Vegetarian: false,
@@ -129,6 +196,10 @@
       computed: {
         items: {
             get() {
+                return this.$store.state.dishplan.filter(dish =>
+                    // filter by search term 
+                    dish.dish.name.includes(this.search)
+                );
                 // let relevantDishes = this.$store.state.dishplan.filter(dish => {
                 // // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
                 // // use a separate function (checkRelevance) instead - left to be finalized
@@ -140,7 +211,6 @@
                 // // & ! this.food_preferences[dish.dish.additives[0].additive.name]
                 // });
                 // return relevantDishes
-                return this.$store.state.dishplan;
             },
             set() {
                 return this.$store.state.dishplan;
@@ -192,7 +262,6 @@
         },
       },
       mounted() {
-        this.getRecommendations()
         // if items not set, query dishplan
         if(!this.items) this.getDishplan()
       }
