@@ -54,7 +54,7 @@
                                         | Login
                                     v-spacer
                                     v-btn(color='primary' :disabled="no_food_preferences"
-                                        @click='updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); cur_step = 2; cur_step_dishes = 1')
+                                        @click='updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); updateSelectedCategories(); cur_step = 2; cur_step_dishes = 1')
                                         v-icon mdi-chevron-right
                                         | Continue
                     v-stepper-content(step='2').pa-0
@@ -202,6 +202,7 @@ export default {
       "Sulfur dioxide": false,
     },
     search: null,
+    selected_categories: [],
     selected_allergies: [],
     selected_additives: [],
     dishes: dishes,
@@ -216,6 +217,7 @@ export default {
     publicKey: config.publicKey,
   }),
   computed: {
+
     no_food_preferences: {
       get: function () {
         for (let [key, value] of Object.entries(this.food_preferences)) {
@@ -287,6 +289,19 @@ export default {
         obj[values[idx]] = true;
       }
     },
+    updateSelectedCategories() {
+      // Object.entries(this.food_preferences).forEach((key, value) => 
+      for (const [key, value] of Object.entries(this.food_preferences)) {
+        if(value){this.selected_categories.push(key)}
+      }
+      // Object.keys(this.food_preferences).forEach((key) => {
+      //   this.food_preferences[key] = true;
+      // });
+      // console.log(this.food_preferences)
+      // for(const item of this.food_preferences){
+      // }
+      // item this.selected_categories
+    },
     // TODO: To be finalized
     // checkRelevance(user_attribute, dish_attribute, attribute_name){
     //     for(let idx = 0; idx < dishes.length; idx++){
@@ -309,8 +324,8 @@ export default {
           username: this.form.email,
           password: this.encrypt(this.form.password),
           card_id: this.form.mensa_card_id ? this.form.mensa_card_id : -1,
-          categories: this.food_preferences,
-          allergies: this.allergies,
+          categories: this.selected_categories,
+          allergies: this.selected_allergies,
           ratings: this.dish_ratings,
         };
         console.log(User)
