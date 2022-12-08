@@ -48,14 +48,7 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async Register({ commit }, User) {
-      await axios.post("user/register", User);
-      commit("setUser", User);
-    },
-    async Login({ commit, dispatch }, User_credentials) {
-      let response = await axios.post("user/login", User_credentials);
-      var access_token = response.data.access;
-      var refresh_token = response.data.refresh;
+    initializeSession({ commit, dispatch }, access_token, refresh_token){
       window.localStorage.setItem("access_token", access_token);
       window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
@@ -67,6 +60,19 @@ export default new Vuex.Store({
       if (access_token)
         axios.defaults.headers.common["Authorization"] =
           "Bearer " + access_token;
+    },
+    async Register({ commit }, User) {
+      let response = await axios.post("user/register", User);
+      var access_token = response.data.access;
+      var refresh_token = response.data.refresh;
+      commit("setUser", User);
+      initializeSession(access_token, refresh_token)
+    },
+    async Login(User_credentials) {
+      let response = await axios.post("user/login", User_credentials);
+      var access_token = response.data.access;
+      var refresh_token = response.data.refresh;
+      initializeSession(access_token, refresh_token)
 
       // commit("setUser", user)
 
