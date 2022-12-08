@@ -248,9 +248,10 @@ export default {
           // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
           // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
           // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
-          this.food_preferences[dish.dish.categories[0].category.name] &
-          ! this.food_preferences[dish.dish.allergies[0].allergy.name]
-          // ! this.food_preferences[dish.dish.additives[0].additive.name]
+          this.food_preferences[dish.dish.categories[0].category.name] 
+          // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
+          // & dish.dish.allergies.length > 0 ? !this.food_preferences[dish.dish.allergies[0].allergy.name] : true
+          // & dish.dish.additives.length > 0 ? !this.food_preferences[dish.dish.additives[0].additive.name] : true
         );
         return relevantDishes
       },
