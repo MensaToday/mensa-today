@@ -76,9 +76,6 @@
                                     h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
                                     v-img(:alt="dish.dish.categories[0].category.nam" height="50" max-width="50" contain
                                       :src="require('@/assets/dish_icons/food_preferences/'+dish.dish.categories[0].category.name+'.png')")
-                                    v-btn(@click="" rounded)
-                                      v-icon mdi-navigation-variant-outline
-                                      | {{ dish.mensa.name }}
                                   v-img.mx-auto(:alt="dish.dish.name" 
                                     :src="dish.dish.url")
                                     v-btn(fab style="position: absolute; top: 45%; left: 4%" 
@@ -103,7 +100,7 @@
                                     v-icon {{(dish_ratings[index].rating == 1) ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'}} 
                                     
                         v-card-actions
-                            v-btn(@click="cur_step-=1") 
+                            v-btn(@click="initialize_dish_ratings(); cur_step-=1") 
                                 v-icon mdi-chevron-left
                                 | Back
                             v-spacer
@@ -208,7 +205,7 @@ export default {
     selected_allergies: [],
     selected_additives: [],
     dishes: dishes,
-    dish_ratings: [{"id": null, "rating": null},{"id": null, "rating": null},{"id": null, "rating": null}],
+    dish_ratings: [],
     form: {
       email: "",
       password: "",
@@ -272,6 +269,9 @@ export default {
         return m;
       }
     },
+    initialize_dish_ratings() {
+      this.dish_ratings = [{"id": null, "rating": null},{"id": null, "rating": null},{"id": null, "rating": null}]
+    },
     checkAll() {
       Object.keys(this.food_preferences).forEach((key) => {
         this.food_preferences[key] = true;
@@ -325,6 +325,9 @@ export default {
         this.showError = true;
       }
     },
+  },
+  created() {
+    this.initialize_dish_ratings()
   }
 };
 </script>

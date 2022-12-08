@@ -338,7 +338,8 @@
         { "allergy": { "id": 7, "name": "Wheat" } }
       ],
       "main": true,
-      "name": "Lasagne Bolognese"
+      "name": "Lasagne Bolognese",
+      "url": "https://www.gutekueche.at/storage/media/recipe/102205/conv/lasagne-bolognese-default.jpg"
     },
     "ext_ratings": { "id": 869, "rating_avg": "3.5", "rating_count": 2 },
     "user_ratings": [],
