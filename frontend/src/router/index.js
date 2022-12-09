@@ -52,6 +52,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "discover" */ "../views/DiscoverDishes.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/privacy-policy",
+    name: "Data Privacy",
+    component: () => import("../views/DataPrivacy.vue"),
+  },
 ];
 
 const router = new VueRouter({
