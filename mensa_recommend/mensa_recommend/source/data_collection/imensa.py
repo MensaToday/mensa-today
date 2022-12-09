@@ -268,8 +268,10 @@ class IMensaCollector(NoAuthURLCollector):
 
         # find every meal category on the page
         for div in document.find_all(class_="aw-meal-category"):
-            category_name: str = div.find(class_="aw-meal-category-name").text
-            side_meal = category_name.lower().startswith("beilage")
+            category_name: str = div.find(class_="aw-meal-category-name")\
+                .text.lower()
+            side_meal = category_name.startswith(
+                "beilage") or category_name.startswith("dessert")
 
             # go to every meal in that meal category
             for meal in div.find_all(class_="aw-meal row no-margin-xs"):
