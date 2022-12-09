@@ -4,7 +4,7 @@ from typing import List, Tuple, Dict
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from api.serializers import DishPlanSerializer
+from mensa_recommend.serializers import DishPlanSerializer
 from mensa.models import UserDishRating, DishPlan, Dish, UserAllergy, \
     UserCategory
 from mensa_recommend.source.computations import distance_computation as dist
