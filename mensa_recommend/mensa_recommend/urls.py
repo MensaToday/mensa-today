@@ -25,10 +25,9 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('django.contrib.auth.urls')),
-    path('users/', include('users.urls')),
-    path('mensa/', include('mensa.urls')),
     path('courses/', include('courses.urls')),
-    re_path(r'api/v1/', include(('api.urls', 'api'), namespace='v1')),
+    re_path(r'api/v1/', include(('users.urls', 'user_api'), namespace='user-v1')),
+    re_path(r'api/v1/', include(('mensa.urls', 'mensa_api'), namespace='mensa-v1')),
     path('api/v1/user/login_alternative', TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
     path('api/v1/user/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
