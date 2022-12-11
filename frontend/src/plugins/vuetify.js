@@ -15,7 +15,6 @@ export default new Vuetify({
             // https://material.io/design/color/the-color-system.html#tools-for-picking-colors
             light: {
                 // https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=3949AB&secondary.color=F4511E
-                // blue
                 primary: "#EA5A0D", 
                 primaryLight: "#6f74dd",
                 primaryDark: "#00227b",
@@ -47,22 +46,36 @@ export default new Vuetify({
             },
             dark: {
                 // https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=9FA8DA&secondary.color=FFAB91
-                // pink
-                primary: "#9fa8da",
-                primaryLight: "#d1d9ff",
-                primaryDark: "#6f79a8",
+                primary: "#EA5A0D", 
+                primaryLight: "#6f74dd",
+                primaryDark: "#00227b",
+                // orange
+                secondary: "#f4511e",
+                secondaryLight: "#ff844c",
+                secondaryDark: "#b91400", 
                 
-                // light blue
-                secondary: "#ffab91",
-                secondaryLight: "#ffddc1",
-                secondaryDark: "#c97b63",
+                // sand (looks bad)
+                complementary: "#b99821",
                 
-                // light purple
-                triadicFirst: "#d19fda",
-                // light bordeaux red
-                triadicSecond: "#da9fa8",
+                // purple
+                triadicFirst: "#9c39ab",
+                // bordeaux red
+                triadicSecond: "#ab3948",
+
+                text: "#3e3e3e",
+                background: "#ffffff",
+                // alternatively e.g. #cccccc
+
+                btnColor: "#ffffff",
+                // Home Hero Are
+                heroGradientBackgroundLeft: "#3949ab",
+                heroGradientBackgroundRight: "#f4511e",
+
+                success: "#34c759",
+                warning: "#ff954f",
+                error: "#ff3a30",
                 
-                // If colours above are used as background: black text, otherwise white
+                // If colors above are used as background: black text, otherwise white
 
                 btnColor: "#121212",
                 heroGradientBackgroundLeft: "#383838",
