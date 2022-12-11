@@ -3,14 +3,7 @@ from django.core.management.base import BaseCommand, CommandError, \
 
 from mensa_recommend.source.data_collection import imensa, learnweb, \
     room_mensa_distance
-
 from mensa_recommend.source.data_collection.utils import Collector
-
-
-class Test(Collector):
-    def run(self) -> None:
-        pass
-
 
 data_collectors = {
     "imensa": imensa.IMensaCollector(),
