@@ -13,7 +13,8 @@ from tqdm import tqdm
 from google_images_search import GoogleImagesSearch
 
 import global_data
-from mensa.models import Category, Allergy, Additive, Dish, DishCategory, DishAllergy, DishAdditive, DishPlan, Mensa, \
+from mensa.models import Category, Allergy, Additive, Dish, DishCategory, \
+    DishAllergy, DishAdditive, DishPlan, Mensa, \
     ExtDishRating
 from . import static_data
 from . import utils
@@ -21,8 +22,9 @@ from .utils import NoAuthURLCollector
 
 
 def _get_dish(name: str, main_meal: bool) -> Dish:
-    """Load a dish by a given name or create one if absent. Can later be used to implement some sort of name matching in
-    order to get rid of duplicated dishes.
+    """Load a dish by a given name or create one if absent. Can later be used
+    to implement some sort of name matching in order to get rid of duplicated
+    dishes.
 
     Parameters
     ----------
@@ -30,8 +32,6 @@ def _get_dish(name: str, main_meal: bool) -> Dish:
         The name of a dish.
     main_meal : bool
         Whether the dish is a main or side meal.
-    image_url : str
-        URL of the image for the dish
 
     Return
     ------
@@ -43,15 +43,17 @@ def _get_dish(name: str, main_meal: bool) -> Dish:
     except Dish.DoesNotExist:
         d = Dish(name=name, main=main_meal)
 
-        # Ignore duplicate errors and just return the dish. Issue only occurs in multithreading context.
-        # Using the created instead of the database instance does not change much. The data is the same.
+        # Ignore duplicate errors and just return the dish. Issue only occurs
+        # in multithreading context. Using the created instead of the database
+        # instance does not change much. The data is the same.
         try:
             # Get an image for the dish from google
             # gis = GoogleImagesSearch(
-            #     os.environ.get("GOOGLE_API_KEY"), os.environ.get("GOOGLE_PROJECT_CX"))
+            #     os.environ.get("GOOGLE_API_KEY"),
+            #     os.environ.get("GOOGLE_PROJECT_CX"))
             # image_url = _get_image_url(name, gis)
-            #image_url = _get_image_url(name)
-            #d.image_url = image_url
+            # image_url = _get_image_url(name)
+            # d.image_url = image_url
             d.save()
         except IntegrityError:
             pass
@@ -73,7 +75,6 @@ def update_urls():
 
         # Only dishes without a dish url has to be concidered
         if dish.url is None:
-
             # Get the image url
             image_url = _get_image_url(dish.name)
 
@@ -166,7 +167,9 @@ def _search(keywords: str) -> List[dict]:
         'accept': 'application/json, text/javascript, */* q=0.01',
         'sec-fetch-dest': 'empty',
         'x-requested-with': 'XMLHttpRequest',
-        'user-agent': 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
+        'user-agent': 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_15_4) '
+                      'AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/80.0.3987.163 Safari/537.36',
         'sec-fetch-site': 'same-origin',
         'sec-fetch-mode': 'cors',
         'referer': 'https://duckduckgo.com/',
@@ -221,7 +224,8 @@ class IMensaCollector(NoAuthURLCollector):
                 # "bistro-friesenring",  # does not exist anymore?
                 "mensa-da-vinci", "bistro-denkpause",
                 "bistro-katholische-hochschule",
-                "bistro-durchblick", "bistro-frieden", "bistro-kabu", "bistro-oeconomicum", "hier-und-jetzt",
+                "bistro-durchblick", "bistro-frieden", "bistro-kabu",
+                "bistro-oeconomicum", "hier-und-jetzt",
                 "mensa-am-aasee",
                 "mensa-am-ring", "mensa-bispinghof"
             ]
@@ -264,12 +268,15 @@ class IMensaCollector(NoAuthURLCollector):
 
         # find every meal category on the page
         for div in document.find_all(class_="aw-meal-category"):
-            category_name: str = div.find(class_="aw-meal-category-name").text
-            side_meal = category_name.lower().startswith("beilage")
+            category_name: str = div.find(class_="aw-meal-category-name")\
+                .text.lower()
+            side_meal = category_name.startswith(
+                "beilage") or category_name.startswith("dessert")
 
             # go to every meal in that meal category
             for meal in div.find_all(class_="aw-meal row no-margin-xs"):
-                # Some "meals" entries are used to display information of the mensa.
+                # Some "meals" entries are used to display information of the
+                # mensa.
                 # Therefore, check if a price is available.
                 no_meal = meal.find(title="Preis für Studierende") is None
                 if no_meal:
@@ -287,7 +294,8 @@ class IMensaCollector(NoAuthURLCollector):
                 self.__save_price(d, mensa, dish_plan_date, price)
                 self.__save_rating(d, mensa, dish_plan_date, rating)
 
-    def __save_groups(self, dish: Dish, groups: Tuple[list, list, list]) -> None:
+    def __save_groups(self, dish: Dish,
+                      groups: Tuple[list, list, list]) -> None:
         categories, additives, allergies = groups
         for c in categories:
             category = Category.objects.get(name=c)
@@ -302,32 +310,36 @@ class IMensaCollector(NoAuthURLCollector):
             utils.save_without_integrity(
                 DishAllergy(dish=dish, allergy=allergy))
 
-    def __save_price(self, dish: Dish, mensa: Mensa, dish_plan_date: date, price: Tuple[float, float]) -> None:
+    def __save_price(self, dish: Dish, mensa: Mensa, dish_plan_date: date,
+                     price: Tuple[float, float]) -> None:
         price_for_students, price_for_non_students = price
         utils.save_without_integrity(
-            DishPlan(dish=dish, mensa=mensa, date=dish_plan_date, priceStudent=price_for_students,
+            DishPlan(dish=dish, mensa=mensa, date=dish_plan_date,
+                     priceStudent=price_for_students,
                      priceEmployee=price_for_non_students))
 
-    def __save_rating(self, dish: Dish, mensa: Mensa, dish_plan_date: date, rating: Tuple[int, float]) -> None:
+    def __save_rating(self, dish: Dish, mensa: Mensa, dish_plan_date: date,
+                      rating: Tuple[int, float]) -> None:
         ratings_count, ratings_avg = rating
         utils.save_without_integrity(
-            ExtDishRating(mensa=mensa, dish=dish, date=dish_plan_date, rating_avg=ratings_avg,
+            ExtDishRating(mensa=mensa, dish=dish, date=dish_plan_date,
+                          rating_avg=ratings_avg,
                           rating_count=ratings_count))
 
     def __scrape_meal(self, meal: Tag, mensa: Mensa, day: str) -> Tuple[
-            str, Tuple[float, float], Tuple[list, list, list], Tuple[int, float]]:
+        str, Tuple[float, float], Tuple[list, list, list], Tuple[int, float]]:
         # load data of actual meal
         name = meal.find(class_="aw-meal-description").text
 
-        # The price for employees is not available on http://imensa.de but can be easily calculated at the
-        # moment.
+        # The price for employees is not available on http://imensa.de but can
+        # be easily calculated at the moment.
         price_for_students = utils.to_float(
             meal.find(title="Preis für Studierende").text[:-2])
         price_for_non_students = price_for_students * 1.5
         price = (price_for_students, price_for_non_students)
 
-        attributes = meal.find(
-            class_="small aw-meal-attributes").span.text.replace("\xa0", "").split(" ")
+        attributes = meal.find(class_="small aw-meal-attributes")\
+            .span.text.replace("\xa0", "").split(" ")
 
         att_type = 0
         categories = []
@@ -378,8 +390,10 @@ class IMensaCollector(NoAuthURLCollector):
                 mensa_db = Mensa.objects.get(name_id=mensa)
 
                 for day in self.days:
-                    urls.append((self.url.format(city=city, mensa=mensa, day=day),
-                                 {"mensa": mensa_db, "date": self.__day_to_date(day), "day": day}))
+                    urls.append(
+                        (self.url.format(city=city, mensa=mensa, day=day),
+                         {"mensa": mensa_db, "date": self.__day_to_date(day),
+                          "day": day}))
         return urls
 
     def __day_to_date(self, day: str) -> date:
