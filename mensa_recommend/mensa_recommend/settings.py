@@ -106,9 +106,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CRONJOBS  = {
+CRONJOBS = [
     ('0 1 * * 1', 'cron_jobs.collect_dishes')
-}
+]
 
 AUTH_USER_MODEL = 'users.User'
 
