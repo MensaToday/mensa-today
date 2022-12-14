@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
 
+    'django_crontab',
+
     'mensa_recommend',
     'mensa',
     'users',
@@ -104,6 +106,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CRONJOBS  = {
+    ('0 1 * * 1', 'cron_jobs.collect_dishes')
+}
 
 AUTH_USER_MODEL = 'users.User'
 
