@@ -11,7 +11,7 @@ div
                   v-row
                     v-col(v-for='(item, index) in props.items' :key="index" cols='12' sm='6' md='6' lg='4')
                       v-card(height="100%")
-                          v-card-title.align-center {{ item.date }} 
+                          v-card-title.align-center {{ days[(new Date(item.date)).getDay()] }}
                           v-img(v-show="item.dish.url != null" :alt="item.dish.name" height='250'
                           :src="item.dish.url")
                           v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250' elevation="0")
@@ -58,6 +58,7 @@ export default {
     return {
       recommendationItems: this.$store.state.recommendations,
       recommendationItemsDaily: this.$store.state.dailyRecommendations,
+      days: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
     };
   },
   computed: {

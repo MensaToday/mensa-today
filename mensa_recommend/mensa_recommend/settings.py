@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'mensa',
     'users',
     'courses',
-    'api',
 ]
 
 
