@@ -32,12 +32,12 @@ export default new Vuetify({
             },
             dark: {
                 // pink
-                primary: "#9fa8da",
+                primary: "#ff8b41",
                 primaryLight: "#d1d9ff",
                 primaryDark: "#6f79a8",
                 
-                // light blue
-                secondary: "#ffab91",
+                // purple
+                secondary: "#a181ff",
                 secondaryLight: "#ffddc1",
                 secondaryDark: "#c97b63",
 
