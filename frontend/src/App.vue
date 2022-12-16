@@ -29,6 +29,10 @@ v-app
                 | {{ icon.mdi }}
           //- v-card-text.white--text.pt-0 Lorem ipsum
           v-divider
+          div.white--text.body-2
+            router-link(to="privacy-policy", style="text-decoration: none; color: inherit;")
+              a.white--text(ref="privacy-policy")
+                | Privacy Policy
           v-card-text.white--text
             | {{ new Date().getFullYear() }} &mdash; 
             strong Marten Jostmann, Leo Giesen, Erik Zimmermann, Marcel Reckmann, Polina Kireyeu
