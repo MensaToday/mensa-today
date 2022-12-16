@@ -5,7 +5,6 @@ div
       v-progress-circular(indeterminate color="primary")
     v-img(src="https://www.stw-muenster.de/content/uploads/2016/10/b_DSC0088-1024x680.jpg" height="150px"
       gradient="to bottom right, rgba(135, 135, 135,.5), rgba(135, 135, 135,.5)")
-      //- rgba(234, 90, 13,.5)
       v-card-title.white--text.justify-center
         h2.my-11 Login
     v-divider
