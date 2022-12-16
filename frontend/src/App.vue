@@ -68,6 +68,11 @@ export default {
         to: { name: "Discover" },
         icon: "magnify",
       },
+      {
+        tag: "Profile",
+        to: { name: "UserProfile" },
+        icon: "account",
+      },
     ],
     icons: [
       {
@@ -84,7 +89,6 @@ export default {
     ...mapActions(["Logout"]),
     toggleTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
-      console.log("active theme: " + this.$vuetify.theme.dark);
     },
     async logout() {
       try {

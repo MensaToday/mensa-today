@@ -9,10 +9,12 @@ export default new Vuex.Store({
     access_token: null,
     refresh_token: null,
     user: {
-      name: null,
+      first_name: null,
+      last_name: null,
       id: null,
       email: null,
       mensa_card_id: null,
+      avatar: null
     },
     card_balance: null,
     dishplan: null,

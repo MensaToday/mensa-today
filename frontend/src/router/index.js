@@ -53,6 +53,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/profile",
+    name: "UserProfile",
+    component: () => import(/* webpackChunkName: "discover" */ "../views/UserProfile.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/privacy-policy",
     name: "Data Privacy",
     component: () => import("../views/DataPrivacy.vue"),
