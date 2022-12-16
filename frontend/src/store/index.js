@@ -51,8 +51,6 @@ export default new Vuex.Store({
   },
   actions: {
     initializeSession({ commit, dispatch }, [access_token, refresh_token]){
-      console.log("initializeSession")
-      console.log(access_token, " - ", refresh_token)
       window.localStorage.setItem("access_token", access_token);
       window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
@@ -73,10 +71,7 @@ export default new Vuex.Store({
       dispatch("initializeSession", [access_token, refresh_token])
     },
     async Login({dispatch}, User_credentials) {
-      console.log("login store")
-      console.log(User_credentials)
       let response = await axios.post("user/login", User_credentials);
-      console.log(response)
       var access_token = response.data.access;
       var refresh_token = response.data.refresh;
       dispatch("initializeSession", [access_token, refresh_token])
