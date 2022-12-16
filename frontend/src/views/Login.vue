@@ -33,9 +33,9 @@ v-container
 </template>
 
 <script>
-import { mapActions } from "vuex";
 import config from "@/config.js";
 import JSEncrypt from "jsencrypt";
+import { mapActions } from "vuex";
 export default {
   name: "Login",
   data() {
