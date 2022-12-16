@@ -20,14 +20,14 @@ v-app
       v-btn(icon @click="toggleTheme") 
         v-icon mdi-brightness-6
   
-  v-main
+  v-main.mb-12
     router-view
     template
   
-  v-footer.mt-12(dark padless)
+  v-footer(dark padless)
     v-row 
-      v-col(cols='12')
-        v-card.indigo.lighten-1.white--text.text-center(flat tile)
+      v-col.pb-0.pt-0
+        v-card.secondary.white--text.text-center(flat tile)
           v-btn.mx-4.white--text(v-for='icon in icons' :key='icon.mdi' icon target="_blank" :href="icon.link")
             v-icon(size='24px' elevation='15')
                 | {{ icon.mdi }}

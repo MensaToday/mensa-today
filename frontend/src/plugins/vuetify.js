@@ -14,81 +14,40 @@ export default new Vuetify({
             // Choose colours
             // https://material.io/design/color/the-color-system.html#tools-for-picking-colors
             light: {
-                // https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=3949AB&secondary.color=F4511E
-                primary: "#EA5A0D", 
-                primaryLight: "#6f74dd",
-                primaryDark: "#00227b",
-                // orange
-                secondary: "#f4511e",
-                secondaryLight: "#ff844c",
-                secondaryDark: "#b91400", 
+                // https://m2.material.io/resources/color/#!/?view.left=0&view.right=1&primary.color=EA5A0D
+                primary: "#f37210",
+                // primary: "#ea5a0d",
+                // slightly changed orange to be less aggressive: #f37210 - but logo is not the same color 
+                primaryLight: "#ff8b41",
+                primaryDark: "#b02700",
+
+                secondary: "#6c54d6",
+                // alternative: light-blue darken-1: #039BE
+                secondaryLight: "#a181ff",
+                secondaryDark: "#3429a4", 
                 
-                // sand (looks bad)
-                complementary: "#b99821",
-                
-                // purple
-                triadicFirst: "#9c39ab",
-                // bordeaux red
-                triadicSecond: "#ab3948",
-
-                text: "#3e3e3e",
-                background: "#ffffff",
-                // alternatively e.g. #cccccc
-
-                btnColor: "#ffffff",
-                // Home Hero Are
-                heroGradientBackgroundLeft: "#3949ab",
-                heroGradientBackgroundRight: "#f4511e",
-
                 success: "#34c759",
-                warning: "#ff954f",
-                error: "#ff3a30",
+                warning: "#eac90d",
+                error: "#ea0d2e",
             },
             dark: {
-                // https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=9FA8DA&secondary.color=FFAB91
-                primary: "#EA5A0D", 
-                primaryLight: "#6f74dd",
-                primaryDark: "#00227b",
-                // orange
-                secondary: "#f4511e",
-                secondaryLight: "#ff844c",
-                secondaryDark: "#b91400", 
+                // pink
+                primary: "#9fa8da",
+                primaryLight: "#d1d9ff",
+                primaryDark: "#6f79a8",
                 
-                // sand (looks bad)
-                complementary: "#b99821",
-                
-                // purple
-                triadicFirst: "#9c39ab",
-                // bordeaux red
-                triadicSecond: "#ab3948",
-
-                text: "#3e3e3e",
-                background: "#ffffff",
-                // alternatively e.g. #cccccc
-
-                btnColor: "#ffffff",
-                // Home Hero Are
-                heroGradientBackgroundLeft: "#3949ab",
-                heroGradientBackgroundRight: "#f4511e",
-
-                success: "#34c759",
-                warning: "#ff954f",
-                error: "#ff3a30",
-                
-                // If colors above are used as background: black text, otherwise white
-
-                btnColor: "#121212",
-                heroGradientBackgroundLeft: "#383838",
-                heroGradientBackgroundRight: "#121212",
+                // light blue
+                secondary: "#ffab91",
+                secondaryLight: "#ffddc1",
+                secondaryDark: "#c97b63",
 
                 // as recommended by the Material Design Guidelines from Google
                 background: "#121212",
                 backgroundLight: "#383838",
                 backgroundSuperLight: "#7f7f7f"
-                // Access colours by: this.$vuetify.theme.themes.dark.primary = "#ffffff"
+                // Access colors by: this.$vuetify.theme.themes.dark.primary = "#ffffff"
             }
         }
     },
-    // maybe need to install mdi fonts: npm i @mdi/font
     icons: { iconfont: "mdi" }
 });
