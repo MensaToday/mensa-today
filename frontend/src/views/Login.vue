@@ -25,15 +25,15 @@ div
           v-on:keyup.enter="login()")
         v-divider
       p(v-if="showError") Identifier or password is incorrect
-    
+
     v-card-actions
-        v-btn(@click="$router.push('/quiz')" color="primary") 
-            v-icon mdi-account-plus
-            | Register
-        v-spacer
-        v-btn(dark color="green darken-2" @click="login()") 
-            v-icon mdi-login-variant
-            | Login 
+      v-btn(@click="$router.push('/quiz')" color="primary") 
+        v-icon mdi-account-plus
+        | Register
+      v-spacer
+      v-btn(dark color="green darken-2" @click="login()") 
+        v-icon mdi-login-variant
+        | Login 
 </template>
 
 <script>

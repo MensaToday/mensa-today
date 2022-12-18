@@ -27,14 +27,6 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "login" */ "../views/Login.vue"),
   },
-  // currently not used:
-  {
-    path: "/suggestion",
-    name: "SuggestionDishes",
-    component: () =>
-      import(/* webpackChunkName: "suggestion" */ "../views/Suggestion.vue"),
-    meta: { requiresAuth: true },
-  },
   {
     path: "/register",
     redirect: "/quiz",

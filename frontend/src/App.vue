@@ -53,11 +53,6 @@ export default {
         to: { name: "HomeWeekRecommendation" },
         icon: "food",
       },
-      // {
-      //   tag: "Quiz (temporary)",
-      //   to: { name: "QuizRegister" },
-      //   icon: "information-outline",
-      // },
       {
         tag: "Discover",
         to: { name: "DiscoverDishes" },
