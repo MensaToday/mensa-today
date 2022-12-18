@@ -50,22 +50,17 @@ export default {
     views: [
       {
         tag: "Your Mensa Week",
-        to: { name: "Home" },
+        to: { name: "HomeWeekRecommendation" },
         icon: "food",
       },
       // {
-      //   tag: "Suggestion (temporary)",
-      //   to: { name: "Suggestion" },
-      //   icon: "food",
-      // },
-      // {
       //   tag: "Quiz (temporary)",
-      //   to: { name: "Quiz" },
+      //   to: { name: "QuizRegister" },
       //   icon: "information-outline",
       // },
       {
         tag: "Discover",
-        to: { name: "Discover" },
+        to: { name: "DiscoverDishes" },
         icon: "magnify",
       },
     ],

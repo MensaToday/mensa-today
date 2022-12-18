@@ -55,13 +55,15 @@ export default new Vuex.Store({
       window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token]);
-      setTimeout(() => {
-        dispatch("GetBalance");
-      }, 1);
-
-      if (access_token)
+      
+      if (access_token) {
         axios.defaults.headers.common["Authorization"] =
-          "Bearer " + access_token;
+        "Bearer " + access_token;
+      
+        setTimeout(() => {
+          dispatch("GetBalance");
+        }, 1);
+      } else console.log("access token not set")
     },
     async Register({ commit, dispatch }, User) {
       let response = await axios.post("user/register", User);
