@@ -329,7 +329,6 @@ export default {
           allergies: this.selected_allergies,
           ratings: this.dish_ratings,
         };
-        console.log(User)
         await this.Register(User);
         // Redirect to homepage
         setTimeout(() => {
