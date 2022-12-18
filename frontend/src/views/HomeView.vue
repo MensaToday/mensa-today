@@ -35,7 +35,7 @@ div
                                   span
                                       //- (:class="{ 'primary--text': sortBy === key }")
                                       v-icon mdi-food-apple
-                                      | {{ item.dish.main ? 'Main Dish' : 'Supplement' }}
+                                      | {{ item.dish.main ? 'Main Dish' : 'Side Dish' }}
                               div 
                                   v-icon mdi-shield-plus-outline
                                   span
