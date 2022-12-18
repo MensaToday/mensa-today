@@ -146,10 +146,10 @@ import config from "@/config.js";
 import JSEncrypt from "jsencrypt";
 import { mapActions } from "vuex";
 export default {
-  name: "Quiz",
+  name: "QuizRegister",
   data: () => ({
     cur_step: 1,
-    cur_step_dishes:0,
+    cur_step_dishes: 0,
     food_preferences: {
       Vegan: true,
       Vegetarian: true,
@@ -217,7 +217,6 @@ export default {
     publicKey: config.publicKey,
   }),
   computed: {
-
     no_food_preferences: {
       get: function () {
         for (let [key, value] of Object.entries(this.food_preferences)) {
@@ -242,18 +241,19 @@ export default {
     },
     relevantDishes: {
       get: function () {
-        let relevantDishes = this.dishes.filter(dish =>
-          // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
-          // use a separate function (checkRelevance) instead - left to be finalized
-          // this.checkRelevance(this.food_preferences, dishes.categories, "category") & 
-          // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
-          // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
-          this.food_preferences[dish.dish.categories[0].category.name] 
+        let relevantDishes = this.dishes.filter(
+          (dish) =>
+            // TODO: does not loop through all dish categories. Most have only one. This is just temporary solution for the demo 🫠
+            // use a separate function (checkRelevance) instead - left to be finalized
+            // this.checkRelevance(this.food_preferences, dishes.categories, "category") &
+            // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
+            // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
+            this.food_preferences[dish.dish.categories[0].category.name]
           // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
           // & dish.dish.allergies.length > 0 ? !this.food_preferences[dish.dish.allergies[0].allergy.name] : true
           // & dish.dish.additives.length > 0 ? !this.food_preferences[dish.dish.additives[0].additive.name] : true
         );
-        return relevantDishes
+        return relevantDishes;
       },
       set: function () {
         return this.dishes;
@@ -264,16 +264,20 @@ export default {
     // import Register action
     ...mapActions(["Register"]),
     encrypt(m) {
-      if(process.env.VUE_APP_PRIVATE_KEY){
+      if (process.env.VUE_APP_PRIVATE_KEY) {
         let encryptor = new JSEncrypt();
         encryptor.setPublicKey(this.publicKey);
         return encryptor.encrypt(m);
-      } else{
+      } else {
         return m;
       }
     },
     initialize_dish_ratings() {
-      this.dish_ratings = [{"id": null, "rating": null},{"id": null, "rating": null},{"id": null, "rating": null}]
+      this.dish_ratings = [
+        { id: null, rating: null },
+        { id: null, rating: null },
+        { id: null, rating: null },
+      ];
     },
     checkAll() {
       Object.keys(this.food_preferences).forEach((key) => {
@@ -291,9 +295,11 @@ export default {
       }
     },
     updateSelectedCategories() {
-      // Object.entries(this.food_preferences).forEach((key, value) => 
+      // Object.entries(this.food_preferences).forEach((key, value) =>
       for (const [key, value] of Object.entries(this.food_preferences)) {
-        if(value){this.selected_categories.push(key)}
+        if (value) {
+          this.selected_categories.push(key);
+        }
       }
       // Object.keys(this.food_preferences).forEach((key) => {
       //   this.food_preferences[key] = true;
@@ -313,11 +319,13 @@ export default {
     //     }
     //     return true
     // },
-    addRating(index, dish_id, rating){
-      this.dish_ratings[index] = {"id": dish_id, "rating": rating}
-      if(this.cur_step_dishes < 3){ this.cur_step_dishes++ }
+    addRating(index, dish_id, rating) {
+      this.dish_ratings[index] = { id: dish_id, rating: rating };
+      if (this.cur_step_dishes < 3) {
+        this.cur_step_dishes++;
+      }
       // update to consider updated rating data
-      this.$forceUpdate()
+      this.$forceUpdate();
     },
     async register() {
       try {
@@ -342,7 +350,7 @@ export default {
     },
   },
   created() {
-    this.initialize_dish_ratings()
-  }
+    this.initialize_dish_ratings();
+  },
 };
 </script>

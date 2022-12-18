@@ -8,53 +8,47 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    name: "Home",
+    name: "HomeWeekRecommendation",
     component: HomeView,
     // check if user is logged in. If yes, redirect user to user-specific page
     meta: { requiresAuth: true },
   },
   {
-    // currently empty
-    path: "/about",
-    name: "about",
+    path: "/quiz",
+    name: "QuizRegister",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
-  },
-  {
-    // quiz = register page
-    path: "/quiz",
-    name: "Quiz",
     component: () => import(/* webpackChunkName: "quiz" */ "../views/Quiz.vue"),
   },
   {
     path: "/login",
-    name: "Login",
+    name: "LoginUser",
     component: () =>
       import(/* webpackChunkName: "login" */ "../views/Login.vue"),
   },
+  // currently not used:
   {
     path: "/suggestion",
-    name: "Suggestion",
+    name: "SuggestionDishes",
     component: () =>
       import(/* webpackChunkName: "suggestion" */ "../views/Suggestion.vue"),
     meta: { requiresAuth: true },
   },
   {
-    path: '/register',
-    redirect: '/quiz'
+    path: "/register",
+    redirect: "/quiz",
   },
   {
     path: "/discover",
-    name: "Discover",
-    component: () => import(/* webpackChunkName: "discover" */ "../views/DiscoverDishes.vue"),
+    name: "DiscoverDishes",
+    component: () =>
+      import(/* webpackChunkName: "discover" */ "../views/DiscoverDishes.vue"),
     meta: { requiresAuth: true },
   },
   {
     path: "/privacy-policy",
-    name: "Data Privacy",
+    name: "DataPrivacy",
     component: () => import("../views/DataPrivacy.vue"),
   },
 ];

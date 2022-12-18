@@ -18,7 +18,7 @@
 <script>
 import SingleDish from "@/components/SingleDish.vue";
 export default {
-  name: "Suggestion",
+  name: "SuggestionDishes",
   components: {
     SingleDish,
   },

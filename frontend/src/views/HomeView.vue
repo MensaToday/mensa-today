@@ -53,20 +53,30 @@ div
 <script>
 import { mapActions } from "vuex";
 export default {
-  name: "Home",
+  name: "HomeWeekRecommendation",
   data() {
     return {
       recommendationItems: this.$store.state.recommendations,
       recommendationItemsDaily: this.$store.state.dailyRecommendations,
-      days: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+      days: [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ],
     };
   },
   computed: {
-    items () { return this.$store.state.dailyRecommendations },
-    loaded(){
+    items() {
+      return this.$store.state.dailyRecommendations;
+    },
+    loaded() {
       // if (typeof this.items !== 'undefined') return true
-      if (this.items != null) return true
-      else return false
+      if (this.items != null) return true;
+      else return false;
     },
   },
   methods: {
@@ -94,8 +104,8 @@ export default {
   },
   mounted() {
     // TODO: exchange with getRecommendations
-    this.getOneRecommendation()
+    this.getOneRecommendation();
     // this.getRecommendations()
-  }
+  },
 };
 </script>

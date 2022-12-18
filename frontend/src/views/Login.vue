@@ -41,7 +41,7 @@ import config from "@/config.js";
 import JSEncrypt from "jsencrypt";
 import { mapActions } from "vuex";
 export default {
-  name: "Login",
+  name: "LoginUser",
   data() {
     return {
       form: {
@@ -58,11 +58,11 @@ export default {
   methods: {
     ...mapActions(["Login"]),
     encrypt(m) {
-      if(process.env.VUE_APP_PRIVATE_KEY){
+      if (process.env.VUE_APP_PRIVATE_KEY) {
         let encryptor = new JSEncrypt();
         encryptor.setPublicKey(this.publicKey);
         return encryptor.encrypt(m);
-      } else{
+      } else {
         return m;
       }
     },

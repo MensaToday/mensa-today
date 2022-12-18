@@ -94,107 +94,118 @@
                 //- -> filter out for day, location, food preference, allergies
                 //- sort by rating
     </template>
-    
+
 <script>
 import { mapActions } from "vuex";
 export default {
-  name: "Discover",
+  name: "DiscoverDishes",
   data() {
     return {
-        // TODO: rating to be implemented
-        // suggested_dish_rating: null,
-        itemsPerPageArray: [3, 6, 9],
-        search: "",
-        filter: {},
-        sortDesc: false,
-        page: 1,
-        itemsPerPage: 3,
-        sortBy: "",
-        selectedCategories: ["Vegan", "Vegetarian", "Pork", "Beef", "Poultry", "Alcohol", "Fish"],
-        filters: {
-          // date: {
-          //   start_date: null,
-          //   end_date: null
-          // },
-          // float - reformat response with parseFloat()
-          affordable: false,
-          // array of mensas
-          mensa_name: null,
-          // boolean
-          main_dish: false,
-          food_preferences: {
-              Vegan: false,
-              Vegetarian: false,
-              Pork: false,
-              Beef: false,
-              Poultry: false,
-              Alcohol: false,
-              Fish: false
-          },
-          additives: {
-            Dyed: false,
-            Preservatives: false,
-            Antioxidants: false,
-            "Flavor enhancers": false,
-            Sulphurated: false,
-            Blackened: false,
-            Waxed: false,
-            Phosphate: false,
-            Sweeteners: false,
-            "Phenylalanine source": false,
-          },
-          allergies: {
-            Gluten: false,
-            Spelt: false,
-            Barles: false,
-            Oats: false,
-            Kamut: false,
-            Rye: false,
-            Wheat: false,
-            Crustaceans: false,
-            Egg: false,
-            Fish: false,
-            Peanuts: false,
-            Soy: false,
-            Milk: false,
-            Nuts: false,
-            Almonds: false,
-            Hazelnuts: false,
-            Walnuts: false,
-            Cashews: false,
-            Pecans: false,
-            "Brazil nuts": false,
-            Pistachios: false,
-            Macadamias: false,
-            Celerey: false,
-            Mustard: false,
-            Sesame: false,
-            Lupines: false,
-            Molluscs: false,
-            "Sulfur dioxide": false,
-          },
-        }
+      // TODO: rating to be implemented
+      // suggested_dish_rating: null,
+      itemsPerPageArray: [3, 6, 9],
+      search: "",
+      filter: {},
+      sortDesc: false,
+      page: 1,
+      itemsPerPage: 3,
+      sortBy: "",
+      selectedCategories: [
+        "Vegan",
+        "Vegetarian",
+        "Pork",
+        "Beef",
+        "Poultry",
+        "Alcohol",
+        "Fish",
+      ],
+      filters: {
+        // date: {
+        //   start_date: null,
+        //   end_date: null
+        // },
+        // float - reformat response with parseFloat()
+        affordable: false,
+        // array of mensas
+        mensa_name: null,
+        // boolean
+        main_dish: false,
+        food_preferences: {
+          Vegan: false,
+          Vegetarian: false,
+          Pork: false,
+          Beef: false,
+          Poultry: false,
+          Alcohol: false,
+          Fish: false,
+        },
+        additives: {
+          Dyed: false,
+          Preservatives: false,
+          Antioxidants: false,
+          "Flavor enhancers": false,
+          Sulphurated: false,
+          Blackened: false,
+          Waxed: false,
+          Phosphate: false,
+          Sweeteners: false,
+          "Phenylalanine source": false,
+        },
+        allergies: {
+          Gluten: false,
+          Spelt: false,
+          Barles: false,
+          Oats: false,
+          Kamut: false,
+          Rye: false,
+          Wheat: false,
+          Crustaceans: false,
+          Egg: false,
+          Fish: false,
+          Peanuts: false,
+          Soy: false,
+          Milk: false,
+          Nuts: false,
+          Almonds: false,
+          Hazelnuts: false,
+          Walnuts: false,
+          Cashews: false,
+          Pecans: false,
+          "Brazil nuts": false,
+          Pistachios: false,
+          Macadamias: false,
+          Celerey: false,
+          Mustard: false,
+          Sesame: false,
+          Lupines: false,
+          Molluscs: false,
+          "Sulfur dioxide": false,
+        },
+      },
     };
   },
   computed: {
     items: {
-        get() {
-            if(!this.$store.state.dishplan) return null
-            return this.$store.state.dishplan.filter(dish =>
-                // filter by search term 
-                dish.dish.name.includes(this.search)
-                & this.checkCategory(dish)
-                & (this.filters.affordable ? this.$store.state.card_balance >= parseFloat(dish.priceStudent) : true)
-                & (this.filters.main_dish ? dish.dish.main : true)
-            );
-        },
-        set() {
-            null;
-        }
+      get() {
+        if (!this.$store.state.dishplan) return null;
+        return this.$store.state.dishplan.filter(
+          (dish) =>
+            // filter by search term
+            dish.dish.name.includes(this.search) &
+            this.checkCategory(dish) &
+            (this.filters.affordable
+              ? this.$store.state.card_balance >= parseFloat(dish.priceStudent)
+              : true) &
+            (this.filters.main_dish ? dish.dish.main : true)
+        );
+      },
+      set() {
+        null;
+      },
     },
-    loaded(){
-      if (this.items != null) return true
-      else return false
+    loaded() {
+      if (this.items != null) return true;
+      else return false;
     },
     numberOfPages() {
       if (this.items) return Math.ceil(this.items.length / this.itemsPerPage);
@@ -206,15 +217,21 @@ export default {
   },
   methods: {
     ...mapActions(["GetDishplan"]),
-    
-    checkCategory(dish){
-      if(dish.dish.categories != undefined){
-        for(let i = 0; i < dish.dish.categories.length; i++){
-          if(!this.selectedCategories.includes(dish.dish.categories[i].category.name)) return false
+
+    checkCategory(dish) {
+      if (dish.dish.categories != undefined) {
+        for (let i = 0; i < dish.dish.categories.length; i++) {
+          if (
+            !this.selectedCategories.includes(
+              dish.dish.categories[i].category.name
+            )
+          )
+            return false;
         }
         // ! this.filters.food_preferences[dish.dish.categories[0].category.name]
-      } return true
-      // this.filters.food_preferences[dish.dish.categories[0].category.name] 
+      }
+      return true;
+      // this.filters.food_preferences[dish.dish.categories[0].category.name]
     },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1;
@@ -226,9 +243,9 @@ export default {
       this.itemsPerPage = number;
     },
     getGoogleMapsUrl(mensaName) {
-        const url = new URL("https://www.google.com/maps/dir/?api=1");
-        url.searchParams.set("destination", mensaName);
-        return url.toString();
+      const url = new URL("https://www.google.com/maps/dir/?api=1");
+      url.searchParams.set("destination", mensaName);
+      return url.toString();
     },
     async getDishplan() {
       try {
@@ -237,18 +254,21 @@ export default {
         console.log(error);
       }
     },
-    async getRecommendations(){
-        try {
-            var request_data = JSON.stringify({day: "2022.12.06", entire_week: "False"})
-            await this.GetRecommendations(request_data);
-        } catch (error) {
-            console.log(error);
-        }
+    async getRecommendations() {
+      try {
+        var request_data = JSON.stringify({
+          day: "2022.12.06",
+          entire_week: "False",
+        });
+        await this.GetRecommendations(request_data);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
   mounted() {
     // if items not set, query dishplan
-    if(!this.items) this.getDishplan()
-  }
+    if (!this.items) this.getDishplan();
+  },
 };
 </script>
