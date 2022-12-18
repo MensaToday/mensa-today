@@ -219,7 +219,7 @@ export default {
   computed: {
     no_food_preferences: {
       get: function () {
-        for (let [key, value] of Object.entries(this.food_preferences)) {
+        for (let [, value] of Object.entries(this.food_preferences)) {
           if (value == true) return false;
         }
         return true;
@@ -230,7 +230,7 @@ export default {
     },
     isCheckAll: {
       get: function () {
-        for (let [key, value] of Object.entries(this.food_preferences)) {
+        for (let [, value] of Object.entries(this.food_preferences)) {
           if (value == false) return false;
         }
         return true;
