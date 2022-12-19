@@ -3,10 +3,10 @@ services:
   app:
     image: mensa_app
     build:
-      context: mensa_recommend
+      context: backend
       dockerfile: Dockerfile.local
     volumes:
-      - ./mensa_recommend/:/app
+      - ./backend/:/app
     ports:
       - 9999:9999
     command: python manage.py runserver 0.0.0.0:9999
@@ -44,11 +44,11 @@ services:
     restart: always
   celery:
     build:
-      context: mensa_recommend
+      context: backend
       dockerfile: Dockerfile.local
-    command: celery -A mensa_recommend worker -l INFO
+    command: celery -A backend worker -l INFO
     volumes:
-      - ./mensa_recommend/:/usr/src/app
+      - ./backend/:/usr/src/app
     env_file:
       - database-variables.env
       - local-variables.env

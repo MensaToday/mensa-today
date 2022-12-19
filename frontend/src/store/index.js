@@ -30,6 +30,8 @@ export default new Vuex.Store({
     rmTokens(state) {
       state.access_token = null;
       state.refresh_token = null;
+      window.localStorage.removeItem("access_token");
+      window.localStorage.removeItem("refresh_token");
     },
     setUser(state, user) {
       state.user = user;
@@ -48,14 +50,7 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async Register({ commit }, User) {
-      await axios.post("user/register", User);
-      commit("setUser", User);
-    },
-    async Login({ commit, dispatch }, User_credentials) {
-      let response = await axios.post("user/login", User_credentials);
-      var access_token = response.data.access;
-      var refresh_token = response.data.refresh;
+    initializeSession({ commit, dispatch }, [access_token, refresh_token]){
       window.localStorage.setItem("access_token", access_token);
       window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
@@ -67,7 +62,19 @@ export default new Vuex.Store({
       if (access_token)
         axios.defaults.headers.common["Authorization"] =
           "Bearer " + access_token;
-
+    },
+    async Register({ commit, dispatch }, User) {
+      let response = await axios.post("user/register", User);
+      var access_token = response.data.access;
+      var refresh_token = response.data.refresh;
+      commit("setUser", User);
+      dispatch("initializeSession", [access_token, refresh_token])
+    },
+    async Login({dispatch}, User_credentials) {
+      let response = await axios.post("user/login", User_credentials);
+      var access_token = response.data.access;
+      var refresh_token = response.data.refresh;
+      dispatch("initializeSession", [access_token, refresh_token])
       // commit("setUser", user)
 
       // const decodedToken = getters.decodedToken
@@ -81,15 +88,11 @@ export default new Vuex.Store({
       // // the token needs to be decoded first, so we wait 2 seconds before we begin
       // setTimeout(() => dispatch('AutoRefreshToken'), 2000)
     },
-    // TODO: The following API-calls are in development
     async Logout({ state, commit }) {
       let response = await axios.post("user/logout", {
         refresh_token: state.refresh_token,
       });
       console.log(response);
-      // var access_token = response.data.access
-      // var refresh_token = response.data.refresh
-      // commit("setTokens", [access_token, refresh_token])
       commit("rmTokens");
     },
     async GetBalance({commit}) {
