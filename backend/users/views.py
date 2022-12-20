@@ -335,9 +335,7 @@ def update_user_preferences(request):
         categories = request.data['categories']
         allergies = request.data['allergies']
 
-        user = request.user
-
-        process_preferences.update_preferences(user, categories, allergies)
+        process_preferences.update_preferences(request.user, categories, allergies)
 
         return Response("Updated Allergies and Categories", status=status.HTTP_200_OK)
     else:
