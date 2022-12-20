@@ -328,7 +328,7 @@ def get_balance(request):
 def get_user_data(request):
     """Get infos about the user
 
-        Route: api/v1/user/get_balance
+        Route: api/v1/user/get_user_data
         Authorization: Authenticated
         Methods: GET
 
