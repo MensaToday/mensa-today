@@ -28,6 +28,8 @@ urlpatterns = [
     path('courses/', include('courses.urls')),
     re_path(r'api/v1/', include(('users.urls', 'user_api'), namespace='user-v1')),
     re_path(r'api/v1/', include(('mensa.urls', 'mensa_api'), namespace='mensa-v1')),
+    re_path(r'api/v1/', include(('courses.urls',
+            'course_api'), namespace='course-v1')),
     path('api/v1/user/login_alternative', TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
     path('api/v1/user/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

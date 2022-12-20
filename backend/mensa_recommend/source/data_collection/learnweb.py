@@ -16,14 +16,16 @@ import datetime
 from tqdm import tqdm
 import threading
 
-from courses.models import Room, Course, Timeslot, Reservation
+from courses.models import Room, Course, Timeslot, Reservation, UserCourse
+from users.models import User
 from .utils import Collector, NoAuthURLCollector, url_to_soup
 import global_data
 
 
 @shared_task
-def run(ziv_id: str, ziv_password: str, current_user: int):
-    lw_collector = LearnWebCollector(ziv_id, ziv_password, current_user)
+def run(ziv_id: str, ziv_password: str, current_user: int, recrawl: bool = False):
+    lw_collector = LearnWebCollector(
+        ziv_id, ziv_password, current_user, recrawl)
     result = lw_collector.run()
 
     return result
@@ -36,10 +38,11 @@ class LearnWebCollector(Collector):
         the quispos system. All crawled data will be stored in the database
     """
 
-    def __init__(self, ziv_id: str, ziv_password: str, current_user: int = None):
+    def __init__(self, ziv_id: str, ziv_password: str, current_user: int = None, recrawl: bool = False):
         self.ziv_id = ziv_id
         self.ziv_password = ziv_password
         self.current_user = current_user
+        self.recrawl = recrawl
 
         # set base urls
         self.base_url = 'https://sso.uni-muenster.de/LearnWeb/learnweb2'
@@ -54,6 +57,9 @@ class LearnWebCollector(Collector):
         session_id = self.get_session_id()
 
         headers = {'Cookie': session_id}
+
+        if self.recrawl:
+            self.__delete_old_courses()
 
         # get current courses from the learnweb. Headers with the session_id are required
         courses = self.__get_current_courses(headers)
@@ -175,11 +181,27 @@ class LearnWebCollector(Collector):
             table_data = self.__get_qis_table_data(qis_url)
 
             # Save the data into the database
-            course = Course(course_id, course_name, course)
-            course.save()
-            course.users.add(self.current_user)
+            try:
+                course = Course.objects.get(publishId=course_id)
+            except Course.DoesNotExist:
+                course = Course(course_id, course_name, course)
+                course.save()
+
+            # Save user course combination
+            user = User.objects.get(id=self.current_user)
+            try:
+                user_course = UserCourse.objects.get(
+                    user=user, course=course)
+            except UserCourse.DoesNotExist:
+                user_course = UserCourse(user=user,
+                                         course=course)
+                user_course.save()
 
             for data in table_data:
+
+                if (data['room_id'] == ''):
+                    continue
+
                 room = Room.objects.get(pk=data['room_id'])
 
                 # Check if room exists otherwise do not save the timeslot
@@ -197,8 +219,13 @@ class LearnWebCollector(Collector):
 
                         timeslot.save()
 
-                    Reservation(course=course, timeslot=timeslot,
-                                room=room).save()
+                    try:
+                        reservation = Reservation.objects.get(course=course, timeslot=timeslot,
+                                                              room=room)
+
+                    except Timeslot.DoesNotExist:
+                        Reservation(course=course, timeslot=timeslot,
+                                    room=room).save()
 
     def __get_quis_url_name(self, search_url: str, headers: dict) -> Union[Tuple[str, str], Tuple[None, None]]:
         """Private method to get the quispos url from the learnweb search result
@@ -251,7 +278,7 @@ class LearnWebCollector(Collector):
         return course_name, qis_url
 
     def __get_qis_table_data(self, qis_url: str) -> List[dict]:
-        """private method to get the quipos table of the course detail page
+        """private method to get the qispos table of the course detail page
 
             Parameters
             ----------
@@ -376,6 +403,28 @@ class LearnWebCollector(Collector):
             formatted_qis_table_data.append(qis_table_data_dict)
 
         return formatted_qis_table_data
+
+    def __delete_old_courses(self):
+        user = User.objects.get(id=self.current_user)
+
+        try:
+            user_course = UserCourse.objects.filter(
+                user=user).latest('crawl_date')
+
+            user_courses = UserCourse.objects.filter(
+                user=user, crawl_date__date=user_course.crawl_date.date()).all()
+
+            current_date_time = datetime.datetime.now()
+
+            for user_course in user_courses:
+
+                if user_course.crawl_date.month >= 10 and (current_date_time.month >= 10 or current_date_time.month < 4):
+                    user_course.delete()
+                elif user_course.crawl_date.month >= 4 and (current_date_time.month >= 4 or current_date_time.month < 10):
+                    user_course.delete()
+
+        except UserCourse.DoesNotExist:
+            pass
 
 
 class RoomCollector(NoAuthURLCollector):
