@@ -1,32 +1,18 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from mensa_recommend.source.data_collection.learnweb import LearnWebCollector, run
-from celery.result import AsyncResult
+from mensa_recommend.source.data_collection.learnweb import (LearnWebCollector,
+                                                             run)
+from mensa_recommend.source.computations.decryption import decrypt
+
+from rest_framework import permissions, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
 
-def learnweb_login(request):
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def register(request):
 
-    if request.method == "POST":
+    ziv_id = request.data['username']
+    ziv_password = request.data['password']
+    ziv_password = decrypt(ziv_password)
 
-        # check if request parameters were provided
-        if 'username' in request.POST and 'password' in request.POST:
-
-            # get request parameters
-            ziv_id = request.POST['username']
-            ziv_password = request.POST['password']
-            current_user = request.user
-
-            # Check if provided login data is correct
-            session_id = LearnWebCollector(ziv_id, ziv_password,
-                                           current_user).get_session_id()
-
-            if session_id == False:
-
-                # If data is not correct send user feedback
-                print("Daten falsch...")
-            else:
-
-                # Id data is correct then crawling can be started
-                run.delay(ziv_id, ziv_password, current_user.id)
-
-    return render(request, 'learnweb_login.html', {})
+    user = request.user

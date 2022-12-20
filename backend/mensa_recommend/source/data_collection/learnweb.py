@@ -175,8 +175,11 @@ class LearnWebCollector(Collector):
             table_data = self.__get_qis_table_data(qis_url)
 
             # Save the data into the database
-            course = Course(course_id, course_name, course)
-            course.save()
+            try:
+                course = Course.objects.get(publishId=course_id)
+            except Course.DoesNotExist:
+                course = Course(course_id, course_name, course)
+                course.save()
             course.users.add(self.current_user)
 
             for data in table_data:
@@ -202,11 +205,12 @@ class LearnWebCollector(Collector):
                         timeslot.save()
 
                     try:
+                        reservation = Reservation.objects.get(course=course, timeslot=timeslot,
+                                                              room=room)
+
+                    except Timeslot.DoesNotExist:
                         Reservation(course=course, timeslot=timeslot,
                                     room=room).save()
-                    except:
-                        print(
-                            f"Reservation already exists: {course}, {timeslot}, {room}")
 
     def __get_quis_url_name(self, search_url: str, headers: dict) -> Union[Tuple[str, str], Tuple[None, None]]:
         """Private method to get the quispos url from the learnweb search result
