@@ -240,7 +240,7 @@ def logout(request):
 def delete_account(request):
     """Delete a user account
 
-        Route: api/v1/user/check_card_id
+        Route: api/v1/user/delete
         Authorization: IsAuthenticated
         Methods: POST
 
