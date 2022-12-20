@@ -14,6 +14,8 @@ from mensa_recommend.source.data_collection.klarna import KlarnaCollector
 
 from mensa.models import Category, UserCategory, Allergy, UserAllergy, UserDishRating, Dish
 
+from mensa_recommend.serializers import UserSerializer
+
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
@@ -319,3 +321,24 @@ def get_balance(request):
     else:
         return Response("No card_id in user profile",
                         status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def get_user_data(request):
+    """Get infos about the user
+
+        Route: api/v1/user/get_balance
+        Authorization: Authenticated
+        Methods: GET
+
+        Output
+        -------
+        {
+            "username": str,
+            "card_id": int
+        }
+    """
+    user = request.user
+
+    return Response(UserSerializer(user).data)

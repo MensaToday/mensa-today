@@ -1,5 +1,6 @@
 from rest_framework import serializers
 import mensa.models as mensa_model
+import users.models as user_model
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -59,7 +60,8 @@ class DishSerializer(serializers.ModelSerializer):
         child=DishAllergySerializer(read_only=True), source='dishallergy_set')
 
     class Meta:
-        fields = ["id", "categories", "additives", "allergies", "main", "name", "url"]
+        fields = ["id", "categories", "additives",
+                  "allergies", "main", "name", "url"]
         model = mensa_model.Dish
 
 
@@ -123,3 +125,10 @@ class UserDishRatingSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ["dish", "rating"]
         model = mensa_model.UserDishRating
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ["username", "card_id"]
+        model = user_model.User
