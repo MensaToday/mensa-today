@@ -8,4 +8,5 @@ urlpatterns = [
     path('user/delete', views.delete_account),
     path('user/check_card_id', views.check_card_id),
     path('user/get_balance', views.get_balance),
+    path('user/get_user_data', views.get_user_data),
 ]
