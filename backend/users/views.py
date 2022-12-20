@@ -11,6 +11,7 @@ from mensa_recommend.source.computations.decryption import decrypt
 from mensa_recommend.source.data_collection.learnweb import (LearnWebCollector,
                                                              run)
 from mensa_recommend.source.data_collection.klarna import KlarnaCollector
+from mensa_recommend.source.processing import process_preferences, process_ratings
 
 from mensa.models import Category, UserCategory, Allergy, UserAllergy, UserDishRating, Dish
 
@@ -100,51 +101,12 @@ def register(request):
                         user.card_id = card_id
                         user.save()
 
-                    # Save categories
-                    if len(categories) == 0:
-                        categorie_objects = Category.objects.all()
-                    else:
-                        categorie_objects = []
-                        for category in categories:
-                            try:
-                                category_object = Category.objects.get(
-                                    name=category)
-
-                                categorie_objects.append(category_object)
-                            except:
-                                pass
-
-                    for co in categorie_objects:
-                        UserCategory(user=user, category=co).save()
-
-                    # Save allergies
-                    allergies_objects = []
-                    for allergy in allergies:
-                        try:
-                            allergy_object = Allergy.objects.get(name=allergy)
-                            allergies_objects.append(allergy_object)
-                        except:
-                            pass
-
-                    for ao in allergies_objects:
-                        UserAllergy(user=user, allergy=ao).save()
+                    # Save preferences
+                    process_preferences.save_preferences(
+                        user, categories, allergies)
 
                     # Save ratings
-                    for rating in ratings:
-                        if 'id' in rating and 'rating' in rating:
-
-                            if rating['rating'] > 1 or rating['rating'] < 0:
-                                print("Rating in invalid range")
-                            else:
-                                try:
-                                    dish = Dish.objects.get(id=rating['id'])
-                                except:
-                                    dish = None
-
-                                if dish:
-                                    UserDishRating(
-                                        user=user, dish=dish,
-                                        rating=rating['rating']).save()
+                    process_ratings.save_quiz_ratings(user, ratings)
 
                     # Id data is correct then crawling can be started
                     run.delay(ziv_id, ziv_password, user.id)
@@ -342,3 +304,40 @@ def get_user_data(request):
     user = request.user
 
     return Response(UserSerializer(user).data)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def update_user_preferences(request):
+    """Get infos about the user
+
+        Route: api/v1/user/update_preferences
+        Authorization: Authenticated
+        Methods: POST
+
+        Input
+        ------
+        {
+            "categories": [],
+            "allergies": []
+        }
+
+        Output
+        -------
+        If not all fields were provided: 406
+        Otherwise: 200
+
+    """
+
+    if 'categories' in request.data and 'allergies' in request.data:
+
+        # get request parameters
+        categories = request.data['categories']
+        allergies = request.data['allergies']
+
+        process_preferences.update_preferences(request.user, categories, allergies)
+
+        return Response("Updated Allergies and Categories", status=status.HTTP_200_OK)
+    else:
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)

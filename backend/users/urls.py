@@ -9,4 +9,5 @@ urlpatterns = [
     path('user/check_card_id', views.check_card_id),
     path('user/get_balance', views.get_balance),
     path('user/get_user_data', views.get_user_data),
+    path('user/update_preferences', views.update_user_preferences),
 ]
