@@ -19,6 +19,27 @@ def save_preferences(user: User, categories: list[str], allergies: list[str]):
     save_allergies(user, allergies)
 
 
+def update_preferences(user: User, categories: list[str], allergies: list[str]):
+    """Function to update preferences
+    All categories and allergies will be deleted and created afterwards
+
+    Parameters
+    ----------
+    user : User
+        User object
+    categories : list
+        List of categories as strings
+    allergies : list
+        List of allergies as strings
+    """
+
+    UserCategory.objects.filter(user=user).delete()
+    save_categories(user, categories)
+
+    UserAllergy.objects.filter(user=user).delete()
+    save_allergies(user, allergies)
+
+
 def save_categories(user: User, categories: list[str]):
     """Function to save categories
 

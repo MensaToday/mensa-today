@@ -304,3 +304,42 @@ def get_user_data(request):
     user = request.user
 
     return Response(UserSerializer(user).data)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def update_user_preferences(request):
+    """Get infos about the user
+
+        Route: api/v1/user/update_preferences
+        Authorization: Authenticated
+        Methods: POST
+
+        Input
+        ------
+        {
+            "categories": [],
+            "allergies": []
+        }
+
+        Output
+        -------
+        If not all fields were provided: 406
+        Otherwise: 200
+
+    """
+
+    if 'categories' in request.data and 'allergies' in request.data:
+
+        # get request parameters
+        categories = request.data['categories']
+        allergies = request.data['allergies']
+
+        user = request.user
+
+        process_preferences.update_preferences(user, categories, allergies)
+
+        return Response("Updated Allergies and Categories", status=status.HTTP_200_OK)
+    else:
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
