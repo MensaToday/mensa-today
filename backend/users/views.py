@@ -236,6 +236,30 @@ def logout(request):
 
 
 @api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def delete_account(request):
+    """Delete a user account
+
+        Route: api/v1/user/delete
+        Authorization: IsAuthenticated
+        Methods: POST
+
+        Output
+        -------
+        If the user is successfully delete: 202
+        If error occured while deleteing: 400
+        If unauthenticated: 401
+    """
+    user = request.user
+
+    try:
+        user.delete()
+        return Response(status=status.HTTP_202_ACCEPTED)
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def check_card_id(request):
     """Check if the card_id is valid
