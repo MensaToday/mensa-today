@@ -180,6 +180,10 @@ class LearnWebCollector(Collector):
             course.users.add(self.current_user)
 
             for data in table_data:
+
+                if (data['room_id'] == ''):
+                    continue
+
                 room = Room.objects.get(pk=data['room_id'])
 
                 # Check if room exists otherwise do not save the timeslot
@@ -197,8 +201,12 @@ class LearnWebCollector(Collector):
 
                         timeslot.save()
 
-                    Reservation(course=course, timeslot=timeslot,
-                                room=room).save()
+                    try:
+                        Reservation(course=course, timeslot=timeslot,
+                                    room=room).save()
+                    except:
+                        print(
+                            f"Reservation already exists: {course}, {timeslot}, {room}")
 
     def __get_quis_url_name(self, search_url: str, headers: dict) -> Union[Tuple[str, str], Tuple[None, None]]:
         """Private method to get the quispos url from the learnweb search result
@@ -251,7 +259,7 @@ class LearnWebCollector(Collector):
         return course_name, qis_url
 
     def __get_qis_table_data(self, qis_url: str) -> List[dict]:
-        """private method to get the quipos table of the course detail page
+        """private method to get the qispos table of the course detail page
 
             Parameters
             ----------

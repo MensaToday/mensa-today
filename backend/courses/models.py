@@ -39,6 +39,12 @@ class Reservation(models.Model):
     timeslot = models.ForeignKey(Timeslot, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['course', 'timeslot', 'room'], name='unique reservation')
+        ]
+
 
 class RoomMensaDistance(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
