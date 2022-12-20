@@ -46,7 +46,7 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile.local
-    command: celery -A backend worker -l INFO
+    command: celery -A mensa_recommend worker -l INFO
     volumes:
       - ./backend/:/usr/src/app
     env_file:
