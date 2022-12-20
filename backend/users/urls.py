@@ -10,4 +10,5 @@ urlpatterns = [
     path('user/get_balance', views.get_balance),
     path('user/get_user_data', views.get_user_data),
     path('user/update_preferences', views.update_user_preferences),
+    path('user/update_card_id', views.update_card_id),
 ]

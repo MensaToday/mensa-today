@@ -341,3 +341,47 @@ def update_user_preferences(request):
     else:
         return Response("Not all fields provided",
                         status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def update_card_id(request):
+    """Update the card ID of the user
+
+        Route: api/v1/user/update_card_id
+        Authorization: Authenticated
+        Methods: POST
+
+        Input
+        ------
+        {
+            "card_id": int
+        }
+
+        Output
+        -------
+        If card id is valid: 200
+        If card id is wrong: 404
+        If card id not provided: 406
+    """
+    if 'card_id' in request.data:
+        card_id = request.data['card_id']
+
+        # Check card_id
+
+        current_balance = KlarnaCollector().get_current_balance(
+            card_id)
+
+        if current_balance is not None:
+            user = request.user
+            user.card_id = card_id
+            user.save()
+
+            return Response("Card Id updated successfully",
+                            status=status.HTTP_200_OK)
+        else:
+            return Response("Card ID wrong", status=status.HTTP_404_NOT_FOUND)
+
+    else:
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
