@@ -19,10 +19,4 @@ module.exports = {
     "no-console": "off",
     "no-debugger": "off",
   },
-
-  extends: [
-    "plugin:vue/essential",
-    "eslint:recommended",
-    "plugin:prettier/recommended",
-  ],
 };
