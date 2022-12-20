@@ -60,8 +60,6 @@ class LearnWebCollector(Collector):
 
         if self.recrawl:
             self.__delete_old_courses()
-        else:
-            return None
 
         # get current courses from the learnweb. Headers with the session_id are required
         courses = self.__get_current_courses(headers)
