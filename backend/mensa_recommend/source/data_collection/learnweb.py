@@ -60,6 +60,8 @@ class LearnWebCollector(Collector):
 
         if self.recrawl:
             self.__delete_old_courses()
+        else:
+            return None
 
         # get current courses from the learnweb. Headers with the session_id are required
         courses = self.__get_current_courses(headers)
@@ -404,8 +406,27 @@ class LearnWebCollector(Collector):
 
         return formatted_qis_table_data
 
-    def __delete_old_courses():
-        pass
+    def __delete_old_courses(self):
+        user = User.objects.get(id=self.current_user)
+
+        try:
+            user_course = UserCourse.objects.filter(
+                user=user).latest('crawl_date')
+
+            user_courses = UserCourse.objects.filter(
+                user=user, crawl_date__date=user_course.crawl_date.date()).all()
+
+            current_date_time = datetime.datetime.now()
+
+            for user_course in user_courses:
+
+                if user_course.crawl_date.month >= 10 and (current_date_time.month >= 10 or current_date_time.month < 4):
+                    user_course.delete()
+                elif user_course.crawl_date.month >= 4 and (current_date_time.month >= 4 or current_date_time.month < 10):
+                    user_course.delete()
+
+        except UserCourse.DoesNotExist:
+            pass
 
 
 class RoomCollector(NoAuthURLCollector):
