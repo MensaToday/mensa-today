@@ -9,7 +9,7 @@ services:
       - ./backend/:/app
     ports:
       - 9999:9999
-    command: python manage.py runserver 0.0.0.0:9999
+    command: bash -c 'printenv >> /etc/environment && service cron start && python manage.py runserver 0.0.0.0:9999'
     env_file:
       - database-variables.env
       - prod-variables.env
