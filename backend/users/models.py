@@ -52,6 +52,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     card_id = models.CharField(max_length=8, null=True)
     dishes = models.ManyToManyField(
         'mensa.Dish', through='mensa.UserDishRating')
+    courses = models.ManyToManyField(
+        'courses.Course', through='courses.UserCourse')
 
     objects = CustomUserManager()
 

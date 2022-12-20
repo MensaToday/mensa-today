@@ -5,7 +5,7 @@ class Course(models.Model):
     publishId = models.BigIntegerField(primary_key=True, unique=True)
     name = models.CharField(max_length=100)
     learnweb_abbr = models.CharField(max_length=50)
-    users = models.ManyToManyField("users.User")
+    users = models.ManyToManyField("users.User", through='UserCourse')
 
 
 class Timeslot(models.Model):
@@ -50,3 +50,9 @@ class RoomMensaDistance(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     mensa = models.ForeignKey('mensa.Mensa', on_delete=models.CASCADE)
     distance = models.FloatField()
+
+
+class UserCourse(models.Model):
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    crawl_date = models.DateTimeField(auto_now_add=True)
