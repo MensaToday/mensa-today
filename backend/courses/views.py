@@ -6,11 +6,14 @@ from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from courses.models import UserCourse
+from courses.serializers import UserCourseSerializer
+
 
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def recrawl_courses(request):
-    """Recrawal the learnweb courses
+    """Recrawl the learnweb courses
 
         Route: api/v1/course/recrawl
         Authorization: IsAuthenticated
@@ -57,3 +60,55 @@ def recrawl_courses(request):
     else:
         return Response("Not all fields provided",
                         status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def get_courses(request):
+    """Get all course information of a user
+
+        Route: api/v1/course/get_courses
+        Authorization: IsAuthenticated
+        Methods: GET
+
+        Output
+        -------
+        [
+            {
+                "course": {
+                    "publishId": 363967,
+                    "name": "Data Analytics 1 WiSe 2022/23, Heike Trautmann, Raphael Prager",
+                    "learnweb_abbr": "DA1-2022_2",
+                    "reservation": [
+                        {
+                            "timeslot": {
+                                "weekDay": "Thu.",
+                                "startTime": "10:00:00",
+                                "endTime": "12:00:00",
+                                "startDate": "2022-10-13",
+                                "endDate": "2023-02-02",
+                                "rythm": "weekly"
+                            }
+                        },
+                        {
+                            "timeslot": {
+                                "weekDay": "Fri.",
+                                "startTime": "10:00:00",
+                                "endTime": "12:00:00",
+                                "startDate": "2022-10-14",
+                                "endDate": "2023-02-03",
+                                "rythm": "weekly"
+                            }
+                        }
+                    ]
+                }
+            },
+        ]
+
+        If not logged in:
+            401 UNAUTHORIZED
+
+    """
+
+    return Response(UserCourseSerializer(UserCourse.objects.filter(user=request.user),
+                                         many=True).data)
