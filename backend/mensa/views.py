@@ -405,6 +405,66 @@ def get_recommendations(request):
 @api_view(['GET'])
 @permission_classes((permissions.AllowAny,))
 def get_quiz_dishes(request):
+    """Get random dishes for the initial quiz based on the user preferences
+
+        Route: api/v1/mensa/get_quiz_dishes
+        Authorization: Any
+        Methods: Get
+
+
+        Input
+        ------
+        {
+            "categories": [str],
+            "allergies": [str]
+        }
+
+        Output
+        -------
+        [
+            {
+                "id": 275,
+                "categories": [
+                    {
+                        "category": {
+                            "id": 4,
+                            "name": "Beef"
+                        }
+                    }
+                ],
+                "additives": [],
+                "allergies": [
+                    {
+                        "allergy": {
+                            "id": 1,
+                            "name": "Gluten"
+                        }
+                    },
+                    {
+                        "allergy": {
+                            "id": 13,
+                            "name": "Milk"
+                        }
+                    },
+                    {
+                        "allergy": {
+                            "id": 23,
+                            "name": "Celery"
+                        }
+                    },
+                    {
+                        "allergy": {
+                            "id": 7,
+                            "name": "Wheat"
+                        }
+                    }
+                ],
+                "main": true,
+                "name": "Nudeln mit Bolognese, Parmesankäse",
+                "url": "https://live.staticflickr.com/5164/5242038276_ff3753e36a_n.jpg"
+            },
+        ]
+    """
 
     if 'categories' in request.data and 'allergies' in request.data:
 
