@@ -6,12 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0003_initial'),
+        ('courses', '0002_initial'),
     ]
 
     operations = [
         migrations.AddConstraint(
             model_name='reservation',
-            constraint=models.UniqueConstraint(fields=('course', 'timeslot', 'room'), name='unique reservation'),
+            constraint=models.UniqueConstraint(
+                fields=('course', 'timeslot', 'room'), name='unique reservation'),
         ),
     ]
