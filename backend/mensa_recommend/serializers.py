@@ -85,11 +85,23 @@ class DishPlanSerializer(serializers.ModelSerializer):
         method_name="get_ext_ratings")
     user_ratings = serializers.SerializerMethodField(
         method_name="get_user_ratings")
+    side_dishes = serializers.SerializerMethodField(
+        method_name="get_side_dishes")
+
 
     class Meta:
         fields = ["dish", "ext_ratings", "user_ratings", "mensa", "date",
-                  "priceStudent", "priceEmployee"]
+                "priceStudent", "priceEmployee", "side_dishes"]
         model = mensa_model.DishPlan
+
+    def __init__(self, *args, **kwargs):
+        super(DishPlanSerializer, self).__init__(*args, **kwargs)
+
+        if 'sides' in self.context:
+            if not self.context['sides']:
+                del self.fields['side_dishes']
+        else:
+            del self.fields['side_dishes']
 
     def get_ext_ratings(self, obj):
         ext_ratings = mensa_model.ExtDishRating.objects.filter(
@@ -102,6 +114,13 @@ class DishPlanSerializer(serializers.ModelSerializer):
             dish=obj.dish).filter(user=self.context["user"])
 
         return UserRatingsWithoutDishSerializer(user_ratings, read_only=True, many=True).data
+
+    def get_side_dishes(self, obj):
+        side_dishes = mensa_model.DishPlan.objects.filter(
+            mensa=obj.mensa, date=obj.date, dish__main=False).all()
+
+        return DishPlanSerializer(side_dishes, read_only=True, many=True, context={
+                        'user': self.context["user"], 'sides': False}).data
 
 
 class BasicDishSerializer(serializers.ModelSerializer):

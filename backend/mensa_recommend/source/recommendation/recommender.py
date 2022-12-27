@@ -180,7 +180,7 @@ class DishRecommender:
 
                 if serialize:
                     dish_plan = DishPlanSerializer(dish_plan, context={
-                        'user': self._user}).data
+                        'user': self._user, 'sides': True}).data
 
                 mapped.append((dish_plan, p))
 
