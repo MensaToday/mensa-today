@@ -3,13 +3,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 import random
 
-
-from mensa.models import UserDishRating, Dish
-
 import datetime
 from datetime import datetime
 
-from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy
+from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy, UserSideSelection
 from mensa_recommend.source.computations.date_computations import \
     get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
@@ -481,3 +478,62 @@ def get_quiz_dishes(request):
         random_dishes = random.sample(dishes, 3)
 
         return Response(DishSerializer(random_dishes, many=True).data)
+
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def save_user_side_dishes(request):
+    """Save the user side dish to main dish allocation
+
+        Route: api/v1/mensa/save_user_side_dishes
+        Authorization: Authenticated
+        Methods: Post
+
+
+        Input
+        ------
+        {
+            "dishes": [
+                {
+                    "main": 1,
+                    "side": 8
+                },
+                {
+                    "main": 11,
+                    "side": 45
+                },
+                ...
+            ]
+        }
+
+        Output
+        -------
+        If Side dish successfully saved: 200
+        If not all fields were provided: 406
+        If side or main dish is not in database: 404
+    """
+
+    if 'dishes' in request.data:
+        dishes = request.data['dishes']
+
+        for dish in dishes:
+            if 'main' in dish and 'side' in dish:
+                main = dish['main']
+                side = dish['side']
+
+                try:
+                    main_object = DishPlan.objects.get(id=main)
+                    side_object = DishPlan.objects.get(id=side)
+                except DishPlan.DoesNotExist:
+                    return Response("main or side dish is not available in the database", status=status.HTTP_404_NOT_FOUND) 
+                
+                UserSideSelection(user=request.user, main=main_object, side=side_object).save()
+
+                return Response("Side dish successfully linked to main dish", status=status.HTTP_200_OK) 
+            
+            else:
+                return Response("Not all fields provided",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    else:
+                return Response("Not all fields provided",
+                            status=status.HTTP_406_NOT_ACCEPTABLE)           
