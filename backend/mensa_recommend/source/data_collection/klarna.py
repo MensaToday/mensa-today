@@ -38,6 +38,8 @@ class KlarnaCollector(Collector):
 
             if 'balance' in response_json:
                 balance = response_json['balance']
+            else:
+                return None
         except requests.exceptions.RequestException as error:
             raise SystemError(error) from error
 

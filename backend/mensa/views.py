@@ -4,14 +4,24 @@ from datetime import datetime
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+import random
 
 from mensa.models import Dish, DishPlan, UserDishRating
 from mensa_recommend.serializers import DishPlanSerializer, \
     UserDishRatingSerializer
+
+from mensa.models import UserDishRating, Dish
+
+import datetime
+from datetime import datetime
+
+from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy
 from mensa_recommend.source.computations.date_computations import \
     get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
 from mensa_recommend.source.recommendation import recommender
+
+from mensa_recommend.serializers import DishPlanSerializer, UserDishRatingSerializer, DishSerializer
 
 
 @api_view(['GET'])
@@ -396,3 +406,84 @@ def get_recommendations(request):
     # TODO: Maybe add this information for front end?
 
     return Response(res, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes((permissions.AllowAny,))
+def get_quiz_dishes(request):
+    """Get random dishes for the initial quiz based on the user preferences
+
+        Route: api/v1/mensa/get_quiz_dishes
+        Authorization: Any
+        Methods: Get
+
+
+        Input
+        ------
+        {
+            "categories": [str],
+            "allergies": [str]
+        }
+
+        Output
+        -------
+        [
+            {
+                "id": 275,
+                "categories": [
+                    {
+                        "category": {
+                            "id": 4,
+                            "name": "Beef"
+                        }
+                    }
+                ],
+                "additives": [],
+                "allergies": [
+                    {
+                        "allergy": {
+                            "id": 1,
+                            "name": "Gluten"
+                        }
+                    },
+                    {
+                        "allergy": {
+                            "id": 13,
+                            "name": "Milk"
+                        }
+                    },
+                    {
+                        "allergy": {
+                            "id": 23,
+                            "name": "Celery"
+                        }
+                    },
+                    {
+                        "allergy": {
+                            "id": 7,
+                            "name": "Wheat"
+                        }
+                    }
+                ],
+                "main": true,
+                "name": "Nudeln mit Bolognese, Parmesankäse",
+                "url": "https://live.staticflickr.com/5164/5242038276_ff3753e36a_n.jpg"
+            },
+        ]
+    """
+
+    if 'categories' in request.data and 'allergies' in request.data:
+
+        # get request parameters
+        categories = request.data['categories']
+        allergies = request.data['allergies']
+
+        category_objects = Category.objects.filter(name__in=categories)
+        allergy_objects = Allergy.objects.exclude(name__in=allergies)
+
+        dishes = list(Dish.objects.filter(
+            categories__in=category_objects, allergies__in=allergy_objects, url__isnull=False))
+
+        random_dishes = random.sample(dishes, 3)
+
+        return Response(DishSerializer(random_dishes, many=True).data)
