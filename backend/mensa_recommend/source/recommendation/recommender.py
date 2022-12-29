@@ -54,6 +54,11 @@ def encode_binary(att_list: List[List[int]]) -> List[List[int]]:
     return res
 
 
+def get_top_n(values: List[Tuple[int, float]], n: int) -> List[
+        Tuple[int, float]]:
+    return values.sort(key=lambda val: val[1])[:n]
+
+
 class DishRecommender:
     """
         The dish recommender class is the main class for generating
@@ -285,33 +290,18 @@ class DishRecommender:
         # computes the user profile for the comparison
         profile = self.__compute_user_profile()
 
-        dish_ids = []
         predictions = []
 
         # compute the cosine_similarity between the profile and each dish from
         # the pool.
         for dish_id, enc in available_dishes:
-            dish_ids.append(dish_id)
-
             sim = dist.cosine_similarity(profile, enc)
-            predictions.append(sim)
+            predictions.append((dish_id, sim))
 
-        # selecting the top n results
-        # disclaimer: this is not the most efficient way for a selection, but
-        # it also should not create any performance reasons.
-        result = []
-        for _ in range(recommendations_per_day):
-            # get best prediction
-            max_id = np.argmax(predictions)
-
-            # insert prediction with dish_id into result list
-            p = (dish_ids[max_id], predictions[max_id])
-            result.append(p)
-
-            # remove max value
-            dish_ids.pop(max_id)
-            predictions.pop(max_id)
-        return result
+        # selecting the top n results (sort by prediction value)
+        predictions.sort(key=lambda val: val[1])
+        top = predictions[:recommendations_per_day]
+        return top
 
     def __load_dish_plan(self) -> Dict[date, List[DishPlan]]:
         """Load the dish plan from the database.
