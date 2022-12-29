@@ -54,11 +54,6 @@ def encode_binary(att_list: List[List[int]]) -> List[List[int]]:
     return res
 
 
-def get_top_n(values: List[Tuple[int, float]], n: int) -> List[
-        Tuple[int, float]]:
-    return values.sort(key=lambda val: val[1])[:n]
-
-
 class DishRecommender:
     """
         The dish recommender class is the main class for generating
