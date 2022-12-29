@@ -1,14 +1,16 @@
 import logging
-from datetime import date, timedelta, datetime
-from typing import List, Tuple, Dict
+from datetime import date, timedelta, datetime, time
+from typing import List, Tuple, Dict, Optional
 
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from mensa_recommend.serializers import DishPlanSerializer
 from mensa.models import UserDishRating, DishPlan, Dish, UserAllergy, \
-    UserCategory
-from mensa_recommend.source.computations import distance_computation as dist
+    UserCategory, Mensa
+from mensa_recommend.serializers import DishPlanSerializer
+from mensa_recommend.source.computations import distance_computation, \
+    user_location
+from mensa_recommend.source.data_collection import weather
 from users.models import User
 
 
@@ -54,6 +56,34 @@ def encode_binary(att_list: List[List[int]]) -> List[List[int]]:
     return res
 
 
+def multiply(f: float, factors: List[Optional[float]],
+             min_value: float = 0.1, max_value: float = 1.0) -> float:
+    """Multiply a float f with a list of factors but consider minimum and
+    maximum bounds.
+
+    Parameters
+    ----------
+    f : float
+        The float that should be multiplied.
+    factors : List[Optional[float]]
+        The list of factors. Can contain None values.
+    min_value : float
+        The minimum value that a factor is allowed to be.
+    max_value : float
+        The maximum value that a factor is allowed to be.
+
+    Return
+    ------
+    f : float
+        The result.
+    """
+    for factor in factors:
+        if factor is not None:
+            bounded = min(max(factor, min_value), max_value)
+            f *= bounded
+    return f
+
+
 class DishRecommender:
     """
         The dish recommender class is the main class for generating
@@ -83,6 +113,15 @@ class DishRecommender:
         self._user = user
         self._user_categories: List[int] = []
         self._user_allergies: List[int] = []
+
+        # TODO: The time when the user wants to eat. This is currently static
+        #  but might be changed in the future.
+        self._daytime: time = time(hour=12)
+        # TODO: Max number of kilometers the user would drive at most.
+        #  In the future this might be an option the user can configure.
+        #  Must be > 0.
+        self._flexibility = 3
+        self._mensa_distances = self.__compute_mensa_distance_scores()
 
         if entire_week:
             self._date_start = day - timedelta(days=day.weekday())
@@ -140,8 +179,8 @@ class DishRecommender:
     def predict(self, recommendations_per_day: int = 1,
                 serialize: bool = False) -> Dict[date, List[
             Tuple[DishPlan, float]]]:
-        """Predicting recommendations for a user. This process is efficient and
-        can be executed synchronously without any problems.
+        """Predicting recommendations for a user. This process is efficient
+        and can be executed synchronously without any problems.
 
         Parameters
         ----------
@@ -153,10 +192,10 @@ class DishRecommender:
         Return
         ------
         result : Dict[date, List[Tuple[DishPlan, float]]]
-            The result per day encapsulated in a dict saved by the date itself.
-            The list of recommendations per day is structured by a tuple
-            combining the DishPlan (with information about dish, mensa and
-            date) and the prediction value (0 <= p <= 1).
+            The result per day encapsulated in a dict saved by the date
+            itself. The list of recommendations per day is structured by a
+            tuple combining the DishPlan (with information about dish, mensa
+            and date) and the prediction value (0 <= p <= 1).
         """
         # Load the data if it has not been done yet. The data will be loaded
         # synchronously in this case.
@@ -173,13 +212,11 @@ class DishRecommender:
         # compute results per day
         for day in self.__days():
             dishes = separated_encoded_dishes[day]
-            pred = self.__predict_dishes(recommendations_per_day, dishes)
+            pred = self.__predict_dishes(day, recommendations_per_day, dishes)
 
             # map the predictions back to DishPlan instances
             mapped = []
-            for dish_id, p in pred:
-                dish_plan = self.__find_dish_in_plan(dish_id, day)
-
+            for dish_id, dish_plan, _, p in pred:
                 if serialize:
                     dish_plan = DishPlanSerializer(dish_plan, context={
                         'user': self._user}).data
@@ -214,9 +251,9 @@ class DishRecommender:
         Return
         ------
         separated_dishes : Dict[date, List[Tuple[int, List[float]]]]
-            The separated dishes combined by a dictionary with its date as key.
-            Each day consists of a list of dishes that are available. Each dish
-            is represented by a tuple combining the dish_id and the
+            The separated dishes combined by a dictionary with its date as
+            key. Each day consists of a list of dishes that are available.
+            Each dish is represented by a tuple combining the dish_id and the
             characteristics vector for content-based filtering.
         """
         separated_dishes = {}
@@ -237,7 +274,8 @@ class DishRecommender:
             separated_dishes[day] = dishes
         return separated_dishes
 
-    def __find_dish_in_plan(self, dish_id: int, day: date) -> DishPlan:
+    def __find_dish_in_plan(self, dish_id: int, day: date) \
+            -> Tuple[DishPlan, Mensa]:
         """Find a dish in the loaded plan.
 
         Parameters
@@ -249,35 +287,48 @@ class DishRecommender:
 
         Return
         ------
-        plan : DishPlan
-            The DishPlan instance combining the relevant dish and its mensa
-            where the dish is actually available.
+        location : Tuple[DishPlan, Mensa]
+            The location.
         """
+        location = None
+        distance_score = 0
+
         for plan in self._plan[day]:
             if plan.dish.id == dish_id:
-                return plan
+                mensa: Mensa = plan.mensa.get()
+                score = self._mensa_distances[mensa.id]
+                if location is None or score < distance_score:
+                    location = plan, mensa
+                    distance_score = score
 
-        raise KeyError(f"Could not find dish with id={dish_id}.")
+        if location is None:
+            raise KeyError(f"Could not find dish with id={dish_id}.")
 
-    def __predict_dishes(self, recommendations_per_day: int,
+        return location
+
+    def __predict_dishes(self, day: date, recommendations_per_day: int,
                          available_dishes: List[Tuple[int, List[float]]]) -> \
-            List[Tuple[int, float]]:
+            List[Tuple[int, DishPlan, Mensa, float]]:
         """Apply content-based filtering and select the best results. Core
         magic of the recommender class.
 
         Parameters
         ----------
+        day: date
+            The date of the recommendations.
         recommendations_per_day : int
             The number of recommendations per day. Must be > 0. Default is 1.
-        available_dishes : List[Tuple[int, List[float]]]
-            The dish pool structured by a list of tuples combining the dish_id
-            and the dish characteristics vector.
+        available_dishes : List[Tuple[int, DishPlan, List[float]]]
+            The dish pool structured by a list of tuples combining the
+            dish_id, the dish_plan instance where this dish can be found and
+            the dish characteristics vector.
 
         Return
         ------
-        result : List[Tuple[int, float]]
+        result : List[Tuple[int, DishPlan, Mensa, float]]
             The predictions in a DESC order. Structured by a list of tuples
-            combining the dish_id and the prediction value.
+            combining the dish_id, the location (DishPlan and Mensa) and the
+            prediction value.
         """
         if len(available_dishes) == 0:
             return []
@@ -290,13 +341,75 @@ class DishRecommender:
         # compute the cosine_similarity between the profile and each dish from
         # the pool.
         for dish_id, enc in available_dishes:
-            sim = dist.cosine_similarity(profile, enc)
-            predictions.append((dish_id, sim))
+            sim = distance_computation.cosine_similarity(profile, enc)
+
+            # also load the dish_plan for position constraints
+            dish_plan, mensa = self.__find_dish_in_plan(dish_id, day)
+            predictions.append((dish_id, dish_plan, mensa, sim))
+
+        # apply prediction constraints such as weather and path length
+        predictions = self.__apply_pred_constraints(day, predictions)
 
         # selecting the top n results (sort by prediction value)
-        predictions.sort(key=lambda val: val[1])
+        predictions.sort(key=lambda val: val[3])
         top = predictions[:recommendations_per_day]
         return top
+
+    def __apply_pred_constraints(self, day: date, predictions: List[Tuple[
+            int, DishPlan, Mensa, float]]) \
+            -> List[Tuple[int, DishPlan, Mensa, float]]:
+        """Apply prediction side constraints such as weather quality or path
+        length.
+
+        Parameters
+        ----------
+        day: date
+            The date of the recommendations.
+        predictions : List[Tuple[int, DishPlan, Mensa, float]]
+            The computed predictions.
+
+        Return
+        ------
+        result : List[Tuple[int, DishPlan, Mensa, float]]
+            The predictions considering all constraints.
+        """
+        weather_scores: Dict[int, float] = {}
+
+        result = []
+        for dish_id, dish_plan, mensa, p in predictions:
+            # make api call to get weather score
+            if mensa.zipCode not in weather_scores:
+                weather_scores[mensa.zipCode] = weather.get_score(
+                    datetime.combine(day, self._daytime),
+                    mensa.lat,
+                    mensa.lon
+                )
+
+            local_weather = weather_scores[mensa.zipCode]
+            dist_score = self._mensa_distances[mensa.id]
+
+            # Do not mess up predictions if one of the constraints is 0.
+            # Therefore, bound constraints to a range of 0.1-1.
+            p = multiply(p, [local_weather, dist_score])
+
+            result.append((dish_id, dish_plan, mensa, p))
+        return result
+
+    def __compute_mensa_distance_scores(self) -> Dict[int, float]:
+        """Compute scores for mensa distances, so they can be used when
+        combining the prediction constraints.
+
+        Return
+        ------
+        distances : Dict[int, float]
+            The distance scores.
+        """
+        distances = user_location.get_user_location(self._user)
+
+        for key in distances.keys():
+            distances[key] = 1 - min(distances[key] / self._flexibility, 1)
+
+        return distances
 
     def __load_dish_plan(self) -> Dict[date, List[DishPlan]]:
         """Load the dish plan from the database.
@@ -395,16 +508,17 @@ class DishRecommender:
 
         # instantiate profile with zeros and
         data_vector_length = len(self._encoded_dishes[0][1])
-        X = [0] * data_vector_length
+        x = [0] * data_vector_length
 
         for rating in self._ratings:
             # consider only ratings that are not hard filtered
             if rating.dish.id in mapped:
                 data = mapped[rating.dish.id]
-                X += np.multiply(rating.rating, data)
-        return X
+                x += np.multiply(rating.rating, data)
+        return x
 
-    def __encode_dishes(self, dishes: List[Dish]) -> List[Tuple[int, List[float]]]:
+    def __encode_dishes(self, dishes: List[Dish]) \
+            -> List[Tuple[int, List[float]]]:
         """Encode all available dishes. Requires them to be already loaded.
 
         Return
