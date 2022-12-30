@@ -293,13 +293,14 @@ class DishRecommender:
             The location.
         """
         location = None
-        distance_score = 0
+        distance_score = -1
 
         for plan in self._plan[day]:
             if plan.dish.id == dish_id:
-                mensa: Mensa = plan.mensa.get()
-                score = self._mensa_distances[mensa.id]
-                if location is None or score < distance_score:
+                mensa: Mensa = plan.mensa
+                score = self.__dist_to_mensa(mensa)
+
+                if location is None or distance_score < score:
                     location = plan, mensa
                     distance_score = score
 
@@ -388,7 +389,7 @@ class DishRecommender:
                 )
 
             local_weather = weather_scores[mensa.zipCode]
-            dist_score = self._mensa_distances[mensa.id]
+            dist_score = self.__dist_to_mensa(mensa)
 
             # Do not mess up predictions if one of the constraints is 0.
             # Therefore, bound constraints to a range of 0.1-1.
@@ -396,6 +397,24 @@ class DishRecommender:
 
             result.append((dish_id, dish_plan, mensa, p))
         return result
+
+    def __dist_to_mensa(self, mensa: Mensa) -> float:
+        """Get the user distance to a mensa if available. Otherwise, return 0.
+
+        Parameters
+        ----------
+        mensa: Mensa
+            The mensa that should be checked.
+
+        Return
+        ------
+        distance : float
+            The distance or 0 if no distance was found.
+        """
+        if mensa.id in self._mensa_distances:
+            return self._mensa_distances[mensa.id]
+        else:
+            return 0
 
     def __compute_mensa_distance_scores(self) -> Dict[int, float]:
         """Compute scores for mensa distances, so they can be used when
