@@ -479,6 +479,7 @@ def get_quiz_dishes(request):
 
         return Response(DishSerializer(random_dishes, many=True).data)
 
+
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def save_user_side_dishes(request):
@@ -495,11 +496,11 @@ def save_user_side_dishes(request):
             "dishes": [
                 {
                     "main": 1,
-                    "side": 8
+                    "side_dishes": [8, 9]
                 },
                 {
                     "main": 11,
-                    "side": 45
+                    "side_dishes": [45]
                 },
                 ...
             ]
@@ -509,31 +510,44 @@ def save_user_side_dishes(request):
         -------
         If Side dish successfully saved: 200
         If not all fields were provided: 406
+        If side dishes is not a list: 406
         If side or main dish is not in database: 404
     """
 
     if 'dishes' in request.data:
         dishes = request.data['dishes']
 
+        # Iterate over each dish (main dish including a list of side dishes)
         for dish in dishes:
-            if 'main' in dish and 'side' in dish:
+            if 'main' in dish and 'side_dishes' in dish:
                 main = dish['main']
-                side = dish['side']
+                side_dishes = dish['side_dishes']
 
+                # Get the main dish object by id
                 try:
                     main_object = DishPlan.objects.get(id=main)
-                    side_object = DishPlan.objects.get(id=side)
                 except DishPlan.DoesNotExist:
-                    return Response("main or side dish is not available in the database", status=status.HTTP_404_NOT_FOUND) 
-                
-                UserSideSelection(user=request.user, main=main_object, side=side_object).save()
+                    return Response("Main dish is not available in the database", status=status.HTTP_404_NOT_FOUND)
 
-                return Response("Side dish successfully linked to main dish", status=status.HTTP_200_OK) 
-            
+                # check if side dishes is a list
+                if type(side_dishes) == list:
+                    for side_dish in side_dishes:
+                        try:
+                            side_object = DishPlan.objects.get(id=side_dish)
+                        except DishPlan.DoesNotExist:
+                            return Response("Side dish is not available in the database", status=status.HTTP_404_NOT_FOUND)
+
+                        UserSideSelection(user=request.user,
+                                          main=main_object, side=side_object).save()
+                else:
+                    return Response("Side dishes is not a list", status=status.HTTP_406_NOT_ACCEPTABLE)
+
+                return Response("Side dish successfully linked to main dish", status=status.HTTP_200_OK)
+
             else:
                 return Response("Not all fields provided",
-                            status=status.HTTP_406_NOT_ACCEPTABLE)
+                                status=status.HTTP_406_NOT_ACCEPTABLE)
 
     else:
-                return Response("Not all fields provided",
-                            status=status.HTTP_406_NOT_ACCEPTABLE)           
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
