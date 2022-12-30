@@ -43,7 +43,9 @@ def encode_binary(att_list: List[List[int]]) -> List[List[int]]:
 
     max_val = max(att_list)
     if len(max_val) == 0:
-        return []
+        # Return 'att_list' since we must remain the size
+        # even if all entries are empty.
+        return att_list
     max_val = max_val[0]
 
     res = []
