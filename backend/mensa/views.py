@@ -1,22 +1,25 @@
+import datetime
+import datetime
+import random
+from datetime import datetime
+from datetime import datetime
+
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+
 import random
-
-
-from mensa.models import UserDishRating, Dish
 
 import datetime
 from datetime import datetime
 
-from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy
+from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy, UserSideSelection
+from mensa_recommend.serializers import DishPlanSerializer, UserDishRatingSerializer, DishSerializer
+
 from mensa_recommend.source.computations.date_computations import \
     get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
-
 from mensa_recommend.source.recommendation import recommender
-
-from mensa_recommend.serializers import DishPlanSerializer, UserDishRatingSerializer, DishSerializer
 
 
 @api_view(['GET'])
@@ -267,7 +270,8 @@ def get_week_recommendation(request):
     r = recommender.DishRecommender(request.user, datetime.today(), True)
     res = r.predict(1, serialize=True)
 
-    recommendations = [day[0][0] for day in res.values()]
+    recommendations = [day[0][0] if len(day) > 0 else {} for day
+                       in res.values()]
     return Response(recommendations, status=status.HTTP_200_OK)
 
 
@@ -481,3 +485,76 @@ def get_quiz_dishes(request):
         random_dishes = random.sample(dishes, 3)
 
         return Response(DishSerializer(random_dishes, many=True).data)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated,))
+def save_user_side_dishes(request):
+    """Save the user side dish to main dish allocation
+
+        Route: api/v1/mensa/save_user_side_dishes
+        Authorization: Authenticated
+        Methods: Post
+
+
+        Input
+        ------
+        {
+            "dishes": [
+                {
+                    "main": 1,
+                    "side_dishes": [8, 9]
+                },
+                {
+                    "main": 11,
+                    "side_dishes": [45]
+                },
+                ...
+            ]
+        }
+
+        Output
+        -------
+        If Side dish successfully saved: 200
+        If not all fields were provided: 406
+        If side dishes is not a list: 406
+        If side or main dish is not in database: 404
+    """
+
+    if 'dishes' in request.data:
+        dishes = request.data['dishes']
+
+        # Iterate over each dish (main dish including a list of side dishes)
+        for dish in dishes:
+            if 'main' in dish and 'side_dishes' in dish:
+                main = dish['main']
+                side_dishes = dish['side_dishes']
+
+                # Get the main dish object by id
+                try:
+                    main_object = DishPlan.objects.get(id=main)
+                except DishPlan.DoesNotExist:
+                    return Response("Main dish is not available in the database", status=status.HTTP_404_NOT_FOUND)
+
+                # check if side dishes is a list
+                if type(side_dishes) == list:
+                    for side_dish in side_dishes:
+                        try:
+                            side_object = DishPlan.objects.get(id=side_dish)
+                        except DishPlan.DoesNotExist:
+                            return Response("Side dish is not available in the database", status=status.HTTP_404_NOT_FOUND)
+
+                        UserSideSelection(user=request.user,
+                                          main=main_object, side=side_object).save()
+                else:
+                    return Response("Side dishes is not a list", status=status.HTTP_406_NOT_ACCEPTABLE)
+
+                return Response("Side dish successfully linked to main dish", status=status.HTTP_200_OK)
+
+            else:
+                return Response("Not all fields provided",
+                                status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    else:
+        return Response("Not all fields provided",
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
