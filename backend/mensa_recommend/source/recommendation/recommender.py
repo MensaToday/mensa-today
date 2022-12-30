@@ -1,3 +1,4 @@
+import logging
 from datetime import date, timedelta, datetime
 from typing import List, Tuple, Dict
 
@@ -123,9 +124,10 @@ class DishRecommender:
         self.dishes = self.__extract_distinct_dishes()
 
         if len(self.dishes) == 0:
-            raise Exception(
-                f"No dishes found! start={self._date_start}, "
+            logging.debug(
+                f"Recommender: No dishes found! start={self._date_start}, "
                 f"end={self._date_end}")
+            return
 
         self.filtered_dishes = self.__filter_dishes()
 
