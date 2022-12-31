@@ -140,7 +140,7 @@ class DishPlanSerializer(serializers.ModelSerializer):
             'user': self.context['user'], 'include_sides': False, 'sides': True, 'main': obj}).data
 
     def get_side_selected(self, obj):
-        print(obj.id)
+
         try:
             user_side_selection = mensa_model.UserSideSelection.objects.get(
                 user=self.context['user'], main=self.context['main'], side=obj)
