@@ -221,7 +221,7 @@ class DishRecommender:
             for dish_id, dish_plan, _, p in pred:
                 if serialize:
                     dish_plan = DishPlanSerializer(dish_plan, context={
-                        'user': self._user}).data
+                        'user': self._user, 'include_sides': True}).data
 
                 mapped.append((dish_plan, p))
 
