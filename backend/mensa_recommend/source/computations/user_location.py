@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, time
 from mensa_recommend.source.computations.transformer import transform_week_day_to_int
 
 from courses.models import UserCourse, Reservation, RoomMensaDistance
@@ -6,13 +6,18 @@ from users.models import User
 from django.db.models.manager import BaseManager
 
 
-def get_user_location(user: User) -> dict[int, float]:
+def get_user_location(user: User, current_date: date = None, noon_time: time = None) -> dict[int, float]:
     """Get the distance fromt he current user location to every mensa
 
         Parameters
         ----------
         user: User
             A user where the distance should be returned
+        current_date: date
+            The date where the position of the user should be returned(default = None)
+            If None the current date will be picked
+        noon_time: time
+            Time of noon (Default = None)
 
 
         Return
@@ -24,19 +29,26 @@ def get_user_location(user: User) -> dict[int, float]:
             }
             If there are no valid reservations an empty dict will be returned
 
-        TODO add a possibility to enter a custom date
     """
 
     # Get all courses of a user
     user_courses = UserCourse.objects.filter(user=user)
 
-    valid_reservations = get_relevant_reservations(user_courses)
+    # Get the current date and weekday
+    if current_date is None:
+        current_date = date.today()
+    elif not isinstance(current_date, date):
+        raise ValueError(
+            "current_date is not of the type datetime.date but of type: " + type(current_date))
+
+    valid_reservations = get_relevant_reservations(user_courses, current_date)
 
     # If there are no valid reservations an empty dict will be returned
     if len(valid_reservations) == 0:
         return {}
 
-    relevant_reservation = choose_relevant_reservation(valid_reservations)
+    relevant_reservation = choose_relevant_reservation(
+        valid_reservations, current_date, noon_time)
 
     # Get the distance between the room of the rervation and every mensa
     room_distances = RoomMensaDistance.objects.filter(
@@ -50,7 +62,7 @@ def get_user_location(user: User) -> dict[int, float]:
     return result
 
 
-def get_relevant_reservations(user_courses: BaseManager[UserCourse]) -> list[Reservation]:
+def get_relevant_reservations(user_courses: BaseManager[UserCourse], current_date: date) -> list[Reservation]:
     """Iterate over each course to get the relevant courses for that day.
         A course is relevant/valid if it belongs to the current day. All relevant
         reservations will be returned
@@ -58,13 +70,14 @@ def get_relevant_reservations(user_courses: BaseManager[UserCourse]) -> list[Res
         Parameters
         ----------
         user_courses: BaseManager[UserCourse]
-            all courses of a user
-
+            All courses of a user
+        current_date: date
+            The date of the reservations
 
         Return
         ------
         valid_reservations: List[Reservation]
-            all valid reservations
+            All valid reservations
     """
 
     valid_reservations = []
@@ -82,10 +95,7 @@ def get_relevant_reservations(user_courses: BaseManager[UserCourse]) -> list[Res
             # Get and transform week day of the timeslot
             week_day = transform_week_day_to_int(timeslot.weekDay)
 
-            # Get the current date time, date and weekday
-            current_date_time = datetime.today()
-            current_date = date.today()
-            current_week_day = current_date_time.weekday()
+            current_week_day = current_date.weekday()
 
             if week_day != -1:
 
@@ -104,7 +114,7 @@ def get_relevant_reservations(user_courses: BaseManager[UserCourse]) -> list[Res
     return valid_reservations
 
 
-def choose_relevant_reservation(valid_reservations: list[Reservation]):
+def choose_relevant_reservation(valid_reservations: list[Reservation], current_date: date, noon_time: time = None):
     """ Choose of all reservations the reservation with the smallest 
     time difference to noon. All reservations in the list have to be on the same day
 
@@ -112,6 +122,11 @@ def choose_relevant_reservation(valid_reservations: list[Reservation]):
         ----------
         valid_reservations: list[Reservation]
             All valid reservations on the same day
+        current_date: date
+            The date of the reservations
+        noon_time: time
+            Time of noon (Default = None)
+            If the time is None the time will be set to 12:00:00
 
 
         Return
@@ -127,9 +142,14 @@ def choose_relevant_reservation(valid_reservations: list[Reservation]):
     min_time_before_12_reservation: Reservation
     min_time_after_12_reservation: Reservation
 
-    # Initialize date with a time of 12:00:00 (noon)
-    noon = datetime.now().replace(
-        hour=12, minute=0, second=0, microsecond=0)
+    if noon_time is None:
+        noon_time = time(12, 0, 0)
+    elif not isinstance(current_date, date):
+        raise ValueError(
+            "noon_time is not of the type datetime.time but of type: " + type(noon_time))
+
+    # Initialize date with a time of noon
+    noon = datetime.combine(current_date, noon_time)
 
     for valid_reservation in valid_reservations:
 
