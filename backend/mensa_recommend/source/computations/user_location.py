@@ -176,18 +176,29 @@ def choose_relevant_reservation(valid_reservations: list[Reservation], current_d
             time_diff = (noon - end_date_time).seconds
 
             # If the difference is smaller than the current minimum before 12,
-            # update the minimun and the reservation
+            # update the minimum and the reservation
             if time_diff < min_time_before_12:
                 min_time_before_12 = time_diff
                 min_time_before_12_reservation = valid_reservation
-        else:
+        elif start_date_time >= noon:
             # end date time is greater than noon (second case)
 
             # calculate the time difference between noon and end date time
             time_diff = (start_date_time - noon).seconds
 
             # If the difference is smaller than the current minimum after 12,
-            # update the minimun and the reservation
+            # update the minimum and the reservation
+            if time_diff < min_time_after_12:
+                min_time_after_12 = time_diff
+                min_time_after_12_reservation = valid_reservation
+        else:
+            # start date time and end date time of the course is between noon
+
+            # calculate the time difference between noon and end date time
+            time_diff = (end_date_time - noon).seconds
+
+            # If the difference is smaller than the current minimum after 12,
+            # update the minimum and the reservation
             if time_diff < min_time_after_12:
                 min_time_after_12 = time_diff
                 min_time_after_12_reservation = valid_reservation
