@@ -22,3 +22,38 @@ def transform_rating(rating: int) -> Union[float, None]:
         return (rating-1)/4
     else:
         return None
+
+
+def transform_week_day_to_int(week_day: str) -> int:
+    """Transform a week day (string) into an integer between 0 (Monday) and 5 (Sunday)
+
+        Parameters
+        ----------
+        week_day: str
+            A weekday as string (Mon.-Sun.)
+
+
+        Return
+        ------
+        week_day: int
+            A weekday as integer (0-5)
+            If the string is not valid then a -1 will be returned
+
+    """
+
+    if week_day == 'Mon.':
+        return 0
+    elif week_day == 'Tue.':
+        return 1
+    elif week_day == 'Wed.':
+        return 2
+    elif week_day == 'Thu.':
+        return 3
+    elif week_day == 'Fri.':
+        return 4
+    elif week_day == 'Sat.':
+        return 4
+    elif week_day == 'Sun.':
+        return 5
+    else:
+        return -1
