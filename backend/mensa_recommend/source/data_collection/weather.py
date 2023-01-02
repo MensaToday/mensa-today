@@ -1,10 +1,9 @@
 import requests
 import datetime
 
-
 api_url = "https://api.open-meteo.com/v1/forecast" \
-          "?latitude=51.96" \
-          "&longitude=7.63" \
+          "?latitude={latitude}" \
+          "&longitude={longitude}" \
           "&hourly=temperature_2m,rain,snowfall,windspeed_10m" \
           "&daily=weathercode" \
           "&timezone=Europe%2FBerlin" \
@@ -12,7 +11,8 @@ api_url = "https://api.open-meteo.com/v1/forecast" \
           "&end_date={end}"
 
 
-def get_score(day: datetime.datetime) -> float:
+def get_score(day: datetime.datetime, latitude: float,
+              longitude: float) -> float:
     """Request the weather at the given date from https://open-mateo.com and
     calculate a single combined score.
 
@@ -20,6 +20,10 @@ def get_score(day: datetime.datetime) -> float:
     ----------
     day : datetime.datetime
         The date that should be checked
+    latitude : float
+        The latitude of the position that should be checked
+    longitude : float
+        The longitude of the position that should be checked
 
     Return
     ------
@@ -27,7 +31,12 @@ def get_score(day: datetime.datetime) -> float:
         A weather score that ranges from 0 to the best value 1.
     """
     formatted = day.strftime("%Y-%m-%d")
-    res = requests.get(api_url.format(start=formatted, end=formatted)).json()
+    res = requests.get(api_url.format(
+        latitude=latitude,
+        longitude=longitude,
+        start=formatted,
+        end=formatted
+    )).json()
     hourly = res["hourly"]
 
     temp = hourly["temperature_2m"]
@@ -80,7 +89,7 @@ def get_score(day: datetime.datetime) -> float:
 
     max_points += 15
     # in km/h
-    if c_wind >= 60:    # stormy wind
+    if c_wind >= 60:  # stormy wind
         points += 15
     elif c_wind >= 40:  # strong wind
         points += 9

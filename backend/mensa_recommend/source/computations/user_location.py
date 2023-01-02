@@ -1,6 +1,7 @@
-from users.models import User
-from courses.models import UserCourse, Course, Reservation, Timeslot, Room, RoomMensaDistance
 from datetime import datetime, date
+
+from courses.models import UserCourse, Reservation, RoomMensaDistance
+from users.models import User
 
 
 def transform_week_day_to_int(week_day: str):
@@ -23,7 +24,6 @@ def transform_week_day_to_int(week_day: str):
 
 
 def get_user_location(user: User):
-
     user_courses = UserCourse.objects.filter(user=user)
 
     valid_reservations = []
@@ -43,8 +43,11 @@ def get_user_location(user: User):
 
             if week_day != -1:
                 if current_week_day == week_day:
-                    if current_date > timeslot.startDate and current_date < timeslot.endDate:
+                    if timeslot.startDate <= current_date <= timeslot.endDate:
                         valid_reservations.append(reservation)
+
+    if len(valid_reservations) == 0:
+        return {}
 
     min_time_before_12 = float('inf')
     min_time_after_12 = float('inf')
@@ -54,15 +57,17 @@ def get_user_location(user: User):
 
     noon = datetime.now().replace(
         hour=12, minute=0, second=0, microsecond=0)
-    for valid_reservation in valid_reservations:
 
+    for valid_reservation in valid_reservations:
         start_time = valid_reservation.timeslot.startTime
         start_date_time = datetime.now().replace(
-            hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0)
+            hour=start_time.hour, minute=start_time.minute, second=0,
+            microsecond=0)
 
         end_time = valid_reservation.timeslot.endTime
         end_date_time = datetime.now().replace(
-            hour=end_time.hour, minute=end_time.minute, second=0, microsecond=0)
+            hour=end_time.hour, minute=end_time.minute, second=0,
+            microsecond=0)
 
         if end_date_time <= noon:
             time_diff = (noon - end_date_time).seconds

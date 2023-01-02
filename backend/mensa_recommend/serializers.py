@@ -85,11 +85,40 @@ class DishPlanSerializer(serializers.ModelSerializer):
         method_name="get_ext_ratings")
     user_ratings = serializers.SerializerMethodField(
         method_name="get_user_ratings")
+    side_dishes = serializers.SerializerMethodField(
+        method_name="get_side_dishes")
+    side_selected = serializers.SerializerMethodField(
+        method_name="get_side_selected")
 
     class Meta:
         fields = ["dish", "ext_ratings", "user_ratings", "mensa", "date",
-                  "priceStudent", "priceEmployee"]
+                  "priceStudent", "priceEmployee", "side_dishes", "side_selected"]
         model = mensa_model.DishPlan
+
+    def __init__(self, *args, **kwargs):
+        """"
+            Decide which fields should be returned based on the context
+            When the context 'include_sides' is True then side dishes should be included.
+            When the context 'sides' is True then a boolean side_selected will be included that
+            states if the side dish was selected by the user or not. If the context is false the
+            coresponding fields will be deleted.
+        """
+        super(DishPlanSerializer, self).__init__(*args, **kwargs)
+
+        if 'include_sides' in self.context:
+            if not self.context['include_sides']:
+                del self.fields['side_dishes']
+        else:
+            del self.fields['side_dishes']
+
+        if 'sides' in self.context:
+            if not self.context['sides']:
+                del self.fields['side_selected']
+            else:
+                del self.fields['mensa']
+                del self.fields['date']
+        else:
+            del self.fields['side_selected']
 
     def get_ext_ratings(self, obj):
         ext_ratings = mensa_model.ExtDishRating.objects.filter(
@@ -102,6 +131,23 @@ class DishPlanSerializer(serializers.ModelSerializer):
             dish=obj.dish).filter(user=self.context["user"])
 
         return UserRatingsWithoutDishSerializer(user_ratings, read_only=True, many=True).data
+
+    def get_side_dishes(self, obj):
+        side_dishes = mensa_model.DishPlan.objects.filter(
+            mensa=obj.mensa, date=obj.date, dish__main=False).all()
+
+        return DishPlanSerializer(side_dishes, read_only=True, many=True, context={
+            'user': self.context['user'], 'include_sides': False, 'sides': True, 'main': obj}).data
+
+    def get_side_selected(self, obj):
+
+        try:
+            user_side_selection = mensa_model.UserSideSelection.objects.get(
+                user=self.context['user'], main=self.context['main'], side=obj)
+
+            return True
+        except mensa_model.UserSideSelection.DoesNotExist:
+            return False
 
 
 class BasicDishSerializer(serializers.ModelSerializer):
