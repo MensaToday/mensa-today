@@ -403,6 +403,8 @@ class DishRecommender:
 
         Parameters
         ----------
+        day: date
+            The specific day that should be checked.
         mensa: Mensa
             The mensa that should be checked.
 
@@ -425,8 +427,8 @@ class DishRecommender:
 
         Return
         ------
-        distances : Dict[int, float]
-            The distance scores.
+        distances : Dict[date, Dict[int, float]]
+            The distance scores per day.
         """
         week_distances = {}
 
