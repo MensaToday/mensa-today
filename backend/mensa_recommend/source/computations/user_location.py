@@ -114,7 +114,7 @@ def get_relevant_reservations(user_courses: BaseManager[UserCourse], current_dat
     return valid_reservations
 
 
-def choose_relevant_reservation(valid_reservations: list[Reservation], current_date: date, noon_time: time = None):
+def choose_relevant_reservation(valid_reservations: list[Reservation], current_date: date, noon_time: Optional[time] = None):
     """ Choose of all reservations the reservation with the smallest 
     time difference to noon. All reservations in the list have to be on the same day
 
