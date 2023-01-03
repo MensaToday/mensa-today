@@ -24,15 +24,15 @@ div
           v-on:keyup.enter="login()")
         v-divider
       p(v-if="showError") Identifier or password is incorrect
-    
+
     v-card-actions
-        v-btn(@click="$router.push('/quiz')" color="primary") 
-            v-icon mdi-account-plus
-            | Register
-        v-spacer
-        v-btn(dark color="green darken-2" @click="login()") 
-            v-icon mdi-login-variant
-            | Login 
+      v-btn(@click="$router.push('/quiz')" color="primary") 
+        v-icon mdi-account-plus
+        | Register
+      v-spacer
+      v-btn(dark color="green darken-2" @click="login()") 
+        v-icon mdi-login-variant
+        | Login 
 </template>
 
 <script>
@@ -40,7 +40,7 @@ import config from "@/config.js";
 import JSEncrypt from "jsencrypt";
 import { mapActions } from "vuex";
 export default {
-  name: "Login",
+  name: "LoginUser",
   data() {
     return {
       form: {
@@ -57,11 +57,11 @@ export default {
   methods: {
     ...mapActions(["Login"]),
     encrypt(m) {
-      if(process.env.VUE_APP_PRIVATE_KEY){
+      if (process.env.VUE_APP_PRIVATE_KEY) {
         let encryptor = new JSEncrypt();
         encryptor.setPublicKey(this.publicKey);
         return encryptor.encrypt(m);
-      } else{
+      } else {
         return m;
       }
     },
