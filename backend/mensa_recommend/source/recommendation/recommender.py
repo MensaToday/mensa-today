@@ -298,7 +298,7 @@ class DishRecommender:
         for plan in self._plan[day]:
             if plan.dish.id == dish_id:
                 mensa: Mensa = plan.mensa
-                score = self.__dist_to_mensa(mensa)
+                score = self.__dist_to_mensa(day, mensa)
 
                 if location is None or distance_score < score:
                     location = plan, mensa
@@ -389,7 +389,7 @@ class DishRecommender:
                 )
 
             local_weather = weather_scores[mensa.zipCode]
-            dist_score = self.__dist_to_mensa(mensa)
+            dist_score = self.__dist_to_mensa(day, mensa)
 
             # Do not mess up predictions if one of the constraints is 0.
             # Therefore, bound constraints to a range of 0.1-1.
@@ -398,7 +398,7 @@ class DishRecommender:
             result.append((dish_id, dish_plan, mensa, p))
         return result
 
-    def __dist_to_mensa(self, mensa: Mensa) -> float:
+    def __dist_to_mensa(self, day: date, mensa: Mensa) -> float:
         """Get the user distance to a mensa if available. Otherwise, return 0.
 
         Parameters
@@ -411,26 +411,35 @@ class DishRecommender:
         distance : float
             The distance or 0 if no distance was found.
         """
-        if mensa.id in self._mensa_distances:
-            return self._mensa_distances[mensa.id]
-        else:
-            return 0
+        if day in self._mensa_distances:
+            distances = self._mensa_distances[day]
+            mid = mensa.id
 
-    def __compute_mensa_distance_scores(self) -> Dict[int, float]:
-        """Compute scores for mensa distances, so they can be used when
-        combining the prediction constraints.
+            if mid in distances:
+                return distances[mid]
+        return 0
+
+    def __compute_mensa_distance_scores(self) -> Dict[date, Dict[int, float]]:
+        """Compute scores for mensa distances for every required day, so they
+        can be used when combining the prediction constraints.
 
         Return
         ------
         distances : Dict[int, float]
             The distance scores.
         """
-        distances = user_location.get_user_location(self._user)
+        week_distances = {}
 
-        for key in distances.keys():
-            distances[key] = 1 - min(distances[key] / self._flexibility, 1)
+        for day in self.__days():
+            distances = user_location.get_user_location(self._user,
+                                                        current_date=day,
+                                                        _time=self._daytime)
+            for key in distances.keys():
+                score = 1 - min(distances[key] / self._flexibility, 1)
+                distances[key] = score
 
-        return distances
+            week_distances[day] = distances
+        return week_distances
 
     def __load_dish_plan(self) -> Dict[date, List[DishPlan]]:
         """Load the dish plan from the database.
