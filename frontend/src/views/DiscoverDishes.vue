@@ -28,6 +28,19 @@ div
                         v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
                           prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple
                           v-model='selectedCategories')
+                        v-select(flat solo-inverted hide-details :items='filters.mensa' width='100'
+                          prepend-inner-icon='mdi-filter-variant' label='Filter Mensa'
+                          v-model='filters.selectedMensa' transition="scale-transition" min-width="auto")
+                        v-menu(v-model="date_menu" :close-on-content-click="false")
+                          template(v-slot:activator="{ on, attrs }")
+                            v-text-field(v-model="filters.date" flat solo-inverted prepend-inner-icon="mdi-calendar"
+                            readonly, v-bind="attrs", v-on="on")
+                          v-date-picker(v-model="filters.date", @input="date_menu = false"
+                            :min="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() + 6) % 7)).toISOString().substr(0, 10)"
+                            :max="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() - 6) % 7)).toISOString().substr(0, 10) ")
+
+
+                        
             template(v-slot:default='props')
               v-row
                 v-col(v-for='(item, index) in props.items' :key="index" cols='12' sm='6' md='6' lg='4')
@@ -110,6 +123,7 @@ export default {
       page: 1,
       itemsPerPage: 3,
       sortBy: "",
+      date_menu: false,
       selectedCategories: [
         "Vegan",
         "Vegetarian",
@@ -139,6 +153,21 @@ export default {
           Alcohol: false,
           Fish: false,
         },
+        mensa: [
+          "Bistro Denkpause",
+          "Mensa Da Vinci",
+          "Bistro Katholische Hochschule",
+          "Bistro Durchblick",
+          "Bistro Frieden",
+          "Bistro KaBu",
+          "Bistro Oeconomicum",
+          "Hier und Jetzt",
+          "Mensa am Aasee",
+          "Mensa am Ring",
+          "Mensa Bispinghof"
+        ],
+        selectedMensa: "Mensa Da Vinci",
+        date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
         additives: {
           Dyed: false,
           Preservatives: false,
@@ -196,7 +225,9 @@ export default {
             (this.filters.affordable
               ? this.$store.state.card_balance >= parseFloat(dish.priceStudent)
               : true) &
-            (this.filters.main_dish ? dish.dish.main : true)
+            (this.filters.main_dish ? dish.dish.main : true) &
+            (this.filters.selectedMensa == dish.mensa.name) &
+            (this.filters.date == dish.date)
         );
       },
       set() {
@@ -270,5 +301,10 @@ export default {
     // if items not set, query dishplan
     if (!this.items) this.getDishplan();
   },
+  watch: {
+    filters(val) {
+      this.dateFormatted = this.formatDate(this.date)
+    },
+  }
 };
 </script>
