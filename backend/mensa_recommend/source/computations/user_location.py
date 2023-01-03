@@ -7,7 +7,7 @@ from users.models import User
 from django.db.models.manager import BaseManager
 
 
-def get_user_location(user: User, current_date: date = None, noon_time: time = None) -> dict[int, float]:
+def get_user_location(user: User, current_date: Optional[date] = None, noon_time: Optional[time] = None) -> dict[int, float]:
     """Get the distance fromt he current user location to every mensa
 
         Parameters
