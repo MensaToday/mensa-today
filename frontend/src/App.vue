@@ -15,21 +15,28 @@ v-app
         v-btn.px-3(outlined @click="logout()")
           v-icon mdi-logout
           | Logout
+    v-spacer
+    div.float-right
+      v-btn(icon @click="toggleTheme") 
+        v-icon mdi-brightness-6
   
-  v-main
+  v-main.mb-12
     router-view
     template
   
-  v-footer.mt-12(dark padless)
+  v-footer(dark padless)
     v-row 
-      v-col(cols='12')
-        v-card.indigo.lighten-1.white--text.text-center(flat tile)
-          v-btn.mx-4.white--text(v-for='icon in icons' :key='icon.mdi' icon target="_blank" :href="icon.link")
-            v-icon(size='24px' elevation='15')
-                | {{ icon.mdi }}
-          //- v-card-text.white--text.pt-0 Lorem ipsum
+      v-col.pb-0.pt-0
+        v-card.secondary.text-center(tile)
+          v-card-title.center-items
+            div.mt-3
+              v-btn.mx-12.white--text(v-for='icon in icons' :key='icon.mdi' icon target="_blank" :href="icon.link")
+                div
+                  v-icon(size='24px' elevation='15')
+                    | {{ icon.mdi }}
+                  p.mt-2 {{ icon.text }}
           v-divider
-          v-card-text.white--text
+          v-card-text.white--text.text-center
             | {{ new Date().getFullYear() }} &mdash; 
             strong Marten Jostmann, Leo Giesen, Erik Zimmermann, Marcel Reckmann, Polina Kireyeu
 </template>
@@ -42,22 +49,12 @@ export default {
     views: [
       {
         tag: "Your Mensa Week",
-        to: { name: "Home" },
+        to: { name: "HomeWeekRecommendation" },
         icon: "food",
       },
-      // {
-      //   tag: "Suggestion (temporary)",
-      //   to: { name: "Suggestion" },
-      //   icon: "food",
-      // },
-      // {
-      //   tag: "Quiz (temporary)",
-      //   to: { name: "Quiz" },
-      //   icon: "information-outline",
-      // },
       {
         tag: "Discover",
-        to: { name: "Discover" },
+        to: { name: "DiscoverDishes" },
         icon: "magnify",
       },
     ],
@@ -65,15 +62,25 @@ export default {
       {
         mdi: "mdi-email",
         link: "mailto:mensa.today@gmail.com",
+        text: "Contact"
       },
       {
         mdi: "mdi-github",
         link: "https://github.com/erikzimmermann/data-integration-recommender",
+        text: "Code"
       },
+      {
+        mdi: "mdi-shield-lock",
+        link: "/privacy-policy",
+        text: "Privacy Policy"
+      }
     ],
   }),
   methods: {
     ...mapActions(["Logout"]),
+    toggleTheme() {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+    },
     async logout() {
       try {
         await this.Logout();

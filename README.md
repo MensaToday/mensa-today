@@ -1,3 +1,5 @@
+[![Python 3.9.7](https://img.shields.io/badge/python-3.9-orange.svg)](https://www.python.org/downloads/release/python-390/) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![GitHub version](https://img.shields.io/github/v/release/erikzimmermann/mensa-today?color=green&include_prereleases)
+
 # Mensa Today Recommender System
 
 Münster is a distributed University with various different canteens and bistros that serve different ranges of food which change every week. As a student who eats at those places frequently, you have to look through all of these dishes to find a meal you want to eat. The idea of our recommender system is to suggest meals based on various different factors: Your eating habits, location (based on semester schedule), weather,…).
@@ -20,7 +22,7 @@ PGADMIN_DEFAULT_PASSWORD = YOUR_PGADMIN_PASSWORD
 After creating the file start docker:
 
 1. `docker-compose up`
-2. In a seccond terminal connect to app container `docker exec -it mensa_recommend-app-1 bash`
+2. In a seccond terminal connect to app container `docker exec -it mensa-today_app_1 bash`
 3. `python manage.py makemigrations`
 4. `python manage.py migrate`
 5. `python manage.py createsuperuser`
