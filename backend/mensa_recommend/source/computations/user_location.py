@@ -1,5 +1,6 @@
 from datetime import datetime, date, time
 from mensa_recommend.source.computations.transformer import transform_week_day_to_int
+from typing import Optional
 
 from courses.models import UserCourse, Reservation, RoomMensaDistance
 from users.models import User
