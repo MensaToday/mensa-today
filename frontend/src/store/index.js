@@ -1,6 +1,8 @@
 import axios from "axios";
 import Vue from "vue";
 import Vuex from "vuex";
+import createPersistedState from "vuex-persistedstate";
+import router from "../router";
 
 Vue.use(Vuex);
 
@@ -27,6 +29,9 @@ export default new Vuex.Store({
       state.access_token = access_token;
       state.refresh_token = refresh_token;
     },
+    setToken(state, access_token) {
+      state.access_token = access_token;
+    },
     rmTokens(state) {
       state.access_token = null;
       state.refresh_token = null;
@@ -48,11 +53,31 @@ export default new Vuex.Store({
     setRecommendationsDaily(state, recommendations) {
       state.dailyRecommendations = recommendations;
     },
+    refreshToken() {
+      // If the user has a refresh token the access token can be refreshed
+      if (this.state.refresh_token != null) {
+        axios
+          .post("user/refresh/", {
+            refresh: this.state.refresh_token,
+          })
+          .then((response) => {
+            this.dispatch("initializeSession", [
+              response.data.access,
+              this.state.refresh_token,
+            ]);
+          })
+          .catch((err) => {
+            // If a 401 is returned the token cannot be refreshed and the user will get logged out
+            if (err.response.status === 401) {
+              this.commit("rmTokens");
+              router.push("/login");
+            }
+          });
+      }
+    },
   },
   actions: {
     initializeSession({ commit, dispatch }, [access_token, refresh_token]) {
-      window.localStorage.setItem("access_token", access_token);
-      window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token]);
 
@@ -91,10 +116,11 @@ export default new Vuex.Store({
       // setTimeout(() => dispatch('AutoRefreshToken'), 2000)
     },
     async Logout({ state, commit }) {
-      let response = await axios.post("user/logout", {
+      await axios.post("user/logout", {
         refresh_token: state.refresh_token,
       });
-      console.log(response);
+
+      router.push("/login");
       commit("rmTokens");
     },
     async GetBalance({ commit }) {
@@ -131,4 +157,5 @@ export default new Vuex.Store({
       commit("setRecommendationsDaily", recommendations);
     },
   },
+  plugins: [createPersistedState()],
 });

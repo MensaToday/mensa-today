@@ -45,6 +45,12 @@ v-app
 import { mapActions } from "vuex";
 export default {
   name: "App",
+  created() {
+    // If there is a token from a previous session, try to refresh it. In case the token expiry has passed, the logout dialig is triggered
+    if (this.$store.state.access_token) {
+      this.startRefreshTimer();
+    }
+  },
   data: () => ({
     views: [
       {
@@ -62,18 +68,18 @@ export default {
       {
         mdi: "mdi-email",
         link: "mailto:mensa.today@gmail.com",
-        text: "Contact"
+        text: "Contact",
       },
       {
         mdi: "mdi-github",
         link: "https://github.com/erikzimmermann/data-integration-recommender",
-        text: "Code"
+        text: "Code",
       },
       {
         mdi: "mdi-shield-lock",
         link: "/privacy-policy",
-        text: "Privacy Policy"
-      }
+        text: "Privacy Policy",
+      },
     ],
   }),
   methods: {
@@ -93,6 +99,13 @@ export default {
         console.log(error);
         this.showError = true;
       }
+    },
+    startRefreshTimer() {
+      // time in ms
+      this.$store.commit("refreshToken");
+      this.timer = setInterval(() => {
+        this.$store.commit("refreshToken");
+      }, 3600000); // 60min*60*1000 = 3600000
     },
   },
 };
