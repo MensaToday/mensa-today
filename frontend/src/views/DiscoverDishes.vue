@@ -268,7 +268,7 @@ export default {
   },
   mounted() {
     // if items not set, query dishplan
-    if (!this.items) this.getDishplan();
+    this.getDishplan();
   },
 };
 </script>

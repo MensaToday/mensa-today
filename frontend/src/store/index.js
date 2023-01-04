@@ -82,9 +82,6 @@ export default new Vuex.Store({
       commit("setTokens", [access_token, refresh_token]);
 
       if (access_token) {
-        axios.defaults.headers.common["Authorization"] =
-          "Bearer " + access_token;
-
         setTimeout(() => {
           dispatch("GetBalance");
         }, 1);

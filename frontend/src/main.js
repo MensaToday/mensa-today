@@ -5,7 +5,11 @@ import vuetify from "./plugins/vuetify";
 import router from "./router";
 import store from "./store";
 
+import interceptorsSetup from "./helpers/interceptors";
+
 axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
+
+interceptorsSetup();
 
 Vue.config.productionTip = false;
 
