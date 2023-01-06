@@ -1,23 +1,26 @@
 from datetime import datetime, date, time
-from mensa_recommend.source.computations.transformer import transform_week_day_to_int
-from typing import Optional
+from typing import Optional, List, Dict
 
-from courses.models import UserCourse, Reservation, RoomMensaDistance
-from users.models import User
 from django.db.models.manager import BaseManager
 
+from courses.models import UserCourse, Reservation, RoomMensaDistance
+from mensa_recommend.source.computations.transformer import \
+    transform_week_day_to_int
+from users.models import User
 
-def get_user_location(user: User, current_date: Optional[date] = None, noon_time: Optional[time] = None) -> dict[int, float]:
-    """Get the distance fromt he current user location to every mensa
+
+def get_user_location(user: User, current_date: Optional[date] = None,
+                      _time: Optional[time] = None) -> Dict[int, float]:
+    """Get the distance from the current user location to every mensa
 
         Parameters
         ----------
         user: User
             A user where the distance should be returned
-        current_date: date
-            The date where the position of the user should be returned(default = None)
+        current_date: Optional[date]
+            The date where the position of the user should be returned.
             If None the current date will be picked
-        noon_time: time
+        _time: Optional[time]
             Time of noon (Default = None)
 
 
@@ -39,8 +42,8 @@ def get_user_location(user: User, current_date: Optional[date] = None, noon_time
     if current_date is None:
         current_date = date.today()
     elif not isinstance(current_date, date):
-        raise ValueError(
-            "current_date is not of the type datetime.date but of type: " + type(current_date))
+        raise ValueError("current_date is not of the type datetime.date but "
+                         f"of type: {type(current_date)}")
 
     valid_reservations = get_relevant_reservations(user_courses, current_date)
 
@@ -49,9 +52,9 @@ def get_user_location(user: User, current_date: Optional[date] = None, noon_time
         return {}
 
     relevant_reservation = choose_relevant_reservation(
-        valid_reservations, current_date, noon_time)
+        valid_reservations, current_date, _time)
 
-    # Get the distance between the room of the rervation and every mensa
+    # Get the distance between the room of the reservation and every mensa
     room_distances = RoomMensaDistance.objects.filter(
         room=relevant_reservation.room)
 
@@ -63,10 +66,11 @@ def get_user_location(user: User, current_date: Optional[date] = None, noon_time
     return result
 
 
-def get_relevant_reservations(user_courses: BaseManager[UserCourse], current_date: date) -> list[Reservation]:
+def get_relevant_reservations(user_courses: BaseManager[UserCourse],
+                              current_date: date) -> List[Reservation]:
     """Iterate over each course to get the relevant courses for that day.
-        A course is relevant/valid if it belongs to the current day. All relevant
-        reservations will be returned
+        A course is relevant/valid if it belongs to the current day. All
+        relevant reservations will be returned
 
         Parameters
         ----------
@@ -88,14 +92,12 @@ def get_relevant_reservations(user_courses: BaseManager[UserCourse], current_dat
         # Get all reservations for this course
         reservations = Reservation.objects.filter(course=user_course.course)
 
-        # Iterate over each reservation to check the timeslot of each reservation
+        # Iterate over each reservation to check the timeslot
         for reservation in reservations:
-
             timeslot = reservation.timeslot
 
             # Get and transform week day of the timeslot
-            week_day = transform_week_day_to_int(timeslot.weekDay)
-
+            week_day = transform_week_day_to_int(timeslot.weekDay)#
             current_week_day = current_date.weekday()
 
             if week_day != -1:
@@ -115,42 +117,45 @@ def get_relevant_reservations(user_courses: BaseManager[UserCourse], current_dat
     return valid_reservations
 
 
-def choose_relevant_reservation(valid_reservations: list[Reservation], current_date: date, noon_time: Optional[time] = None):
+def choose_relevant_reservation(valid_reservations: List[Reservation],
+                                current_date: date,
+                                _time: Optional[time] = None) -> Reservation:
     """ Choose of all reservations the reservation with the smallest 
-    time difference to noon. All reservations in the list have to be on the same day
+    time difference to noon. All reservations in the list have to be on the
+    same day.
 
         Parameters
         ----------
-        valid_reservations: list[Reservation]
+        valid_reservations: List[Reservation]
             All valid reservations on the same day
         current_date: date
             The date of the reservations
-        noon_time: time
-            Time of noon (Default = None)
+        _time: Optional[time]
+            The time that should be checked (Default = None).
             If the time is None the time will be set to 12:00:00
 
 
         Return
         ------
         relevant_reservation: Reservation
-            Reservation with the smallest time difference to noon
+            The reservation with the smallest time difference.
     """
 
     # Initialize variables to keep track of current minimum
-    min_time_before_12 = float('inf')
-    min_time_after_12 = float('inf')
+    min_time_before = float('inf')
+    min_time_after = float('inf')
 
-    min_time_before_12_reservation: Reservation
-    min_time_after_12_reservation: Reservation
+    min_time_before_reservation: Reservation
+    min_time_after_reservation: Reservation
 
-    if noon_time is None:
-        noon_time = time(12, 0, 0)
+    if _time is None:
+        _time = time(12, 0, 0)
     elif not isinstance(current_date, date):
-        raise ValueError(
-            "noon_time is not of the type datetime.time but of type: " + type(noon_time))
+        raise ValueError("_time is not of the type datetime.time but of type:"
+                         f" {type(_time)}")
 
-    # Initialize date with a time of noon
-    noon = datetime.combine(current_date, noon_time)
+    # Initialize date with the given time
+    specific_time = datetime.combine(current_date, _time)
 
     for valid_reservation in valid_reservations:
 
@@ -170,44 +175,44 @@ def choose_relevant_reservation(valid_reservations: list[Reservation], current_d
             hour=end_time.hour, minute=end_time.minute, second=0,
             microsecond=0)
 
-        # Check if the end date time is smaller or equals to noon (first case)
-        if end_date_time <= noon:
+        # Check if the end date time is smaller or equal to _time (first case)
+        if end_date_time <= specific_time:
 
-            # calculate the time difference between noon and end date time
-            time_diff = (noon - end_date_time).seconds
+            # calculate the time difference between _time and end date time
+            time_diff = (specific_time - end_date_time).seconds
 
-            # If the difference is smaller than the current minimum before 12,
-            # update the minimum and the reservation
-            if time_diff < min_time_before_12:
-                min_time_before_12 = time_diff
-                min_time_before_12_reservation = valid_reservation
-        elif start_date_time >= noon:
+            # If the difference is smaller than the current minimum before
+            # _time, update the minimum and the reservation
+            if time_diff < min_time_before:
+                min_time_before = time_diff
+                min_time_before_reservation = valid_reservation
+        elif start_date_time >= specific_time:
             # end date time is greater than noon (second case)
 
             # calculate the time difference between noon and end date time
-            time_diff = (start_date_time - noon).seconds
+            time_diff = (start_date_time - specific_time).seconds
 
-            # If the difference is smaller than the current minimum after 12,
-            # update the minimum and the reservation
-            if time_diff < min_time_after_12:
-                min_time_after_12 = time_diff
-                min_time_after_12_reservation = valid_reservation
+            # If the difference is smaller than the current minimum after
+            # _time, update the minimum and the reservation
+            if time_diff < min_time_after:
+                min_time_after = time_diff
+                min_time_after_reservation = valid_reservation
         else:
             # start date time and end date time of the course is between noon
 
-            # calculate the time difference between noon and end date time
-            time_diff = (end_date_time - noon).seconds
+            # calculate the time difference between _time and end date time
+            time_diff = (end_date_time - specific_time).seconds
 
-            # If the difference is smaller than the current minimum after 12,
-            # update the minimum and the reservation
-            if time_diff < min_time_after_12:
-                min_time_after_12 = time_diff
-                min_time_after_12_reservation = valid_reservation
+            # If the difference is smaller than the current minimum after
+            # _time, update the minimum and the reservation
+            if time_diff < min_time_after:
+                min_time_after = time_diff
+                min_time_after_reservation = valid_reservation
 
-    # Get the reservation with the smallest time of before and after 12
-    if min_time_before_12 <= min_time_after_12:
-        relevant_reservation = min_time_before_12_reservation
+    # Get the reservation with the smallest time of before and after _time
+    if min_time_before <= min_time_after:
+        relevant_reservation = min_time_before_reservation
     else:
-        relevant_reservation = min_time_after_12_reservation
+        relevant_reservation = min_time_after_reservation
 
     return relevant_reservation
