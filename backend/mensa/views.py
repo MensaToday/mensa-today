@@ -490,7 +490,8 @@ def get_quiz_dishes(request):
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def save_user_side_dishes(request):
-    """Save the user side dish to main dish allocation
+    """Save the user side dish to main dish allocation. Also use this function to update/delete
+    user side dishes. To delete them just post an empty side_dishes list.
 
         Route: api/v1/mensa/save_user_side_dishes
         Authorization: Authenticated
@@ -502,7 +503,7 @@ def save_user_side_dishes(request):
         {
             "dishes": [
                 {
-                    "main": 1,
+                    "main": 1,              # dishplan id
                     "side_dishes": [8, 9]
                 },
                 {
@@ -535,6 +536,13 @@ def save_user_side_dishes(request):
                     main_object = DishPlan.objects.get(id=main)
                 except DishPlan.DoesNotExist:
                     return Response("Main dish is not available in the database", status=status.HTTP_404_NOT_FOUND)
+
+                # Delete all current main_dish, side_dish assignment for this user
+                # This is the fastes way to ensure that the user side dishes are always up to date
+                # When a user deletes a side dish this function can be just called again and the coresponding
+                # dish will be deleted
+                UserSideSelection.objects.filter(
+                    user=request.user, main=main_object).delete()
 
                 # check if side dishes is a list
                 if type(side_dishes) == list:
