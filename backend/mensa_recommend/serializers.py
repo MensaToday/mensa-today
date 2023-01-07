@@ -173,8 +173,31 @@ class UserDishRatingSerializer(serializers.ModelSerializer):
         model = mensa_model.UserDishRating
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserCategorySerializer(serializers.ModelSerializer):
+
+    category = CategorySerializer(read_only=True)
 
     class Meta:
-        fields = ["username", "card_id"]
+        fields = ["category"]
+        model = mensa_model.UserCategory
+
+
+class UserAllergySerializer(serializers.ModelSerializer):
+
+    allergy = AllergySerializer(read_only=True)
+
+    class Meta:
+        fields = ["allergy"]
+        model = mensa_model.UserAllergy
+
+
+class UserSerializer(serializers.ModelSerializer):
+    user_category = serializers.ListSerializer(
+        child=UserCategorySerializer(read_only=True), source='usercategory_set')
+
+    user_allergy = serializers.ListSerializer(
+        child=UserAllergySerializer(read_only=True), source='userallergy_set')
+
+    class Meta:
+        fields = ["username", "card_id", "user_category", "user_allergy"]
         model = user_model.User
