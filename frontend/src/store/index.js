@@ -9,6 +9,7 @@ export default new Vuex.Store({
     access_token: null,
     refresh_token: null,
     user: {
+      username: null,
       first_name: null,
       last_name: null,
       id: null,
@@ -40,6 +41,10 @@ export default new Vuex.Store({
     },
     setBalance(state, card_balance) {
       state.card_balance = card_balance;
+    },
+    setUserData(state, user_data) {
+      state.user.mensa_card_id = user_data.card_id;
+      state.user.username = user_data.username;
     },
     setDishplan(state, dishplan) {
       state.dishplan = dishplan;
@@ -108,6 +113,11 @@ export default new Vuex.Store({
       let response = await axios.get("mensa/get_dishplan");
       var dishplan = response.data;
       commit("setDishplan", dishplan);
+    },
+    async GetUserData({ commit }) {
+      let response = await axios.get("user/get_user_data");
+      var user_data = response.data;
+      commit("setUserData", user_data);
     },
     async GetRecommendations({ commit }) {
       var today = new Date();
