@@ -298,7 +298,31 @@ def get_user_data(request):
         -------
         {
             "username": str,
-            "card_id": int
+            "card_id": int,
+            "user_category": [
+                {
+                    "category": {
+                        "id": int
+                        "name": str
+                    },
+                    "category": {
+                        "id": int
+                        "name": str
+                    },
+                }
+            ],
+            "user_allergy": [
+                {
+                    "allergy": {
+                        "id": int
+                        "name": str
+                    },
+                    "allergy": {
+                        "id": int
+                        "name": str
+                    },
+                }
+            ]
         }
     """
     user = request.user
@@ -335,7 +359,8 @@ def update_user_preferences(request):
         categories = request.data['categories']
         allergies = request.data['allergies']
 
-        process_preferences.update_preferences(request.user, categories, allergies)
+        process_preferences.update_preferences(
+            request.user, categories, allergies)
 
         return Response("Updated Allergies and Categories", status=status.HTTP_200_OK)
     else:
