@@ -116,6 +116,13 @@ class DishRecommender:
         self._user_categories: List[int] = []
         self._user_allergies: List[int] = []
 
+        if entire_week:
+            self._date_start = day - timedelta(days=day.weekday())
+            self._date_end = self._date_start + timedelta(days=4)
+        else:
+            self._date_start = day
+            self._date_end = day
+
         # TODO: The time when the user wants to eat. This is currently static
         #  but might be changed in the future.
         self._daytime: time = time(hour=12)
@@ -124,13 +131,6 @@ class DishRecommender:
         #  Must be > 0.
         self._flexibility = 3
         self._mensa_distances = self.__compute_mensa_distance_scores()
-
-        if entire_week:
-            self._date_start = day - timedelta(days=day.weekday())
-            self._date_end = self._date_start + timedelta(days=4)
-        else:
-            self._date_start = day
-            self._date_end = day
 
         self._plan: Dict[date, List[DishPlan]] = {}
         self._ratings: List[UserDishRating] = []
