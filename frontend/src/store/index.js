@@ -15,7 +15,9 @@ export default new Vuex.Store({
       id: null,
       email: null,
       mensa_card_id: null,
-      avatar: null
+      avatar: null,
+      food_categories: [],
+      food_allergies: []
     },
     card_balance: null,
     dishplan: null,
@@ -45,6 +47,8 @@ export default new Vuex.Store({
     setUserData(state, user_data) {
       state.user.mensa_card_id = user_data.card_id;
       state.user.username = user_data.username;
+      state.user.food_categories = user_data.user_category;
+      state.user.food_allergies = user_data.user_allergy;
     },
     setDishplan(state, dishplan) {
       state.dishplan = dishplan;

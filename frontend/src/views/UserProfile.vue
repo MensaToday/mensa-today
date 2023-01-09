@@ -8,11 +8,10 @@ v-container(fluid)
                 v-row 
                     v-col(cols='4').center-items
                         v-avatar(size='128')
-                            v-img(v-if="this.$store.state.user.avatar"
-                                :src="$store.state.user.avatar" alt="User Profile")
-                            v-card.center-items.primary.rounded-b-0(
-                                v-else height='250' width='250')
-                    v-col(cols='3')
+                            v-card.center-items.primary.rounded-b-0(height="128", width="128")
+                              v-icon(size="64",color='white') mdi-account-school
+                              
+                    v-col(cols='4')
                         v-list(style="background: transparent;")
                             v-list-item
                                 v-list-item-icon
@@ -21,10 +20,8 @@ v-container(fluid)
                             v-list-item
                                 v-list-item-icon
                                     v-icon(color='white') mdi-card-bulleted
-                                v-list-item-content.white--text {{ this.$store.state.user.mensa_card_id }}
+                                v-list-item-content.white--text(:key="updateElement") {{ this.$store.state.user.mensa_card_id }}
                                   
-                   
-                            
         //- //- Start Profile Data
         //- v-card-actions.justify-center
         //-   v-dialog(
@@ -148,20 +145,53 @@ v-container(fluid)
             v-card.py-3.pt-md-6
               v-card-text
                 v-row
-                  v-col
-                v-text-field(
-                  outlined
-                  dense
-                  v-model='updatedUserInfo.mensa_card_id'
-                  prepend-icon='mdi-card-bulleted'
-                  label='Mensa Card ID (7 digits)')     
+                  v-text-field(
+                    outlined
+                    dense
+                    v-model='updatedUserInfo.mensa_card_id'
+                    prepend-icon='mdi-card-bulleted'
+                    label='Mensa Card ID (7 digits)')    
+                v-row
+                  v-col.py-0(cols="4" v-for="(value, food_preference, index) in food_preferences" :key="index")
+                      v-checkbox.mx-3(
+                          v-model="food_preferences[food_preference]"
+                          :label="food_preference")
+                  v-col.py-0(cols="4")
+                      v-checkbox.mx-3(
+                          @click="isCheckAll ? uncheckAll() : checkAll()"
+                          v-model="isCheckAll"
+                          label="Select All")
+                v-row
+                  v-col(cols="6")
+                      v-combobox(v-model='selected_allergies' :items='Object.keys(allergies)' 
+                          :search-input.sync='search' hide-selected label='Specify Allergies' 
+                          multiple persistent-hint small-chips clearable)
+                          template(v-slot:no-data)
+                              v-list-item
+                                  v-list-item-content
+                                      v-list-item-title
+                                          | No results matching &quot;
+                                          strong {{ search }}
+                                          | &quot;. 
+                  v-col(cols="6")
+                    v-combobox(v-model='selected_additives' :items='Object.keys(additives)' 
+                        :search-input.sync='search' hide-selected 
+                        label='Specify Additives You Dislike' 
+                        multiple persistent-hint small-chips clearable)
+                        template(v-slot:no-data)
+                            v-list-item
+                                v-list-item-content
+                                    v-list-item-title
+                                        | No results matching &quot;
+                                        strong {{ search }}
+                                        | &quot;.
                 v-btn.ml-8(
                   color="primary"
                   @click="changeUserInfoDialog = false"
                 ) Cancel 
                 v-btn.ml-3(
                   color="primary"
-                  @click="updateUserInfo(updatedUserInfo.mensa_card_id);"
+                  @click="updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); updateSelectedCategories(); updateUserInfo(updatedUserInfo.mensa_card_id, selected_categories, selected_allergies); changeUserInfoDialog = false"
                 ) Save
 
         v-card-actions.justify-center
@@ -188,7 +218,7 @@ v-container(fluid)
                 ) Cancel 
                 v-btn.ml-3(
                   color="primary"
-                  @click="deleteAccount(deleteAccountConfirmation); $router.push('/login');"
+                  @click="deleteAccount(deleteAccountConfirmation);"
                 ) Confirm
                  
 
@@ -222,6 +252,63 @@ data: () => ({
     updatedUserInfo: {
       mensa_card_id: null
     },
+    updateElement: 0,
+
+    food_preferences: {
+      Vegan: false,
+      Vegetarian: false,
+      Pork: false,
+      Beef: false,
+      Poultry: false,
+      Alcohol: false,
+      Fish: false,
+    },
+    additives: {
+      Dyed: false,
+      Preservatives: false,
+      Antioxidants: false,
+      "Flavor enhancers": false,
+      Sulphurated: false,
+      Blackened: false,
+      Waxed: false,
+      Phosphate: false,
+      Sweeteners: false,
+      "Phenylalanine source": false,
+    },
+    allergies: {
+      Gluten: false,
+      Spelt: false,
+      Barles: false,
+      Oats: false,
+      Kamut: false,
+      Rye: false,
+      Wheat: false,
+      Crustaceans: false,
+      Egg: false,
+      Fish: false,
+      Peanuts: false,
+      Soy: false,
+      Milk: false,
+      Nuts: false,
+      Almonds: false,
+      Hazelnuts: false,
+      Walnuts: false,
+      Cashews: false,
+      Pecans: false,
+      "Brazil nuts": false,
+      Pistachios: false,
+      Macadamias: false,
+      Celerey: false,
+      Mustard: false,
+      Sesame: false,
+      Lupines: false,
+      Molluscs: false,
+      "Sulfur dioxide": false,
+    },
+    search: null,
+    selected_categories: [],
+    selected_allergies: [],
+    selected_additives: [],
        
     // Change avatar
     // changeAvatarDialog: false,
@@ -255,6 +342,22 @@ methods:{
     // 'NewPassword',
     'GetUserData'
   ]),
+  forceRenderer(){
+    this.updateElement += 1;
+  },
+  updateSelectedCategories() {
+      // Object.entries(this.food_preferences).forEach((key, value) =>
+      for (const [key, value] of Object.entries(this.food_preferences)) {
+        if (value) {
+          this.selected_categories.push(key);
+        }
+      }
+    },
+  updateObject(obj, values) {
+    for (let idx = 0; idx < values.length; idx++) {
+      obj[values[idx]] = true;
+    }
+  },
   async getUserData(){
     try {
         await this.GetUserData();
@@ -271,20 +374,38 @@ methods:{
       }
     }
     else {console.error("Wrong delete message!")}
-    
   },
-  async updateUserInfo(card_id) {
-    console.log(card_id)
+  async updateUserInfo(card_id, categories, allergies) {
+    console.log(card_id);
+    console.log(categories);
+    console.log(allergies);
+    if(card_id != null) {
     try {
       //Update Mensa Card Id
       await axios.post('user/update_card_id', {
         card_id: card_id
       });
-      this.deleteAccountDialog = false;
-    } catch (error) {
+      } catch (error) {
       console.error(error.message)
+      }
     }
+      await axios.post('user/update_preferences', {
+        categories: categories,
+        allergies: allergies
+      });
+
+    
     this.getUserData();
+  },
+  checkAll() {
+      Object.keys(this.food_preferences).forEach((key) => {
+        this.food_preferences[key] = true;
+      });
+    },
+  uncheckAll() {
+    Object.keys(this.food_preferences).forEach((key) => {
+      this.food_preferences[key] = false;
+    });
   },
   // async submit(){
   //   if(this.form.password != this.form.passwordRepeat){
@@ -387,6 +508,20 @@ methods:{
   //   }
   //   catch(error) { console.error(error) }
   // },
+},
+
+computed: {
+  isCheckAll: {
+      get: function () {
+        for (let [, value] of Object.entries(this.food_preferences)) {
+          if (value == false) return false;
+        }
+        return true;
+      },
+      set: function () {
+        return false;
+      },
+    },
 },
 
 created() {
