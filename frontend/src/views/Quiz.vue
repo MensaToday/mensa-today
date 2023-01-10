@@ -67,17 +67,17 @@
                                 v-stepper-step(step='3')
                             v-stepper-items
                               v-stepper-content(
-                                v-for="(dish, index) in relevantDishes.slice(0,3)"
-                                :key="dish.dish.name"
+                                v-for="(dish, index) in dishes"
+                                :key="index"
                                 :step='index+1')
-                                h3.my-0 {{ dish.dish.name }}
+                                h3.my-0 {{ dish.name }}
                                 v-row.my-0
                                   v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                                    h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
-                                    v-img(:alt="dish.dish.categories[0].category.nam" height="50" max-width="50" contain
-                                      :src="require('@/assets/dish_icons/food_preferences/'+dish.dish.categories[0].category.name+'.png')")
-                                  v-img.mx-auto(:alt="dish.dish.name" 
-                                    :src="dish.dish.url")
+                                    //h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
+                                    v-img(:alt="dish.categories[0].category.nam" height="50" max-width="50" contain
+                                      :src="require('@/assets/dish_icons/food_preferences/'+dish.categories[0].category.name+'.png')")
+                                  v-img(:alt="dish.name" 
+                                    :src="dish.url", height='250')
                                     v-btn(fab style="position: absolute; top: 45%; left: 4%" 
                                       v-if='cur_step_dishes>1'
                                       @click="cur_step_dishes-=1") 
@@ -88,12 +88,12 @@
                                       @click='cur_step_dishes+=1')
                                       v-icon mdi-chevron-right
                                 div.justify-center
-                                  v-btn.my-2(@click="addRating(cur_step_dishes-1, dish.dish.id, 0)" 
+                                  v-btn.my-2(@click="addRating(cur_step_dishes-1, dish.id, 0)" 
                                     large width="50%" elevation="1"
                                     :color="dish_ratings[index].rating != 0 ? 'gray' : 'primary'"
                                     )
                                     v-icon {{(dish_ratings[index].rating == 0) ? 'mdi-thumb-down' : 'mdi-thumb-down-outline'}} 
-                                  v-btn.my-2(@click="addRating(cur_step_dishes-1, dish.dish.id, 1)" 
+                                  v-btn.my-2(@click="addRating(cur_step_dishes-1, dish.id, 1)" 
                                     large width="50%" elevation="1"
                                     :color="dish_ratings[index].rating ? 'green' : 'gray'"
                                     )
@@ -145,6 +145,8 @@ import dishes from "@/assets/quiz_dishes/dishes.json";
 import config from "@/config.js";
 import JSEncrypt from "jsencrypt";
 import { mapActions } from "vuex";
+import axios from "axios";
+import Vue from "vue";
 export default {
   name: "QuizRegister",
   data: () => ({
@@ -279,6 +281,22 @@ export default {
         { id: null, rating: null },
       ];
     },
+    initialize_dishes() {
+      axios
+        .post("mensa/get_quiz_dishes", {
+          categories: this.selected_categories,
+          allergies: this.selected_allergies,
+        })
+        .then((response) => {
+          var data = response.data;
+
+          for (var i = 0; i < data.length; i++) {
+            Vue.set(this.dishes, i, data[i]);
+          }
+
+          console.log(this.dishes);
+        });
+    },
     checkAll() {
       Object.keys(this.food_preferences).forEach((key) => {
         this.food_preferences[key] = true;
@@ -301,13 +319,7 @@ export default {
           this.selected_categories.push(key);
         }
       }
-      // Object.keys(this.food_preferences).forEach((key) => {
-      //   this.food_preferences[key] = true;
-      // });
-      // console.log(this.food_preferences)
-      // for(const item of this.food_preferences){
-      // }
-      // item this.selected_categories
+      this.initialize_dishes();
     },
     // TODO: To be finalized
     // checkRelevance(user_attribute, dish_attribute, attribute_name){

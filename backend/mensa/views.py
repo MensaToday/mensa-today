@@ -406,14 +406,14 @@ def get_recommendations(request):
     return Response(res, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def get_quiz_dishes(request):
     """Get random dishes for the initial quiz based on the user preferences
 
         Route: api/v1/mensa/get_quiz_dishes
         Authorization: Any
-        Methods: Get
+        Methods: Post
 
 
         Input
