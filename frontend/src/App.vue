@@ -19,11 +19,11 @@ v-app
     div.float-right
       v-btn(icon @click="toggleTheme") 
         v-icon mdi-brightness-6
-  
+
   v-main.mb-12
     router-view
     template
-  
+
   v-footer(dark padless)
     v-row 
       v-col.pb-0.pt-0
@@ -120,24 +120,30 @@ $secondary: var(--v-secondary-base);
 $secondaryLight: var(--v-secondaryLight-base);
 $secondaryDark: var(--v-secondaryDark-base);
 $btnColor: var(--v-btnColor-base);
+
 // $text: var(--v-text-base);
 // 1. General Style
 * {
   box-sizing: border-box;
+
   &::before,
   &::after {
     box-sizing: border-box;
   }
+
   // word-break: break-all !important;
 }
+
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
+
   &::before,
   &::after {
     box-sizing: border-box;
   }
+
   // Check out cool fonts: https://visme.co/blog/modern-fonts/
   h1,
   h2,
@@ -151,10 +157,12 @@ $btnColor: var(--v-btnColor-base);
     word-break: keep-all;
   }
 }
+
 .center-items {
   display: grid;
   place-items: center;
 }
+
 // 3.1 Gradient Button
 .gradient-btn {
   color: $btnColor !important;
@@ -162,29 +170,22 @@ $btnColor: var(--v-btnColor-base);
   background-size: 200% auto;
   // text-shadow: 0px 0px 10px rgba(0,0,0,0.2);
   // box-shadow: 0 0 20px #eee;
-  background-image: linear-gradient(
-    to right,
-    $secondary 0%,
-    $primary 51%,
-    $secondary 100%
-  );
+  // background-image: linear-gradient(to right, $secondary 0%, $primary 51%, $secondary 100%);
+
   &:hover {
     // change the direction of the change here
     background-position: right center;
   }
 }
+
 .gradient-btn-secondary {
   color: $btnColor !important;
   transition: 0.5s;
   background-size: 200% auto;
   // text-shadow: 0px 0px 10px rgba(0,0,0,0.2);
   // box-shadow: 0 0 20px #eee;
-  background-image: linear-gradient(
-    to right,
-    $secondaryLight 0%,
-    $secondaryDark 51%,
-    $secondaryLight 100%
-  );
+  // background-image: linear-gradient(to right, $secondaryLight 0%, $secondaryDark 51%, $secondaryLight 100%);
+
   &:hover {
     // change the direction of the change here
     background-position: right center;
