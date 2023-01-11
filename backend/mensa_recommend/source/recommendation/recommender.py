@@ -132,6 +132,9 @@ class DishRecommender:
         self._flexibility = 3
         self._mensa_distances = self.__compute_mensa_distance_scores()
 
+        # Optional: Avoids having duplicates in the same week
+        self.anti_repetition = True
+
         self._plan: Dict[date, List[DishPlan]] = {}
         self._ratings: List[UserDishRating] = []
         self.dishes: List[Dish] = []
@@ -210,15 +213,25 @@ class DishRecommender:
         # separate dishes by day
         separated_encoded_dishes = self.__get_separated_encoded_dishes()
 
+        # save dish ids for anti-repetition
+        chosen_dishes = []
+
         result = {}
         # compute results per day
         for day in self.__days():
-            dishes = separated_encoded_dishes[day]
+            # select available dishes based on day and anti-repetition
+            dishes = [(did, data)
+                      for did, data in separated_encoded_dishes[day]
+                      if not self.anti_repetition or did not in chosen_dishes]
+
+            # make predictions
             pred = self.__predict_dishes(day, recommendations_per_day, dishes)
 
             # map the predictions back to DishPlan instances
             mapped = []
             for dish_id, dish_plan, _, p in pred:
+                chosen_dishes.append(dish_id)
+
                 if serialize:
                     dish_plan = DishPlanSerializer(dish_plan, context={
                         'user': self._user, 'include_sides': True}).data
