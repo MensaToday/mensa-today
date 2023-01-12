@@ -11,7 +11,7 @@ v-app
       v-spacer
       .d-flex.align-center.mr-5(v-if="$store.state.card_balance")
         v-icon.mr-2 mdi-wallet
-        p.my-auto €{{ $store.state.card_balance.replace('.',',') }}
+        label.white--text €{{ $store.state.card_balance.replace('.',',') }}
       .d-flex.align-center.mr-3
         v-btn(icon @click="toggleTheme") 
           v-icon mdi-brightness-6
@@ -155,6 +155,10 @@ $btnColor: var(--v-btnColor-base);
     margin-bottom: 5rem;
     word-break: keep-all;
   }
+}
+
+.my-custom-label {
+  color: white;
 }
 
 .center-items {
