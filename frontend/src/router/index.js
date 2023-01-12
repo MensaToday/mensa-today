@@ -39,9 +39,15 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/profile",
-    name: "UserProfile",
-    component: () => import(/* webpackChunkName: "discover" */ "../views/UserProfile.vue"),
+    path: "/settings/general",
+    name: "SettingsGeneral",
+    component: () => import(/* webpackChunkName: "discover" */ "../views/SettingsGeneral.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/settings/privacy",
+    name: "SettingsPrivacy",
+    component: () => import(/* webpackChunkName: "discover" */ "../views/SettingsPrivacy.vue"),
     meta: { requiresAuth: true },
   },
   {

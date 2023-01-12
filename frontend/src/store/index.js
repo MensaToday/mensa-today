@@ -1,6 +1,7 @@
 import axios from "axios";
 import Vue from "vue";
 import Vuex from "vuex";
+import { mapState } from "vuex";
 
 Vue.use(Vuex);
 
@@ -24,8 +25,12 @@ export default new Vuex.Store({
     recommendations: null,
     dailyRecommendations: null,
   },
+  computed: {
+    ...mapState(['user'])
+  },
   getters: {
     isLoggedIn: (state) => state.access_token != null,
+    userData: (state) => {return state.user}
   },
   mutations: {
     setTokens(state, [access_token, refresh_token]) {
@@ -129,14 +134,14 @@ export default new Vuex.Store({
       var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
       var yyyy = today.getFullYear();
       today = yyyy + "." + mm + "." + dd;
-
+      
       let response = await axios.post("mensa/get_recommendations", {
         day: today,
         entire_week: "True",
-        recommendations_per_day: 1,
+        recommendations_per_day: 5,
       });
 
-      console.log(response);
+      //console.log(response.data);
       var recommendations = response.data;
       commit("setRecommendations", recommendations);
     },

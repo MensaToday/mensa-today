@@ -9,17 +9,22 @@ v-app
         v-icon.mr-3 mdi-{{ view.icon }}
         | {{ view.tag }}
       v-spacer
-      .d-flex.align-center.mr-6(v-if="$store.state.card_balance")
+      .d-flex.align-center.mr-5(v-if="$store.state.card_balance")
         v-icon.mr-2 mdi-wallet
-        p.my-auto.mr-9 €{{ $store.state.card_balance.replace('.',',') }}
-        v-btn.px-3(outlined @click="logout()")
-          v-icon mdi-logout
-          | Logout
-    v-spacer
-    div.float-right
-      v-btn(icon @click="toggleTheme") 
-        v-icon mdi-brightness-6
-  
+        p.my-auto €{{ $store.state.card_balance.replace('.',',') }}
+      .d-flex.align-center.mr-3
+        v-btn(icon @click="toggleTheme") 
+          v-icon mdi-brightness-6
+      .d-flex.align-center.mr-5
+        v-menu(offset-y width="100px")
+          template(v-slot:activator="{ on, attrs }")
+            v-btn.elevation-0(color="primary" dark v-bind="attrs" v-on="on")
+              v-icon mdi-dots-vertical  
+          v-list(width="150px")
+            v-list-item(v-for="(item, index) in optionItems" :key="index" :to="item.to") {{ item.tag }}
+            v-list-item(@click="logout()") Logout
+              
+
   v-main.mb-12
     router-view
     template
@@ -46,6 +51,13 @@ import { mapActions } from "vuex";
 export default {
   name: "App",
   data: () => ({
+    optionItems: [
+      {
+        tag: "Settings",
+        to: { name: "SettingsGeneral" },
+        icon: "mdi-food",
+      },  
+    ],
     views: [
       {
         tag: "Your Mensa Week",
@@ -56,11 +68,6 @@ export default {
         tag: "Discover",
         to: { name: "DiscoverDishes" },
         icon: "magnify",
-      },
-      {
-        tag: "Profile",
-        to: { name: "UserProfile" },
-        icon: "account",
       },
     ],
     icons: [
