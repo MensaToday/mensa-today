@@ -157,10 +157,6 @@ $btnColor: var(--v-btnColor-base);
   }
 }
 
-.my-custom-label {
-  color: white;
-}
-
 .center-items {
   display: grid;
   place-items: center;
