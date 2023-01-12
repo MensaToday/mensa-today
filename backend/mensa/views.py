@@ -1,22 +1,15 @@
 import datetime
-import datetime
 import random
-import time
-from datetime import datetime
 from datetime import datetime
 
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-import random
-
-import datetime
-from datetime import datetime
-
-from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy, UserSideSelection
-from mensa_recommend.serializers import DishPlanSerializer, UserDishRatingSerializer, DishSerializer
-
+from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy, \
+    UserSideSelection
+from mensa_recommend.serializers import DishPlanSerializer, \
+    UserDishRatingSerializer, DishSerializer
 from mensa_recommend.source.computations.date_computations import \
     get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
@@ -268,13 +261,11 @@ def get_week_recommendation(request):
 
             200-OK if successful
         """
-    t = time.time()
     r = recommender.DishRecommender(request.user, datetime.today(), True)
     res = r.predict(1, serialize=True)
 
     recommendations = [day[0][0] if len(day) > 0 else {} for day
                        in res.values()]
-    print("Overall:", time.time() - t)
     return Response(recommendations, status=status.HTTP_200_OK)
 
 
