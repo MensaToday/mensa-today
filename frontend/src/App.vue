@@ -1,8 +1,8 @@
 <template lang="pug">
 v-app
   v-app-bar(app color='primary' dark)
-    .d-flex.align-center(@click="$router.push('/').catch(()=>{})")
-      v-img.shrink.mr-2(alt='MensaToday Logo' contain src='@/assets/logo.png' transition='scale-transition' width='40')
+    .d-flex.align-center
+      v-img.shrink.mr-2(v-bind:class="cursorClass" @mouseover="isHovered = true" @mouseleave="isHovered = false" alt='MensaToday Logo' contain src='@/assets/logo_no_bg.png' transition='scale-transition' width='40' @click="$router.push('/').catch(()=>{})")
       h2 MensaToday
     v-tabs(align-with-title v-if="$store.getters.isLoggedIn")
       v-tab.white--text(v-for="view in views" :key="view.to.name" :to="view.to") 
@@ -14,7 +14,7 @@ v-app
         label.white--text €{{ $store.state.card_balance.replace('.',',') }}
       .d-flex.align-center.mr-3
         v-btn(icon @click="toggleTheme") 
-          v-icon mdi-brightness-6
+          v-icon {{ darkMode ? 'mdi-moon-waning-crescent' : 'mdi-white-balance-sunny'}}
       .d-flex.align-center.mr-5
         v-menu(offset-y width="100px")
           template(v-slot:activator="{ on, attrs }")
@@ -24,7 +24,6 @@ v-app
             v-list-item(v-for="(item, index) in optionItems" :key="index" :to="item.to") {{ item.tag }}
             v-list-item(@click="logout()") Logout
               
-
   v-main.mb-12
     router-view
     template
@@ -35,7 +34,7 @@ v-app
         v-card.secondary.text-center(tile)
           v-card-title.center-items
             div.mt-3
-              v-btn.mx-12.white--text(v-for='icon in icons' :key='icon.mdi' icon target="_blank" :href="icon.link")
+              v-btn.mx-12.white--text(plain v-for='icon in icons' :key='icon.mdi' icon target="_blank" :href="icon.link")
                 div
                   v-icon(size='24px' elevation='15')
                     | {{ icon.mdi }}
@@ -51,6 +50,8 @@ import { mapActions } from "vuex";
 export default {
   name: "App",
   data: () => ({
+    isHovered: false,
+    darkMode: false,
     optionItems: [
       {
         tag: "Settings",
@@ -91,6 +92,7 @@ export default {
   methods: {
     ...mapActions(["Logout"]),
     toggleTheme() {
+      this.darkMode = !this.darkMode;
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
     },
     async logout() {
@@ -107,6 +109,13 @@ export default {
       }
     },
   },
+  computed: {
+    cursorClass() {
+      return {
+        'cursor-pointer': this.isHovered
+      }
+    }
+  }
 };
 </script>
 
@@ -155,6 +164,10 @@ $btnColor: var(--v-btnColor-base);
     margin-bottom: 5rem;
     word-break: keep-all;
   }
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .center-items {
