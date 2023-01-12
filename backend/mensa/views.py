@@ -1,6 +1,7 @@
 import datetime
 import datetime
 import random
+import time
 from datetime import datetime
 from datetime import datetime
 
@@ -267,11 +268,13 @@ def get_week_recommendation(request):
 
             200-OK if successful
         """
+    t = time.time()
     r = recommender.DishRecommender(request.user, datetime.today(), True)
     res = r.predict(1, serialize=True)
 
     recommendations = [day[0][0] if len(day) > 0 else {} for day
                        in res.values()]
+    print("Overall:", time.time() - t)
     return Response(recommendations, status=status.HTTP_200_OK)
 
 
@@ -398,10 +401,6 @@ def get_recommendations(request):
 
     r = recommender.DishRecommender(request.user, day, entire_week)
     res = r.predict(rec_per_day, serialize=True)
-
-    num_dishes = len(r.dishes)
-    num_filtered_dishes = len(r.filtered_dishes)
-    # TODO: Maybe add this information for front end?
 
     return Response(res, status=status.HTTP_200_OK)
 
