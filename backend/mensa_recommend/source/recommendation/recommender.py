@@ -254,7 +254,7 @@ class DishRecommender:
 
     def __predict_day(self, day: date, dishes: list[tuple[int, list[float]]],
                       profile: list[float], recommendations_per_day: int,
-                      serialize: bool):
+                      serialize: bool) -> Tuple[List, List[int]]:
         pred = self.__predict_dishes(day, recommendations_per_day, dishes,
                                      profile)
 
