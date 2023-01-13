@@ -4,8 +4,18 @@ from typing import Optional
 
 
 class Condition(ABC):
+    """
+        A condition interface for validating caching data.
+    """
     @abstractmethod
     def holds(self) -> bool:
+        """Checks if the given condition still holds.
+
+        Return
+        ------
+        result : bool
+            True if the condition still holds. False, otherwise.
+        """
         pass
 
 

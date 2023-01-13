@@ -53,6 +53,9 @@ def multiply(f: float, factors: List[Optional[float]],
 
 
 class DishCondition(Condition):
+    """
+        A dish condition that only holds if the dish count has not changed.
+    """
     def __init__(self):
         self._dishes: int = -1
 
@@ -65,6 +68,10 @@ class DishCondition(Condition):
 
 
 class DishEncoderCache:
+    """
+        A dish encoder cache to prevent all dishes from being calculated over
+        and over again.
+    """
     def __init__(self):
         self._condition = DishCondition()
         self._encoder = DishEncoder()
@@ -77,6 +84,11 @@ class DishEncoderCache:
 
 
 class WeatherCache:
+    """
+        A weather cache to prevent duplicate api calls for the same result.
+
+        Holds only 30 minutes and maps zip codes on the first 3 digits.
+    """
     def __init__(self):
         self._lifetime = timedelta(minutes=30)
         self._cache: Dict[int, Dict[datetime, Tuple[
