@@ -145,6 +145,9 @@ class DishRecommender:
         self._flexibility = 3
         self._mensa_distances = self.__compute_mensa_distance_scores()
 
+        # Optional: Avoids having duplicates in the same week
+        self.anti_repetition = True
+
         self._plan: Dict[date, Dict[int, DishPlan]] = {}
         self._ratings: List[UserDishRating] = []
         self.dishes: List[Dish] = []
@@ -224,13 +227,24 @@ class DishRecommender:
         # separate dishes by day
         separated_encoded_dishes = self.__get_separated_encoded_dishes()
 
+        # save dish ids for anti-repetition
+        chosen_dishes = []
+
         # computes the user profile for the comparison
         profile = self.__compute_user_profile()
 
         result = {}
         for day in self.__days():
-            p = self.__predict_day(day, separated_encoded_dishes[day], profile,
-                                   recommendations_per_day, serialize)
+            # select available dishes based on day and anti-repetition
+            dishes = [(did, data)
+                      for did, data in separated_encoded_dishes[day]
+                      if not self.anti_repetition or did not in chosen_dishes]
+
+            # make prediction
+            p, chosen = self.__predict_day(day, dishes, profile,
+                                           recommendations_per_day, serialize)
+            chosen_dishes.extend(chosen)
+
             if serialize:
                 result[date_to_str(day)] = p
             else:
@@ -246,14 +260,18 @@ class DishRecommender:
 
         # map the predictions back to DishPlan instances
         mapped = []
+        chosen_dishes = []
+
         for dish_id, dish_plan, _, p in pred:
+            chosen_dishes.append(dish_id)
+
             if serialize:
                 dish_plan = DishPlanSerializer(dish_plan, context={
                     'user': self._user, 'include_sides': True}).data
 
             mapped.append((dish_plan, p))
 
-        return mapped
+        return mapped, chosen_dishes
 
     def __days(self) -> List[date]:
         """Get a list of valid days within the scope for recommending.
