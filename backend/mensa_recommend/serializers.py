@@ -1,5 +1,3 @@
-import time
-
 from rest_framework import serializers
 
 import mensa.models as mensa_model

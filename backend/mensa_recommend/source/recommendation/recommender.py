@@ -3,7 +3,6 @@ from datetime import date, timedelta, datetime, time
 from typing import List, Tuple, Dict, Optional
 
 import numpy as np
-from joblib import Parallel, delayed
 
 from mensa.models import UserDishRating, DishPlan, Dish, UserAllergy, \
     UserCategory, Mensa
@@ -11,7 +10,8 @@ from mensa_recommend.serializers import DishPlanSerializer
 from mensa_recommend.source.computations import distance_computation, \
     user_location
 from mensa_recommend.source.data_collection import weather
-from mensa_recommend.source.processing.caching import Cache, Condition
+from mensa_recommend.source.processing.conditions import Condition, \
+    TimeCondition
 from mensa_recommend.source.processing.encoding import DishEncoder
 from users.models import User
 
@@ -64,16 +64,40 @@ class DishCondition(Condition):
         return True
 
 
-class DishEncoderCache(Cache[List[Tuple[int, List[float]]]]):
+class DishEncoderCache:
     def __init__(self):
+        self._condition = DishCondition()
         self._encoder = DishEncoder()
-        super().__init__(DishCondition(), self._encoder.encode)
+        self._cache: List[Tuple[int, List[float]]] = []
+
+    def get(self) -> List[Tuple[int, List[float]]]:
+        if not self._condition.holds():
+            self._cache = self._encoder.encode()
+        return self._cache
 
 
-class WeatherCache(Cache[List[Tuple[int, List[float]]]]):
+class WeatherCache:
     def __init__(self):
-        self._encoder = DishEncoder()
-        super().__init__(DishCondition(), self._encoder.encode)
+        self._lifetime = timedelta(minutes=30)
+        self._cache: Dict[int, Dict[datetime, Tuple[
+            TimeCondition, float]]] = dict()
+
+    def get(self, mensa: Mensa, t: datetime) -> float:
+        broad_zip = int(mensa.zipCode / 100)
+
+        weather_data = self._cache.get(broad_zip)
+        if weather_data is None:
+            weather_data = dict()
+            self._cache[broad_zip] = weather_data
+
+        data: Optional[Tuple[TimeCondition, float]] = weather_data.get(t)
+        if data is None:
+            weather_data[t] = TimeCondition(self._lifetime), \
+                weather.get_score(t, mensa.lat, mensa.lon)
+        elif not data[0].holds():
+            weather_data[t] = data[0], weather.get_score(t, mensa.lat,
+                                                         mensa.lon)
+        return self._cache[broad_zip][t][1]
 
 
 class DishRecommender:
@@ -86,6 +110,7 @@ class DishRecommender:
         first demo and a most viable product.
     """
     _dish_encoder = DishEncoderCache()
+    _weather = WeatherCache()
 
     def __init__(self, user: User, day: date, entire_week: bool = False):
         """
@@ -113,7 +138,7 @@ class DishRecommender:
 
         # TODO: The time when the user wants to eat. This is currently static
         #  but might be changed in the future.
-        self._daytime: time = time(hour=12)
+        self._lunch_time: time = time(hour=12)
         # TODO: Max number of kilometers the user would drive at most.
         #  In the future this might be an option the user can configure.
         #  Must be > 0.
@@ -202,24 +227,15 @@ class DishRecommender:
         # computes the user profile for the comparison
         profile = self.__compute_user_profile()
 
-        parallel_result = Parallel(n_jobs=5, backend='threading', verbose=5)(
-            delayed(self.__predict_day)(
-                day,
-                separated_encoded_dishes[day],
-                profile,
-                recommendations_per_day,
-                serialize
-            ) for day in self.__days()
-        )
-
         result = {}
-        # compute results per day
-        for idx, day in enumerate(self.__days()):
-            mapped = parallel_result[idx]
+        for day in self.__days():
+            p = self.__predict_day(day, separated_encoded_dishes[day], profile,
+                                   recommendations_per_day, serialize)
             if serialize:
-                result[date_to_str(day)] = mapped
+                result[date_to_str(day)] = p
             else:
-                result[day] = mapped
+                result[day] = p
+
         return result
 
     def __predict_day(self, day: date, dishes: list[tuple[int, list[float]]],
@@ -232,7 +248,6 @@ class DishRecommender:
         mapped = []
         for dish_id, dish_plan, _, p in pred:
             if serialize:
-                # TODO: Serializer still takes up to 0.45s of 0.55s in total!
                 dish_plan = DishPlanSerializer(dish_plan, context={
                     'user': self._user, 'include_sides': True}).data
 
@@ -365,20 +380,10 @@ class DishRecommender:
         result : List[Tuple[int, DishPlan, Mensa, float]]
             The predictions considering all constraints.
         """
-        weather_scores: Dict[int, float] = {}
-
         result = []
         for dish_id, dish_plan, mensa, p in predictions:
-            # make api call to get weather score
-            if mensa.zipCode not in weather_scores:
-                # TODO: Takes up to 0.08s (0.4s for a week)
-                weather_scores[mensa.zipCode] = weather.get_score(
-                    datetime.combine(day, self._daytime),
-                    mensa.lat,
-                    mensa.lon
-                )
-
-            local_weather = weather_scores[mensa.zipCode]
+            local_weather = self._weather.get(
+                mensa, datetime.combine(day, self._lunch_time))
             dist_score = self.__dist_to_mensa(day, dish_plan.mensa_id)
 
             # Do not mess up predictions if one of the constraints is 0.
@@ -426,7 +431,7 @@ class DishRecommender:
         for day in self.__days():
             distances = user_location.get_user_location(self._user,
                                                         current_date=day,
-                                                        _time=self._daytime)
+                                                        _time=self._lunch_time)
             for key in distances.keys():
                 score = 1 - min(distances[key] / self._flexibility, 1)
                 distances[key] = score
