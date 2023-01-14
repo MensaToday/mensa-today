@@ -134,7 +134,7 @@ class DishRecommender:
         Still, for the first execution a recommendation takes up to 2 seconds
         but for all following invocations the recommender returns predictions
         after 0.1 seconds. For more information about the conditions, check
-        their class.
+        their classes.
     """
     _dish_encoder = DishEncoderCache()
     _weather = WeatherCache()
