@@ -91,24 +91,35 @@ class WeatherCache:
     """
     def __init__(self):
         self._lifetime = timedelta(minutes=30)
+
+        # time conditions per zip code are necessary since they might be
+        # accessed at different times
         self._cache: Dict[int, Dict[datetime, Tuple[
             TimeCondition, float]]] = dict()
 
     def get(self, mensa: Mensa, t: datetime) -> float:
+        # merge zip codes to decrease the number of api calls
         broad_zip = int(mensa.zipCode / 100)
 
+        # check availability of the dictionary for the given zip code
         weather_data = self._cache.get(broad_zip)
         if weather_data is None:
             weather_data = dict()
             self._cache[broad_zip] = weather_data
 
+        # check if we already have some cached data
         data: Optional[Tuple[TimeCondition, float]] = weather_data.get(t)
         if data is None:
+            # no data available -> initialize time condition and fetch weather
             weather_data[t] = TimeCondition(self._lifetime), \
                 weather.get_score(t, mensa.lat, mensa.lon)
-        elif not data[0].holds():
-            weather_data[t] = data[0], weather.get_score(t, mensa.lat,
-                                                         mensa.lon)
+        else:
+            # data available -> check if time condition still holds
+            if not data[0].holds():
+                # weather is outdated -> fetch
+                weather_data[t] = data[0], weather.get_score(t, mensa.lat,
+                                                             mensa.lon)
+        # return cache
         return self._cache[broad_zip][t][1]
 
 
