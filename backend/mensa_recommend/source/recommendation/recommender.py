@@ -128,6 +128,13 @@ class DishRecommender:
         The dish recommender class is the main class for generating
         recommendations. As of right now, the approach is held very naive
         without any inbetween savings to speed up the process in any way.
+
+        To increase performance, the recommender caches operations that are
+        time-consuming and updates them only if their conditions changes.
+        Still, for the first execution a recommendation takes up to 2 seconds
+        but for all following invocations the recommender returns predictions
+        after 0.1 seconds. For more information about the conditions, check
+        their class.
     """
     _dish_encoder = DishEncoderCache()
     _weather = WeatherCache()
