@@ -128,9 +128,6 @@ class DishRecommender:
         The dish recommender class is the main class for generating
         recommendations. As of right now, the approach is held very naive
         without any inbetween savings to speed up the process in any way.
-
-        Disclaimer: This should not be used in production but rather for a
-        first demo and a most viable product.
     """
     _dish_encoder = DishEncoderCache()
     _weather = WeatherCache()
