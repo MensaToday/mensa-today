@@ -26,8 +26,8 @@ class TimeCondition(Condition):
 
     def holds(self) -> bool:
         now = datetime.now()
-        result = self._timestamp is not None and (now - self._timestamp) \
-            .seconds < self._lifetime
+        result = self._timestamp is not None and \
+            (now - self._timestamp).seconds < self._lifetime
 
         if not result:
             self._timestamp = now
