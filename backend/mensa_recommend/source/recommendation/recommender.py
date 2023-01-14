@@ -474,7 +474,7 @@ class DishRecommender:
 
         Return
         ------
-        plan : Dict[date, List[DishPlan]]
+        plan : Dict[date, Dict[int, DishPlan]]
             The dish plan for every day.
         """
         dish_plan = {}
