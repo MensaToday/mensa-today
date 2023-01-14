@@ -470,7 +470,9 @@ class DishRecommender:
         return week_distances
 
     def __load_dish_plan(self) -> Dict[date, Dict[int, DishPlan]]:
-        """Load the dish plan from the database.
+        """Load the dish plan from the database and filter duplicated
+        dish_plans with the same date and dish by choosing the one with the
+        nearest mensa.
 
         Return
         ------
@@ -485,14 +487,17 @@ class DishRecommender:
                 .prefetch_related("dish", "mensa", "dish__categories",
                                   "dish__allergies")
 
+            # only select one dish_plan per dish; determine by distance score
             for plan in plans:
                 did = plan.dish_id
                 score = self.__dist_to_mensa(day, plan.mensa_id)
 
+                # compare scores; the higher, the better
                 current = dish_to_plan.get(did)
                 if current is None or score > current[1]:
                     dish_to_plan[did] = plan, score
 
+            # remove score values
             dish_plan[day] = {did: plan
                               for did, (plan, _) in dish_to_plan.items()}
         return dish_plan
