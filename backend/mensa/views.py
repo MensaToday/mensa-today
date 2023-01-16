@@ -1,6 +1,7 @@
 import datetime
 import random
 from datetime import datetime
+import time
 
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
@@ -79,10 +80,14 @@ def get_dishplan(request):
     """
 
     last_monday = get_last_monday()
+    t1 = time.time()
+    dishplan_qs = DishPlan.objects.prefetch_related('mensa', 'dish', 'dish__categories', 'dish__allergies', 'dish__additives', 'dish__ext_ratings').filter(
+        date__gte=last_monday)
 
-    return Response(
-        DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday),
-                           many=True, context={'user': request.user}).data)
+    dish_serialized = DishPlanSerializer(dishplan_qs,
+                                         many=True, context={'user': request.user}).data
+    print(time.time()-t1)
+    return Response(dish_serialized)
 
 
 @api_view(['GET', 'POST'])
