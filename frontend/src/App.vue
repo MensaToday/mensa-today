@@ -21,9 +21,13 @@ v-app
             v-btn.elevation-0(color="primary" dark v-bind="attrs" v-on="on")
               v-icon mdi-dots-vertical  
           v-list(width="150px")
-            v-list-item(v-for="(item, index) in optionItems" :key="index" :to="item.to") {{ item.tag }}
-            v-list-item(@click="logout()") Logout
-              
+            v-list-item(v-for="(item, index) in optionItems" :key="index" :to="item.to") 
+              v-icon {{item.icon}}
+              | {{ item.tag }}
+            v-list-item(@click="logout()") 
+              v-icon mdi-logout
+              | Logout
+
   v-main.mb-12
     router-view
     template
@@ -56,8 +60,8 @@ export default {
       {
         tag: "Settings",
         to: { name: "SettingsGeneral" },
-        icon: "mdi-food",
-      },  
+        icon: "mdi-account-cog",
+      },
     ],
     views: [
       {
