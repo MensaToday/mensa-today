@@ -4,58 +4,71 @@ div
     h1.text-center.my-6 Your Mensa Week
     v-row 
       v-col
-        v-skeleton-loader(v-show="!loaded" :loading="!loaded" transition="fade-transition" type="card")
+        v-skeleton-loader(v-show="!loaded" :loading="!loaded" type="card")
         template(v-if="loaded")
-          v-data-iterator(:items='items' hide-default-footer)
-            template(v-slot:default='props')
-              v-row
-                v-col(v-for='(item, index) in props.items' :key="index" cols='12' sm='6' md='6' lg='4')
-                  v-card(height="100%")
-                    v-card-title.align-center {{ days[(new Date(item.date)).getDay()] }}
-                    v-img(v-show="item.dish.url != null" :alt="item.dish.name" height='250'
-                    :src="item.dish.url")
-                    v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250' elevation="0")
-                      h1 {{ item.dish.name[0] }}
+          div.pb-4(v-for="(array, key) in items" :key="key")
+            v-sheet.mx-auto.elevation-4(max-width="1600")
+              div
+                //- h4.mx-auto Hi
+                v-slide-group.pa-2(show-arrows)
+                  v-slide-item(v-for="(item, index) in array" :key="index" )
+                    
+                    v-card.pa-4(height="650" width="500")
+                      v-img(v-show="item[0].dish.url != null" :alt="item[0].dish.name" height='300'
+                      :src='item[0].dish.url')
+                        //- v-progress-circular(:rotate="-90" :size="100" :width="15" :value="item[1]*100" color="primary") {{ (item[1]*100).toFixed(2) }}
 
-                    v-card-title.subheading(style="word-break: normal")
-                      | {{ item.dish.name }}
-                    v-divider
-                    v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                      h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
-                        //- (:class="{ 'primary--text': sortBy === key }")
-                        | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
-                      v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
-                        height="50" max-width="50" contain :key="category"
-                        :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
-                      v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
-                        v-icon mdi-navigation-variant-outline
-                        | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
-                    v-col.align-center.justify-center.d-flex.justify-space-between
-                      div
-                        span
-                          //- (:class="{ 'primary--text': sortBy === key }")
-                          v-icon mdi-food-apple
-                          | {{ item.dish.main ? 'Main Dish' : 'Side Dish' }}
-                      div 
-                        v-icon mdi-shield-plus-outline
-                        span
-                          //- (:class="{ 'primary--text': sortBy === key }")
-                          span(v-if="item.dish.additives.length == 0")  None
-                          span(v-for="additive in item.dish.additives" :key="additive.additive.name")  {{ additive.additive.name }}
-                    v-col.align-center.justify-center.d-flex.justify-space-between
-                      div 
-                        v-icon mdi-calendar
-                        span {{ new Date(item.date).toLocaleDateString('de-DE') }}
-                      v-rating(hover length="5" background-color="gray" readonly size="24" half-increments 
-                        v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0")
+                      v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item[0].dish.url == null" height='300' elevation="0")
+                        h1 {{ item[0].dish.name[0] }}
+                        
+                      v-card-title(style="font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item[0].dish.name }}
+
+                      v-divider
+
+                      v-col.align-center.justify-center.d-flex.justify-space-between.py-2
+                        h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item[0].priceStudent)+1) }") €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
+                        
+                        v-btn(rounded :href="getGoogleMapsUrl(item[0].mensa.name)" target="_blank" rel="noopener noreferrer")
+                          v-icon mdi-navigation-variant-outline
+                          | {{ (item[0].mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
+
+                      v-col.align-center.justify-center.d-flex.justify-space-between
+
+                        div
+                          v-img(v-for="(category, index) in item[0].dish.categories.length" :alt="item[0].dish.categories[index].category.name" 
+                            height="50" max-width="50" contain :key="category"
+                            :src="require('@/assets/dish_icons/food_preferences/'+item[0].dish.categories[index].category.name+'.png')")
+                          //- span
+                          //-   //- (:class="{ 'primary--text': sortBy === key }")
+                          //-   v-icon mdi-food-apple
+                          //-   | {{ item[0].dish.main ? 'Main Dish' : 'Side Dish' }}
+                      
+                        div 
+                          v-icon mdi-shield-plus-outline
+                          span
+                            //- (:class="{ 'primary--text': sortBy === key }")
+                            span(v-if="item[0].dish.additives.length == 0")  None
+                            span(v-for="additive in item[0].dish.additives" :key="additive.additive.name")  {{ additive.additive.name }}
+                     
+                      v-col.align-center.justify-center.d-flex.justify-space-between
+                        v-spacer
+                        span {{ item[0].ext_ratings.rating_avg }}
+                        v-rating(v-model="rating" half-increments hover length="5" background-color="gray" readonly size="24" 
+                          :value="parseFloat(item[0].ext_ratings.rating_avg) + 0.0")
+                        v-btn(@click="setRating(item[0].dish.id, 5)")
+        
 </template>
 
 <script>
 import { mapActions } from "vuex";
+import { axios } from "axios";
 export default {
   name: "HomeWeekRecommendation",
   data() {
     return {
+      rating: 0.0,
+      model: null,
+      recommendationItemsTest: null,
       recommendationItems: this.$store.state.recommendations,
       recommendationItemsDaily: this.$store.state.dailyRecommendations,
       days: [
@@ -71,7 +84,7 @@ export default {
   },
   computed: {
     items() {
-      return this.$store.state.dailyRecommendations;
+      return this.$store.state.recommendations;
     },
     loaded() {
       // if (typeof this.items !== 'undefined') return true
@@ -81,7 +94,9 @@ export default {
   },
   methods: {
     ...mapActions(["GetRecommendations", "GetOneRecommendation"]),
-
+    print(msg){
+      console.log(msg);
+    },
     async getRecommendations() {
       try {
         await this.GetRecommendations();
@@ -101,11 +116,19 @@ export default {
       url.searchParams.set("destination", mensaName);
       return url.toString();
     },
+    async setRating(dish_id, rating) {
+      let response = await axios.post("mensa/user_ratings", {
+        dish_id: dish_id,
+        rating: rating
+      });
+      console.log(response);
+    }
   },
   mounted() {
     // TODO: exchange with getRecommendations
-    this.getOneRecommendation();
-    // this.getRecommendations()
+    //this.getOneRecommendation();
+    this.getRecommendations();
   },
 };
 </script>
+

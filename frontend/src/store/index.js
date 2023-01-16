@@ -117,7 +117,7 @@ export default new Vuex.Store({
       let response = await axios.post("mensa/get_recommendations", {
         day: today,
         entire_week: "True",
-        recommendations_per_day: 1,
+        recommendations_per_day: 5,
       });
 
       console.log(response);
