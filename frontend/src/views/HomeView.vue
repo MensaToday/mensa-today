@@ -93,9 +93,20 @@ export default {
     },
   },
   methods: {
+<<<<<<< HEAD
     ...mapActions(["GetRecommendations", "GetOneRecommendation"]),
     print(msg){
       console.log(msg);
+=======
+    ...mapActions(["GetRecommendations", "GetOneRecommendation", "GetUserData"]),
+
+    async getUserData() {
+      try{
+        await this.GetUserData();
+      } catch (error) {
+        console.log(error);
+      }
+>>>>>>> origin
     },
     async getRecommendations() {
       try {
@@ -126,8 +137,14 @@ export default {
   },
   mounted() {
     // TODO: exchange with getRecommendations
+<<<<<<< HEAD
     //this.getOneRecommendation();
     this.getRecommendations();
+=======
+    this.getOneRecommendation();
+    this.getUserData();
+    // this.getRecommendations()
+>>>>>>> origin
   },
 };
 </script>

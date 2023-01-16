@@ -1,21 +1,15 @@
 import datetime
-import datetime
 import random
-from datetime import datetime
 from datetime import datetime
 
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-import random
-
-import datetime
-from datetime import datetime
-
-from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy, UserSideSelection
-from mensa_recommend.serializers import DishPlanSerializer, UserDishRatingSerializer, DishSerializer
-
+from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy, \
+    UserSideSelection
+from mensa_recommend.serializers import DishPlanSerializer, \
+    UserDishRatingSerializer, DishSerializer
 from mensa_recommend.source.computations.date_computations import \
     get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
@@ -398,10 +392,6 @@ def get_recommendations(request):
 
     r = recommender.DishRecommender(request.user, day, entire_week)
     res = r.predict(rec_per_day, serialize=True)
-
-    num_dishes = len(r.dishes)
-    num_filtered_dishes = len(r.filtered_dishes)
-    # TODO: Maybe add this information for front end?
 
     return Response(res, status=status.HTTP_200_OK)
 
