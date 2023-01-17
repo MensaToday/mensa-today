@@ -19,9 +19,9 @@ module.exports = {
     "no-console": "off",
     "no-debugger": "off",
     "prettier/prettier": [
-      "error",
+      "warn",
       {
-        "endOfLine": "auto",
+        endOfLine: "auto",
       },
     ],
   },
