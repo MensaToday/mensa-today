@@ -60,7 +60,7 @@ div
                     v-img(v-show="item.dish.url != null" :alt="item.dish.name" height='250'
                     :src="item.dish.url")
                     v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250')
-                      h1 {{ item.dish.name[0] }}
+                      h1.text--secondary {{ item.dish.name[0] }}
 
                     v-card-title.subheading(style="word-break: normal")
                       | {{ item.dish.name }}
