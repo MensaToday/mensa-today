@@ -165,7 +165,6 @@ export default new Vuex.Store({
         recommendations_per_day: 5,
       });
 
-      //console.log(response.data);
       var recommendations = response.data;
       commit("setRecommendations", recommendations);
     },
