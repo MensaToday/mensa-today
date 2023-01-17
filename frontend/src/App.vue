@@ -1,58 +1,23 @@
 <template lang="pug">
 v-app
-  v-app-bar(app color='primary' dark)
-    .d-flex.align-center
-      v-img.shrink.mr-2(v-bind:class="cursorClass" @mouseover="isHovered = true" @mouseleave="isHovered = false" alt='MensaToday Logo' contain src='@/assets/logo_no_bg.png' transition='scale-transition' width='40' @click="$router.push('/').catch(()=>{})")
-      h2 MensaToday
-    v-tabs(align-with-title v-if="$store.getters.isLoggedIn")
-      v-tab.white--text(v-for="view in views" :key="view.to.name" :to="view.to") 
-        v-icon.mr-3 mdi-{{ view.icon }}
-        | {{ view.tag }}
-      v-spacer
-      .d-flex.align-center.mr-5(v-if="$store.state.card_balance")
-        v-icon.mr-2 mdi-wallet
-        label.white--text €{{ $store.state.card_balance.replace('.',',') }}
-      .d-flex.align-center.mr-3
-        v-btn(icon @click="toggleTheme") 
-          v-icon {{ darkMode ? 'mdi-moon-waning-crescent' : 'mdi-white-balance-sunny'}}
-      .d-flex.align-center.mr-5
-        v-menu(offset-y width="100px")
-          template(v-slot:activator="{ on, attrs }")
-            v-btn.elevation-0(color="primary" dark v-bind="attrs" v-on="on")
-              v-icon mdi-dots-vertical  
-          v-list(width="150px")
-            v-list-item(v-for="(item, index) in optionItems" :key="index" :to="item.to") 
-              v-icon {{item.icon}}
-              | {{ item.tag }}
-            v-list-item(@click="logout()") 
-              v-icon mdi-logout
-              | Logout
+  NavigationBar
 
   v-main.mb-12
     router-view
     template
 
-  v-footer(dark padless)
-    v-row 
-      v-col.pb-0.pt-0
-        v-card.secondary.text-center(tile)
-          v-card-title.center-items
-            div.mt-3
-              v-btn.mx-12.white--text(plain v-for='icon in icons' :key='icon.mdi' icon target="_blank" :href="icon.link")
-                div
-                  v-icon(size='24px' elevation='15')
-                    | {{ icon.mdi }}
-                  p.mt-2 {{ icon.text }}
-          v-divider
-          v-card-text.white--text.text-center
-            | {{ new Date().getFullYear() }} &mdash; 
-            strong Marten Jostmann, Leo Giesen, Erik Zimmermann, Marcel Reckmann, Polina Kireyeu
+  Footer
 </template>
 
 <script>
 import { mapActions } from "vuex";
+import Footer from "./components/Footer.vue";
+import NavigationBar from "./components/NavigationBar.vue";
 export default {
   name: "App",
+  components: {
+    NavigationBar, Footer
+  },
   created() {
     // If there is a token from a previous session, try to refresh it. In case the token expiry has passed, the logout dialig is triggered
     if (this.$store.state.access_token) {
