@@ -1,51 +1,39 @@
 <template lang="pug">
 v-app
-  v-app-bar(app color='primary' dark)
-    .d-flex.align-center(@click="$router.push('/').catch(()=>{})")
-      v-img.shrink.mr-2(alt='MensaToday Logo' contain src='@/assets/logo.png' transition='scale-transition' width='40')
-      h2 MensaToday
-    v-tabs(align-with-title v-if="$store.getters.isLoggedIn")
-      v-tab.white--text(v-for="view in views" :key="view.to.name" :to="view.to") 
-        v-icon.mr-3 mdi-{{ view.icon }}
-        | {{ view.tag }}
-      v-spacer
-      .d-flex.align-center.mr-6(v-if="$store.state.card_balance")
-        v-icon.mr-2 mdi-wallet
-        p.my-auto.mr-9 €{{ $store.state.card_balance.replace('.',',') }}
-        v-btn.px-3(outlined @click="logout()")
-          v-icon mdi-logout
-          | Logout
-    v-spacer
-    div.float-right
-      v-btn(icon @click="toggleTheme") 
-        v-icon mdi-brightness-6
+  NavigationBar
 
   v-main.mb-12
     router-view
     template
 
-  v-footer(dark padless)
-    v-row 
-      v-col.pb-0.pt-0
-        v-card.secondary.text-center(tile)
-          v-card-title.center-items
-            div.mt-3
-              v-btn.mx-12.white--text(v-for='icon in icons' :key='icon.mdi' icon target="_blank" :href="icon.link")
-                div
-                  v-icon(size='24px' elevation='15')
-                    | {{ icon.mdi }}
-                  p.mt-2 {{ icon.text }}
-          v-divider
-          v-card-text.white--text.text-center
-            | {{ new Date().getFullYear() }} &mdash; 
-            strong Marten Jostmann, Leo Giesen, Erik Zimmermann, Marcel Reckmann, Polina Kireyeu
+  Footer
 </template>
 
 <script>
 import { mapActions } from "vuex";
+import Footer from "./components/Footer.vue";
+import NavigationBar from "./components/NavigationBar.vue";
 export default {
   name: "App",
+  components: {
+    NavigationBar, Footer
+  },
+  created() {
+    // If there is a token from a previous session, try to refresh it. In case the token expiry has passed, the logout dialig is triggered
+    if (this.$store.state.access_token) {
+      this.startRefreshTimer();
+    }
+  },
   data: () => ({
+    isHovered: false,
+    darkMode: false,
+    optionItems: [
+      {
+        tag: "Settings",
+        to: { name: "SettingsGeneral" },
+        icon: "mdi-account-cog",
+      },
+    ],
     views: [
       {
         tag: "Your Mensa Week",
@@ -79,6 +67,7 @@ export default {
   methods: {
     ...mapActions(["Logout"]),
     toggleTheme() {
+      this.darkMode = !this.darkMode;
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
     },
     async logout() {
@@ -94,7 +83,21 @@ export default {
         this.showError = true;
       }
     },
+    startRefreshTimer() {
+      // time in ms
+      this.$store.commit("refreshToken");
+      this.timer = setInterval(() => {
+        this.$store.commit("refreshToken");
+      }, 3600000); // 60min*60*1000 = 3600000
+    },
   },
+  computed: {
+    cursorClass() {
+      return {
+        'cursor-pointer': this.isHovered
+      }
+    }
+  }
 };
 </script>
 
@@ -143,6 +146,10 @@ $btnColor: var(--v-btnColor-base);
     margin-bottom: 5rem;
     word-break: keep-all;
   }
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .center-items {

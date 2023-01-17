@@ -1,6 +1,8 @@
 import axios from "axios";
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { mapState } from "vuex";
+import createPersistedState from "vuex-persistedstate";
+import router from "../router";
 
 Vue.use(Vuex);
 
@@ -9,23 +11,37 @@ export default new Vuex.Store({
     access_token: null,
     refresh_token: null,
     user: {
-      name: null,
+      username: null,
+      first_name: null,
+      last_name: null,
       id: null,
       email: null,
       mensa_card_id: null,
+      avatar: null,
+      food_categories: [],
+      food_allergies: [],
     },
     card_balance: null,
     dishplan: null,
     recommendations: null,
     dailyRecommendations: null,
   },
+  computed: {
+    ...mapState(["user"]),
+  },
   getters: {
     isLoggedIn: (state) => state.access_token != null,
+    userData: (state) => {
+      return state.user;
+    },
   },
   mutations: {
     setTokens(state, [access_token, refresh_token]) {
       state.access_token = access_token;
       state.refresh_token = refresh_token;
+    },
+    setToken(state, access_token) {
+      state.access_token = access_token;
     },
     rmTokens(state) {
       state.access_token = null;
@@ -39,6 +55,12 @@ export default new Vuex.Store({
     setBalance(state, card_balance) {
       state.card_balance = card_balance;
     },
+    setUserData(state, user_data) {
+      state.user.mensa_card_id = user_data.card_id;
+      state.user.username = user_data.username;
+      state.user.food_categories = user_data.user_category;
+      state.user.food_allergies = user_data.user_allergy;
+    },
     setDishplan(state, dishplan) {
       state.dishplan = dishplan;
     },
@@ -48,18 +70,35 @@ export default new Vuex.Store({
     setRecommendationsDaily(state, recommendations) {
       state.dailyRecommendations = recommendations;
     },
+    refreshToken() {
+      // If the user has a refresh token the access token can be refreshed
+      if (this.state.refresh_token != null) {
+        axios
+          .post("user/refresh/", {
+            refresh: this.state.refresh_token,
+          })
+          .then((response) => {
+            this.dispatch("initializeSession", [
+              response.data.access,
+              this.state.refresh_token,
+            ]);
+          })
+          .catch((err) => {
+            // If a 401 is returned the token cannot be refreshed and the user will get logged out
+            if (err.response.status === 401) {
+              this.commit("rmTokens");
+              router.push("/login");
+            }
+          });
+      }
+    },
   },
   actions: {
     initializeSession({ commit, dispatch }, [access_token, refresh_token]) {
-      window.localStorage.setItem("access_token", access_token);
-      window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token]);
 
       if (access_token) {
-        axios.defaults.headers.common["Authorization"] =
-          "Bearer " + access_token;
-
         setTimeout(() => {
           dispatch("GetBalance");
         }, 1);
@@ -94,6 +133,8 @@ export default new Vuex.Store({
       await axios.post("user/logout", {
         refresh_token: state.refresh_token,
       });
+
+      router.push("/login");
       commit("rmTokens");
     },
     async GetBalance({ commit }) {
@@ -106,6 +147,11 @@ export default new Vuex.Store({
       var dishplan = response.data;
       commit("setDishplan", dishplan);
     },
+    async GetUserData({ commit }) {
+      let response = await axios.get("user/get_user_data");
+      var user_data = response.data;
+      commit("setUserData", user_data);
+    },
     async GetRecommendations({ commit }) {
       var today = new Date();
       var dd = String(today.getDate()).padStart(2, "0");
@@ -116,7 +162,7 @@ export default new Vuex.Store({
       let response = await axios.post("mensa/get_recommendations", {
         day: today,
         entire_week: "True",
-        recommendations_per_day: 1,
+        recommendations_per_day: 5,
       });
 
       var recommendations = response.data;
@@ -129,4 +175,5 @@ export default new Vuex.Store({
       commit("setRecommendationsDaily", recommendations);
     },
   },
+  plugins: [createPersistedState()],
 });

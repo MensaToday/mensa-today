@@ -48,7 +48,7 @@ services:
       dockerfile: Dockerfile.local
     command: celery -A mensa_recommend worker -l INFO
     volumes:
-      - ./backend/:/usr/src/app
+      - ./backend/:/app
     env_file:
       - database-variables.env
       - local-variables.env
