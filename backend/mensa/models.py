@@ -142,7 +142,11 @@ class UserDishRating(models.Model):
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     rating = models.FloatField()  # range: 0.0 .. 1.0
 
+
 class UserSideSelection(models.Model):
+    class Meta:
+        unique_together = (('main', 'user', 'side'),)
+
     main = models.ForeignKey(DishPlan, on_delete=models.CASCADE, related_name="main")
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     side = models.ForeignKey(DishPlan, on_delete=models.CASCADE, related_name="side")

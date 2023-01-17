@@ -1,6 +1,6 @@
 import axios from "axios";
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { mapState } from "vuex";
 import createPersistedState from "vuex-persistedstate";
 import router from "../router";
 
@@ -11,18 +11,29 @@ export default new Vuex.Store({
     access_token: null,
     refresh_token: null,
     user: {
-      name: null,
+      username: null,
+      first_name: null,
+      last_name: null,
       id: null,
       email: null,
       mensa_card_id: null,
+      avatar: null,
+      food_categories: [],
+      food_allergies: [],
     },
     card_balance: null,
     dishplan: null,
     recommendations: null,
     dailyRecommendations: null,
   },
+  computed: {
+    ...mapState(["user"]),
+  },
   getters: {
     isLoggedIn: (state) => state.access_token != null,
+    userData: (state) => {
+      return state.user;
+    },
   },
   mutations: {
     setTokens(state, [access_token, refresh_token]) {
@@ -43,6 +54,12 @@ export default new Vuex.Store({
     },
     setBalance(state, card_balance) {
       state.card_balance = card_balance;
+    },
+    setUserData(state, user_data) {
+      state.user.mensa_card_id = user_data.card_id;
+      state.user.username = user_data.username;
+      state.user.food_categories = user_data.user_category;
+      state.user.food_allergies = user_data.user_allergy;
     },
     setDishplan(state, dishplan) {
       state.dishplan = dishplan;
@@ -130,6 +147,11 @@ export default new Vuex.Store({
       var dishplan = response.data;
       commit("setDishplan", dishplan);
     },
+    async GetUserData({ commit }) {
+      let response = await axios.get("user/get_user_data");
+      var user_data = response.data;
+      commit("setUserData", user_data);
+    },
     async GetRecommendations({ commit }) {
       var today = new Date();
       var dd = String(today.getDate()).padStart(2, "0");
@@ -140,10 +162,10 @@ export default new Vuex.Store({
       let response = await axios.post("mensa/get_recommendations", {
         day: today,
         entire_week: "True",
-        recommendations_per_day: 1,
+        recommendations_per_day: 5,
       });
 
-      console.log(response);
+      //console.log(response.data);
       var recommendations = response.data;
       commit("setRecommendations", recommendations);
     },

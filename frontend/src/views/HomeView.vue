@@ -80,8 +80,15 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["GetRecommendations", "GetOneRecommendation"]),
+    ...mapActions(["GetRecommendations", "GetOneRecommendation", "GetUserData"]),
 
+    async getUserData() {
+      try{
+        await this.GetUserData();
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async getRecommendations() {
       try {
         await this.GetRecommendations();
@@ -105,6 +112,7 @@ export default {
   mounted() {
     // TODO: exchange with getRecommendations
     this.getOneRecommendation();
+    this.getUserData();
     // this.getRecommendations()
   },
 };
