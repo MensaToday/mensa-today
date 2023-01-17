@@ -91,10 +91,9 @@ export default new Vuex.Store({
       // setTimeout(() => dispatch('AutoRefreshToken'), 2000)
     },
     async Logout({ state, commit }) {
-      let response = await axios.post("user/logout", {
+      await axios.post("user/logout", {
         refresh_token: state.refresh_token,
       });
-      console.log(response);
       commit("rmTokens");
     },
     async GetBalance({ commit }) {
@@ -120,7 +119,6 @@ export default new Vuex.Store({
         recommendations_per_day: 1,
       });
 
-      console.log(response);
       var recommendations = response.data;
       commit("setRecommendations", recommendations);
     },
