@@ -91,7 +91,7 @@ div
                             span(v-if="item.dish.additives.length == 0")  None
                             span(v-for="additive in item.dish.additives" :key="additive.additive.name") 
                               span {{ additive.additive.name }}
-                              span(v-if="additive.additive.name != item.dish.additives[item.dish.additives.length-1]") , 
+                              span(v-show="additive != item.dish.additives[item.dish.additives.length-1]") , 
                     v-row 
                       v-col.align-center.justify-center.d-flex.justify-space-between
                         div 
