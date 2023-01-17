@@ -1,7 +1,11 @@
 <template lang="pug">
 v-container(fluid)
-  v-alert(dismissible transition="fade-transition" v-if="failed == false" :value="alert" type="success") {{ update_success_message }}
-  v-alert(dismissible transition="fade-transition" v-if="failed == true" :value="alert" type="error") {{ update_error_message }}
+  v-alert(dismissible transition="fade-transition" 
+    v-if="failed == false" :value="alert" type="success") 
+    | {{ update_success_message }}
+  v-alert(dismissible transition="fade-transition" 
+    v-if="failed == true" :value="alert" type="error") 
+    | {{ update_error_message }}
 
   div.center-items
     v-row

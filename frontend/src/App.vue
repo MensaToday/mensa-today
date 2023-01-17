@@ -19,7 +19,8 @@ export default {
     NavigationBar, Footer
   },
   created() {
-    // If there is a token from a previous session, try to refresh it. In case the token expiry has passed, the logout dialig is triggered
+    // If there is a token from a previous session, try to refresh it. 
+    // In case the token expiry has passed, the logout dialog is triggered
     if (this.$store.state.access_token) {
       this.startRefreshTimer();
     }
