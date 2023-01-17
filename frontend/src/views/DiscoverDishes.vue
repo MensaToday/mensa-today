@@ -176,10 +176,12 @@ export default {
           "Hier und Jetzt",
           "Mensa am Aasee",
           "Mensa am Ring",
-          "Mensa Bispinghof"
+          "Mensa Bispinghof",
         ],
         selectedMensa: "Mensa Da Vinci",
-        date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+        date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+          .toISOString()
+          .substr(0, 10),
         additives: {
           Dyed: false,
           Preservatives: false,
@@ -314,9 +316,9 @@ export default {
     this.getDishplan();
   },
   watch: {
-    filters(val) {
-      this.dateFormatted = this.formatDate(this.date)
+    filters() {
+      this.dateFormatted = this.formatDate(this.date);
     },
-  }
+  },
 };
 </script>

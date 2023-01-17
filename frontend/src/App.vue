@@ -16,10 +16,12 @@ import NavigationBar from "./components/NavigationBar.vue";
 export default {
   name: "App",
   components: {
-    NavigationBar, Footer
+    NavigationBar,
+    Footer,
   },
   created() {
-    // If there is a token from a previous session, try to refresh it. In case the token expiry has passed, the logout dialig is triggered
+    // If there is a token from a previous session, try to refresh it.
+    // In case the token expiry has passed, the logout dialog is triggered
     if (this.$store.state.access_token) {
       this.startRefreshTimer();
     }
@@ -94,10 +96,10 @@ export default {
   computed: {
     cursorClass() {
       return {
-        'cursor-pointer': this.isHovered
-      }
-    }
-  }
+        "cursor-pointer": this.isHovered,
+      };
+    },
+  },
 };
 </script>
 

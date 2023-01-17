@@ -13,15 +13,16 @@ module.exports = {
 
   parserOptions: {
     parser: "@babel/eslint-parser",
+    requireConfigFile: false,
   },
 
   rules: {
     "no-console": "off",
     "no-debugger": "off",
     "prettier/prettier": [
-      "error",
+      "warn",
       {
-        "endOfLine": "auto",
+        endOfLine: "auto",
       },
     ],
   },
