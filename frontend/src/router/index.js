@@ -24,6 +24,13 @@ const routes = [
   {
     path: "/login",
     name: "LoginUser",
+    beforeEnter: (to, from, next) => {
+      if (!store.getters.isLoggedIn) {
+        next();
+      } else {
+        next(false);
+      }
+    },
     component: () =>
       import(/* webpackChunkName: "login" */ "../views/Login.vue"),
   },
@@ -67,13 +74,13 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // check if authorization is required (cf. meta tags in routes)
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    // if a user is logged in, he can enter
-    if (store.getters.isLoggedIn) {
+    // if a user is logged in, he can enter, otherwise not
+
+    if (!store.getters.isLoggedIn) {
+      next("/login");
+    } else {
       next();
-      return;
     }
-    // if not logged in, the user is redirected to the home page
-    next("/login");
   } else {
     next();
   }
