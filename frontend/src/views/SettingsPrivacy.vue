@@ -47,68 +47,61 @@ import SettingsNavigation from "../components/SettingsNavigation.vue";
 export default {
   name: "SettingsPrivacy",
   components: {
-    SettingsNavigation
+    SettingsNavigation,
   },
   data: () => ({
     deleteAccountDialog: false,
     deleteAccountConfirmation: null,
 
     updatedInfo: {
-      mensa_card_id: ""
+      mensa_card_id: "",
     },
     failed: false,
     alert: false,
     delete_error_message: "Deleting profile failed!",
-
   }),
   watch: {
     alert(new_val) {
       if (new_val) {
-        setTimeout(() => { this.alert = false }, 3000);
+        setTimeout(() => {
+          this.alert = false;
+        }, 3000);
       }
-    }
+    },
   },
   methods: {
-    ...mapActions([
-      'Logout'
-    ]),
+    ...mapActions(["Logout"]),
     reloadPage() {
       window.location.reload();
     },
     print(msg) {
-      console.log(msg)
+      console.log(msg);
     },
     async deleteAccount(message) {
-      if (message == 'DELETE') {
+      if (message == "DELETE") {
         try {
-          await axios.post('user/delete')
+          await axios.post("user/delete");
           this.logout();
-          this.$router.push('/login')
-
+          this.$router.push("/login");
         } catch (error) {
-          console.error(error.message)
+          console.error(error.message);
         }
-      }
-      else {
+      } else {
         this.failed = true;
         this.alert = true;
-        console.error("Wrong delete message!")
+        console.error("Wrong delete message!");
       }
     },
     async logout() {
       try {
         await this.Logout();
       } catch (error) {
-        console.error(error.message)
+        console.error(error.message);
       }
     },
   },
-  computed: {
-  },
-  mounted() {
-  },
-  created() {
-  },
+  computed: {},
+  mounted() {},
+  created() {},
 };
 </script>
-

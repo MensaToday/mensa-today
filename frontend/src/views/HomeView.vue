@@ -80,10 +80,14 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["GetRecommendations", "GetOneRecommendation", "GetUserData"]),
+    ...mapActions([
+      "GetRecommendations",
+      "GetOneRecommendation",
+      "GetUserData",
+    ]),
 
     async getUserData() {
-      try{
+      try {
         await this.GetUserData();
       } catch (error) {
         console.log(error);

@@ -48,13 +48,15 @@ const routes = [
   {
     path: "/settings/general",
     name: "SettingsGeneral",
-    component: () => import(/* webpackChunkName: "discover" */ "../views/SettingsGeneral.vue"),
+    component: () =>
+      import(/* webpackChunkName: "discover" */ "../views/SettingsGeneral.vue"),
     meta: { requiresAuth: true },
   },
   {
     path: "/settings/privacy",
     name: "SettingsPrivacy",
-    component: () => import(/* webpackChunkName: "discover" */ "../views/SettingsPrivacy.vue"),
+    component: () =>
+      import(/* webpackChunkName: "discover" */ "../views/SettingsPrivacy.vue"),
     meta: { requiresAuth: true },
   },
   {

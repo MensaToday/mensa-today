@@ -15,28 +15,28 @@ v-footer(dark padless)
                     | {{ new Date().getFullYear() }} &mdash; 
                     strong Marten Jostmann, Leo Giesen, Erik Zimmermann, Marcel Reckmann, Polina Kireyeu
 </template>
-    
+
 <script>
 export default {
-    name: "AppFooter",
-    data: () => ({
-        icons: [
-            {
-                mdi: "mdi-email",
-                link: "mailto:mensa.today@gmail.com",
-                text: "Contact",
-            },
-            {
-                mdi: "mdi-github",
-                link: "https://github.com/erikzimmermann/data-integration-recommender",
-                text: "Code",
-            },
-            {
-                mdi: "mdi-shield-lock",
-                link: "/privacy-policy",
-                text: "Privacy Policy",
-            },
-        ],
-    })
+  name: "AppFooter",
+  data: () => ({
+    icons: [
+      {
+        mdi: "mdi-email",
+        link: "mailto:mensa.today@gmail.com",
+        text: "Contact",
+      },
+      {
+        mdi: "mdi-github",
+        link: "https://github.com/erikzimmermann/data-integration-recommender",
+        text: "Code",
+      },
+      {
+        mdi: "mdi-shield-lock",
+        link: "/privacy-policy",
+        text: "Privacy Policy",
+      },
+    ],
+  }),
 };
 </script>

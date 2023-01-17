@@ -28,60 +28,60 @@ v-app-bar(app color='primary' dark)
                         v-icon mdi-logout
                         | Logout
 </template>
-    
+
 <script>
 import { mapActions } from "vuex";
 export default {
-    name: "NavigationBar",
-    data: () => ({
-        isHovered: false,
-        darkMode: false,
-        optionItems: [
-            {
-                tag: "Settings",
-                to: { name: "SettingsGeneral" },
-                icon: "mdi-account-cog",
-            },
-        ],
-        views: [
-            {
-                tag: "Your Mensa Week",
-                to: { name: "HomeWeekRecommendation" },
-                icon: "food",
-            },
-            {
-                tag: "Discover",
-                to: { name: "DiscoverDishes" },
-                icon: "magnify",
-            },
-        ]
-    }),
-    methods: {
-        ...mapActions(["Logout"]),
-        toggleTheme() {
-            this.darkMode = !this.darkMode;
-            this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
-        },
-        async logout() {
-            try {
-                await this.Logout();
-                // Redirect to login webpage
-                setTimeout(() => {
-                    this.showError = false;
-                    this.$router.push("/login");
-                }, 500);
-            } catch (error) {
-                console.log(error);
-                this.showError = true;
-            }
-        },
+  name: "NavigationBar",
+  data: () => ({
+    isHovered: false,
+    darkMode: false,
+    optionItems: [
+      {
+        tag: "Settings",
+        to: { name: "SettingsGeneral" },
+        icon: "mdi-account-cog",
+      },
+    ],
+    views: [
+      {
+        tag: "Your Mensa Week",
+        to: { name: "HomeWeekRecommendation" },
+        icon: "food",
+      },
+      {
+        tag: "Discover",
+        to: { name: "DiscoverDishes" },
+        icon: "magnify",
+      },
+    ],
+  }),
+  methods: {
+    ...mapActions(["Logout"]),
+    toggleTheme() {
+      this.darkMode = !this.darkMode;
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
     },
-    computed: {
-        cursorClass() {
-            return {
-                'cursor-pointer': this.isHovered
-            }
-        }
-    }
+    async logout() {
+      try {
+        await this.Logout();
+        // Redirect to login webpage
+        setTimeout(() => {
+          this.showError = false;
+          this.$router.push("/login");
+        }, 500);
+      } catch (error) {
+        console.log(error);
+        this.showError = true;
+      }
+    },
+  },
+  computed: {
+    cursorClass() {
+      return {
+        "cursor-pointer": this.isHovered,
+      };
+    },
+  },
 };
 </script>
