@@ -1,7 +1,7 @@
 import axios from "axios";
 import Vue from "vue";
 import Vuex, { mapState } from "vuex";
-// import createPersistedState from "vuex-persistedstate";
+import createPersistedState from "vuex-persistedstate";
 import router from "../router";
 
 Vue.use(Vuex);
@@ -176,5 +176,5 @@ export default new Vuex.Store({
       commit("setRecommendationsDaily", recommendations);
     },
   },
-  // plugins: [createPersistedState()],
+  plugins: [createPersistedState()],
 });
