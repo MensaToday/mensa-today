@@ -53,6 +53,12 @@ v-app
 import { mapActions } from "vuex";
 export default {
   name: "App",
+  created() {
+    // If there is a token from a previous session, try to refresh it. In case the token expiry has passed, the logout dialig is triggered
+    if (this.$store.state.access_token) {
+      this.startRefreshTimer();
+    }
+  },
   data: () => ({
     isHovered: false,
     darkMode: false,
@@ -111,6 +117,13 @@ export default {
         console.log(error);
         this.showError = true;
       }
+    },
+    startRefreshTimer() {
+      // time in ms
+      this.$store.commit("refreshToken");
+      this.timer = setInterval(() => {
+        this.$store.commit("refreshToken");
+      }, 3600000); // 60min*60*1000 = 3600000
     },
   },
   computed: {

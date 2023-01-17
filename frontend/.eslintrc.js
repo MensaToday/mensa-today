@@ -18,5 +18,11 @@ module.exports = {
   rules: {
     "no-console": "off",
     "no-debugger": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto",
+      },
+    ],
   },
 };
