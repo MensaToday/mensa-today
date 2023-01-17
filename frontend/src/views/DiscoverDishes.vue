@@ -75,11 +75,11 @@ div
                             v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
                               height="50" max-width="50" contain :key="category"
                               :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
-                      v-row  
+                      v-row.align-center.justify-center.d-flex.justify-space-between
                         v-col
                           span
                             //- (:class="{ 'primary--text': sortBy === key }")
-                            v-icon mdi-food-apple
+                            v-icon.mr-2 mdi-food-apple
                             | {{ item.dish.main ? 'Main Dish' : 'Side Dish' }}
                         v-col 
                           v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
@@ -88,7 +88,7 @@ div
                       v-row 
                         v-col    
                           div 
-                            v-icon mdi-shield-plus-outline
+                            v-icon.mr-2 mdi-shield-plus-outline
                             span
                               //- (:class="{ 'primary--text': sortBy === key }")
                               span(v-if="item.dish.additives.length == 0")  None
@@ -98,7 +98,7 @@ div
                       v-row 
                         v-col.align-center.justify-center.d-flex.justify-space-between
                           div 
-                            v-icon mdi-calendar
+                            v-icon.mr-2 mdi-calendar
                             span {{ new Date(item.date).toLocaleDateString('de-DE') }}
                           v-rating(hover length="5" background-color="gray" readonly size="24" half-increments 
                             v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0")
