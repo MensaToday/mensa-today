@@ -133,11 +133,13 @@ export default new Vuex.Store({
       await axios.post("user/logout", {
         refresh_token: state.refresh_token,
       });
-
-      router.push("/login");
+      // catch aborted navigation
+      router.push("/login").catch(() => {});
       commit("rmTokens");
     },
-    async GetBalance({ commit }) {
+    async GetBalance({ state, commit }) {
+      // if the mensa card is not specified, you cannot make the API CALL
+      if (!state.user.mensa_card_id) return;
       let response = await axios.get("user/get_balance");
       var card_balance = response.data.toFixed(2);
       commit("setBalance", card_balance);
