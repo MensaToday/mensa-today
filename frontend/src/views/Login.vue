@@ -1,5 +1,8 @@
 <template lang="pug">
 v-card.mx-auto.mt-12(max-width='400')
+  v-img(src="https://www.stw-muenster.de/content/uploads/2016/10/b_DSC0088-1024x680.jpg" height="150px"
+    gradient="to bottom right, rgba(135, 135, 135,.5), rgba(135, 135, 135,.5)")
+  v-divider
   v-card-title(style="color:grey;") Login
   v-card-text
     v-form(@submit.prevent="submit")

@@ -51,7 +51,6 @@ export default {
   },
   data: () => ({
     deleteAccountDialog: false,
-    deleteAccountDialog: false,
     deleteAccountConfirmation: null,
 
     updatedInfo: {

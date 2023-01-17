@@ -168,17 +168,15 @@ export default {
       }
     },
     setPreferenceData() {
-
-      for (const [a, b] of Object.entries(this.$store.state.user.food_categories)) {
+      for (const [, b] of Object.entries(this.$store.state.user.food_categories)) {
         this.food_preferences[b.category.name] = true;
       }
-      for (const [a, b] of Object.entries(this.$store.state.user.food_allergies)) {
+      for (const [, b] of Object.entries(this.$store.state.user.food_allergies)) {
         this.allergies[b.allergy.name] = true;
         this.selected_allergies.push(b.allergy.name);
         this.updateObject(this.allergies, b.allergy.name);
       }
       this.updateSelectedCategories();
-
     },
     updateObject(obj, values) {
       for (let idx = 0; idx < values.length; idx++) {
@@ -263,9 +261,6 @@ export default {
       },
     },
     user_data() { return this.$store.state.user; },
-  },
-  mounted() {
-    //this.getUserData();
   },
   created() {
     this.setPreferenceData();

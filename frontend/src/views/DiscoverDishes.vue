@@ -314,7 +314,7 @@ export default {
     this.getDishplan();
   },
   watch: {
-    filters(val) {
+    filters() {
       this.dateFormatted = this.formatDate(this.date)
     },
   }

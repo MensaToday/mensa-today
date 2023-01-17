@@ -18,7 +18,7 @@ v-footer(dark padless)
     
 <script>
 export default {
-    name: "Footer",
+    name: "AppFooter",
     data: () => ({
         icons: [
             {
