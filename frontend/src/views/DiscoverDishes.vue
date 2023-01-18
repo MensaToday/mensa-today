@@ -9,65 +9,99 @@ div
           v-data-iterator(:items='items' :items-per-page.sync='itemsPerPage' :page.sync='page' 
             hide-default-footer 
             :sort-desc="sortDesc")
+            //- Filters for Dishes in Discover Dishes
             template(v-slot:header)
-              v-toolbar.mb-2(color='primary' dark height='130px')
-                v-col.py-0.mt-0(cols='12')
-                  v-card(color="primary" flat)
-                    v-col.d-flex.justify-space-between.py-0
-                      v-text-field(v-model='search' clearable flat solo-inverted hide-details 
-                        prepend-inner-icon='mdi-magnify' label='Search')
-                      v-checkbox.mx-3.pt-3(
-                        v-model="filters.affordable"
-                        label="Affordable")
-                      v-checkbox.mx-3.pt-3(
-                        v-model="filters.main_dish"
-                        label="Main Dish")
-                  v-card(color="primary" flat)
-                    v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                      template(v-if='$vuetify.breakpoint.mdAndUp')
-                        v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
-                          prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple
-                          v-model='selectedCategories')
+              v-toolbar.center-items.mb-2(color='primary' dark 
+                :min-height='$vuetify.breakpoint.mdAndUp ? "210px" : "420px"')
+                div.mt-5
+                  v-row
+                    v-col(cols='12' md='6')
+                      v-card(color="transparent" flat)
+                        v-row 
+                          v-col
+                            v-text-field(v-model='search' clearable flat solo-inverted hide-details 
+                              prepend-inner-icon='mdi-magnify' label='Search')
+                        v-row  
+                          v-col
+                            v-checkbox.mx-3.pt-3(
+                              v-model="filters.affordable"
+                              label="You can afford it")
+                            v-checkbox.mx-3.pt-3(
+                              v-model="filters.main_dish"
+                              label="Only Main Dishes")
+                    v-col(cols='12' md='6')
+                      v-card(color="transparent" flat)
+                        template
+                          v-row
+                            v-col
+                              v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
+                                prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple
+                                v-model='selectedCategories')
+                          v-row
+                            v-col.py-0
+                              v-select(flat solo-inverted hide-details :items='filters.mensa' width='100'
+                                prepend-inner-icon='mdi-filter-variant' label='Filter Mensa'
+                                v-model='filters.selectedMensa' transition="scale-transition" min-width="auto")
+                          v-row
+                            v-col.pb-0
+                              v-menu(v-model="date_menu" :close-on-content-click="false" width="100%")
+                                template(v-slot:activator="{ on, attrs }")
+                                  v-text-field(v-model="filters.date" flat solo-inverted prepend-inner-icon="mdi-calendar"
+                                  readonly, v-bind="attrs", v-on="on")
+                                v-date-picker(v-model="filters.date", @input="date_menu = false"
+                                  :min="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() + 6) % 7)).toISOString().substr(0, 10)"
+                                  :max="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() - 6) % 7)).toISOString().substr(0, 10) ")
+
+            //- Dishes in Discover Dishes
             template(v-slot:default='props')
               v-row
                 v-col(v-for='(item, index) in props.items' :key="index" cols='12' sm='6' md='6' lg='4')
                   v-card(height="100%")
                     v-img(v-show="item.dish.url != null" :alt="item.dish.name" height='250'
                     :src="item.dish.url")
-                    v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250')
-                      h1 {{ item.dish.name[0] }}
+                    v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250' elevation="0")
+                      h1.text--secondary {{ item.dish.name[0] }}
 
                     v-card-title.subheading(style="word-break: normal")
                       | {{ item.dish.name }}
                     v-divider
-                    v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                      h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
-                        //- (:class="{ 'primary--text': sortBy === key }")
-                        | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
-                      v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
-                        height="50" max-width="50" contain :key="category"
-                        :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
-                      v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
-                        v-icon mdi-navigation-variant-outline
-                        | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
-                    v-col.align-center.justify-center.d-flex.justify-space-between
-                      div
-                        span
-                          //- (:class="{ 'primary--text': sortBy === key }")
-                          v-icon mdi-food-apple
-                          | {{ item.dish.main ? 'Main Dish' : 'Side Dish' }}
-                      div 
-                        v-icon mdi-shield-plus-outline
-                        span
-                          //- (:class="{ 'primary--text': sortBy === key }")
-                          span(v-if="item.dish.additives.length == 0")  None
-                          span(v-for="additive in item.dish.additives" :key="additive.additive.name")  {{ additive.additive.name }}
-                    v-col.align-center.justify-center.d-flex.justify-space-between
-                      div 
-                        v-icon mdi-calendar
-                        span {{ new Date(item.date).toLocaleDateString('de-DE') }}
-                      v-rating(hover length="5" background-color="gray" readonly size="24" half-increments 
-                        v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0")
+                    v-container.mt-2
+                      v-row
+                        v-col.align-center.justify-center.d-flex.justify-space-between.py-0
+                          h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
+                            //- (:class="{ 'primary--text': sortBy === key }")
+                            | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
+                          div.d-flex
+                            v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
+                              height="50" max-width="50" contain :key="category"
+                              :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
+                      v-row.align-center.justify-center.d-flex.justify-space-between
+                        v-col
+                          span
+                            //- (:class="{ 'primary--text': sortBy === key }")
+                            v-icon.mr-2 mdi-food-apple
+                            | {{ item.dish.main ? 'Main Dish' : 'Side Dish' }}
+                        v-col 
+                          v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
+                            v-icon mdi-navigation-variant-outline
+                            | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
+                      v-row 
+                        v-col    
+                          div 
+                            v-icon.mr-2 mdi-shield-plus-outline
+                            span
+                              //- (:class="{ 'primary--text': sortBy === key }")
+                              span(v-if="item.dish.additives.length == 0")  None
+                              span(v-for="additive in item.dish.additives" :key="additive.additive.name") 
+                                span {{ additive.additive.name }}
+                                span(v-show="additive != item.dish.additives[item.dish.additives.length-1]") , 
+                      v-row 
+                        v-col.align-center.justify-center.d-flex.justify-space-between
+                          div 
+                            v-icon.mr-2 mdi-calendar
+                            span {{ new Date(item.date).toLocaleDateString('de-DE') }}
+                          v-rating(hover length="5" background-color="gray" readonly size="24" half-increments 
+                            v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0")
 
             template(v-slot:footer)
               v-row.mt-2(align='center' justify='center')
@@ -110,6 +144,7 @@ export default {
       page: 1,
       itemsPerPage: 3,
       sortBy: "",
+      date_menu: false,
       selectedCategories: [
         "Vegan",
         "Vegetarian",
@@ -139,6 +174,23 @@ export default {
           Alcohol: false,
           Fish: false,
         },
+        mensa: [
+          "Bistro Denkpause",
+          "Mensa Da Vinci",
+          "Bistro Katholische Hochschule",
+          "Bistro Durchblick",
+          "Bistro Frieden",
+          "Bistro KaBu",
+          "Bistro Oeconomicum",
+          "Hier und Jetzt",
+          "Mensa am Aasee",
+          "Mensa am Ring",
+          "Mensa Bispinghof",
+        ],
+        selectedMensa: "Mensa Da Vinci",
+        date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+          .toISOString()
+          .substr(0, 10),
         additives: {
           Dyed: false,
           Preservatives: false,
@@ -196,7 +248,9 @@ export default {
             (this.filters.affordable
               ? this.$store.state.card_balance >= parseFloat(dish.priceStudent)
               : true) &
-            (this.filters.main_dish ? dish.dish.main : true)
+            (this.filters.main_dish ? dish.dish.main : true) &
+            (this.filters.selectedMensa == dish.mensa.name) &
+            (this.filters.date == dish.date)
         );
       },
       set() {
@@ -268,7 +322,12 @@ export default {
   },
   mounted() {
     // if items not set, query dishplan
-    if (!this.items) this.getDishplan();
+    this.getDishplan();
+  },
+  watch: {
+    filters() {
+      this.dateFormatted = this.formatDate(this.date);
+    },
   },
 };
 </script>
