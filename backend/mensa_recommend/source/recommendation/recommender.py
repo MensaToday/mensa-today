@@ -367,7 +367,7 @@ class DishRecommender:
         predictions = self.__apply_pred_constraints(day, predictions)
 
         # selecting the top n results (sort by prediction value)
-        predictions.sort(key=lambda val: val[3])
+        predictions.sort(key=lambda val: val[3], reverse=True)
         top = predictions[:recommendations_per_day]
         return top
 
