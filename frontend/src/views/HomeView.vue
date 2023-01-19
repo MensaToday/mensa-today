@@ -142,7 +142,7 @@ export default {
       }
     },
     async getUserData() {
-      try{
+      try {
         await this.GetUserData();
       } catch (error) {
         console.log(error);

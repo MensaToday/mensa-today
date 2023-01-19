@@ -1,6 +1,10 @@
 <template lang="pug">
 v-card.mx-auto.mt-12(max-width='400')
-  v-card-title(style="color:grey;") Login
+  v-img(src="https://www.stw-muenster.de/content/uploads/2016/10/b_DSC0088-1024x680.jpg" height="150px"
+    gradient="to bottom right, rgba(135, 135, 135,.5), rgba(135, 135, 135,.5)")
+    v-card-title.white--text.justify-center
+      h2.my-11 Login
+  v-divider
   v-card-text
     v-form(@submit.prevent="submit")
       v-text-field(
@@ -18,9 +22,9 @@ v-card.mx-auto.mt-12(max-width='400')
     v-btn(width="100%" dark color="primary" @click="login()") 
       | Login 
   v-card-actions 
-    label(style="color:grey;") Not registered yet?
-    router-link(to="/quiz" style="color: red;")
-      label.ml-1
+    span Not registered yet?
+    router-link(to="/quiz")
+      span.ml-1
         a Sign up!
 </template>
 
