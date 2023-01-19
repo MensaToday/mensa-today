@@ -18,7 +18,8 @@ export default new Vuex.Store({
       mensa_card_id: null,
       avatar: null,
       food_categories: [],
-      food_allergies: []
+      food_allergies: [],
+      user_ratings: [],
     },
     card_balance: null,
     dishplan: null,
@@ -63,6 +64,9 @@ export default new Vuex.Store({
     },
     setRecommendationsDaily(state, recommendations) {
       state.dailyRecommendations = recommendations;
+    },
+    setUserRatings(state, user_ratings){
+      state.user.user_ratings = user_ratings;
     },
   },
   actions: {
@@ -128,6 +132,12 @@ export default new Vuex.Store({
       var user_data = response.data;
       commit("setUserData", user_data);
     },
+    async GetUserRatings({ commit }) {
+      let response = await axios.get("mensa/user_ratings");
+      var user_ratings = response.data
+      console.log(user_ratings)
+      commit("setUserRatings", user_ratings);
+    },
     async GetRecommendations({ commit }) {
       var today = new Date();
       var dd = String(today.getDate()).padStart(2, "0");
@@ -138,7 +148,7 @@ export default new Vuex.Store({
       let response = await axios.post("mensa/get_recommendations", {
         day: today,
         entire_week: "True",
-        recommendations_per_day: 5,
+        recommendations_per_day: 4,
       });
 
       //console.log(response.data);
