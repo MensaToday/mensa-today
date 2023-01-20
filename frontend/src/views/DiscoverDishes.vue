@@ -62,7 +62,7 @@ div
                     v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250' elevation="0")
                       h1.text--secondary {{ item.dish.name[0] }}
 
-                    v-card-title.subheading(style="word-break: normal")
+                    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;")
                       | {{ item.dish.name }}
                     v-divider
                     v-container.mt-2
