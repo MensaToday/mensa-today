@@ -140,20 +140,18 @@ export default {
   methods: {
     ...mapActions(["GetRecommendations", "GetOneRecommendation", "GetUserData", "GetUserRatings"]),
     convertDate(date){
-      let old_date = new Date(date);
-      var dd = String(old_date.getDate()).padStart(2, "0");
-      var mm = String(old_date.getMonth() + 1).padStart(2, "0"); //January is 0!
-      var yyyy = old_date.getFullYear();
+      let dd = date.slice(8,10);
+      let mm = date.slice(5, 7);
+      let yyyy = date.slice(0, 4)
+      let old_date = new Date();
       var weekday = this.days[old_date.getDay()-1]
       return(weekday + ", " + dd + "." + mm + "." + yyyy);
     },
     prev() {
-            console.log(this.currentTab)
-            if (this.currentTab === 0) return
-            this.currentTab = this.currentTab - 1
-        },
+        if (this.currentTab === 0) return
+        this.currentTab = this.currentTab - 1
+    },
     next() {
-        console.log(this.currentTab)
         if (this.currentTab === Object.keys(this.items).length-1) return
         this.currentTab = this.currentTab + 1
     },
