@@ -9,7 +9,6 @@ div
         
           v-tabs(fixed-tabs v-model="tab")
             v-btn.elevation-0(tile style="border-bottom-left-radius: 25px; border-top-left-radius: 25px;" @click="prev();")
-              //- v-icon mdi-arrow-left-thick
               v-icon mdi-chevron-left
             v-btn.elevation-0(tile style ="text-transform: unset !important" width="150px") {{ this.convertDate(Object.keys(items)[currentTab])  }}
             v-btn.elevation-0(tile style="border-bottom-right-radius: 25px; border-top-right-radius: 25px;" @click="next();")
@@ -22,22 +21,46 @@ div
               template(v-if="currentTab === Object.keys(items).indexOf(key)")
                 v-row.justify-center
                   v-card.ma-2(height="570px" width="350px" v-for="(item, index) in array" :key="index")
-                    v-row
-                      v-col
-                        v-img(style="border-top-left-radius: 1%; border-top-right-radius: 1%" v-show="item[0].dish.url != null" :alt="item[0].dish.name" height='250'
-                        :src='item[0].dish.url')
-                        v-card.center-items.light-green.lighten-2(style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" v-show="item[0].dish.url == null" height='250' elevation="0")
-                          h1 {{ item[0].dish.name[0] }}
-                        v-progress-linear(:height="6" :background-opacity=".5" :value="item[1]*100" )
-   
-                        v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item[0].dish.name }}
+           
+                    v-img(style="border-top-left-radius: 1%; border-top-right-radius: 1%" v-show="item[0].dish.url != null" :alt="item[0].dish.name" height='250'
+                    :src='item[0].dish.url')
+                    v-card.center-items.light-green.lighten-2(style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" v-show="item[0].dish.url == null" height='250' elevation="0")
+                      h1 {{ item[0].dish.name[0] }}
+                    v-progress-linear(:height="6" :background-opacity=".5" :value="item[1]*100" )
 
+                    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item[0].dish.name }}
+                    //- v-card-subtitle.mt-1(:class="{'red--text': $store.state.card_balance <= (parseFloat(item[0].priceStudent)+1) }") €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }} 
+                    
                     v-divider
-                      
-                    v-row
-                      v-col
-                        h4.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item[0].priceStudent)+1) }") €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
+                    //- v-card-subtitle.mt-1(:class="{'red--text': $store.state.card_balance <= (parseFloat(item[0].priceStudent)+1) }") €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
 
+                    v-card-text
+                      v-row 
+                        v-col.adjusted-padding-margin.d-flex.justify-space-between
+                          div.d-flex.align-center(style="font-weight: bold; font-size: 17px;" :class="{'red--text': $store.state.card_balance <= (parseFloat(item[0].priceStudent)+1) }") €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
+                          v-btn(rounded :href="getGoogleMapsUrl(item[0].mensa.name)" target="_blank" rel="noopener noreferrer")
+                            v-icon mdi-navigation-variant-outline
+                            | {{ (item[0].mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
+
+                      v-row 
+                        v-col.adjusted-padding-margin.d-flex.justify-space-between
+                          v-icon mdi-shield-plus-outline
+                          div.d-flex
+                            v-img(v-for="(category, index) in item[0].dish.categories.length" :alt="item[0].dish.categories[index].category.name" height="40" max-width="40" contain :key="category"
+                              :src="require('@/assets/dish_icons/food_preferences/'+item[0].dish.categories[index].category.name+'.png')")
+
+                      v-row
+                        v-col.adjusted-padding-margin.d-flex.justify-space-between
+                          v-btn(width="100%") View Side Dishes
+                       
+
+                      v-row
+                        v-col.adjusted-padding-margin.d-flex.justify-end
+                          v-rating(v-model="ratingItems[Object.keys(items).indexOf(key)][index].rating" half-increments hover length="5" background-color="gray" size="24" 
+                            @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item[0].dish.id, $event);")
+
+                          
+                    
                       //- v-row
                       //-   div.ma-2
                       //-     h4.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item[0].priceStudent)+1) }") €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
@@ -148,7 +171,6 @@ export default {
         console.log(error);
       }
     },
-    print(msg){console.log(msg);},
     async getRecommendations() {
       try {
         await this.GetRecommendations();
@@ -186,9 +208,6 @@ export default {
       console.log(response);
     },
     initializeRatings(){
-      for (let i = 0; i < this.userRatings.length; i++) {
-        
-      }
     },
   },
   mounted() {
@@ -197,15 +216,17 @@ export default {
     this.getRecommendations();
     this.getUserRatings();
     this.initializeRatings();
-    this.getOneRecommendation();
     this.getUserData();
     
-    // this.getRecommendations()
   },
 };
 </script>
 
 <style>
 
+.adjusted-padding-margin {
+  margin: 3px;
+  padding: 3px;
+}
 
 </style>
