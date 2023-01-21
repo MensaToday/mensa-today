@@ -78,20 +78,19 @@ div
                             @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item[0].dish.id, $event);")
 
           //- Overlay for Selected Dish
-          v-dialog(absolute :value="dish_overlay")
+          v-dialog(absolute :value="dish_overlay" opacity="90%")
             v-btn(fixed top right color="primary" fab small @click="dish_overlay = false")
               v-icon mdi-close
             //- only try to render if a dish is selected
             v-container(v-if="dish_overlay")
               v-row(no-gutters)
-                v-col(cols="12" md="4")
-                  DishCard(:dish_prop="selected_dish" fixed)
-                v-col(cols="12" md="8")
-                  v-card.center-items(v-if="selected_dish.side_dishes.length == 0" light width="100%")
-                    h3 No suggested side dishes
-                  v-row(v-else no-gutters)
-                    v-col(cols="12" md="6" v-for="side_dish in selected_dish.side_dishes" :key="side_dish.dish.name")
-                      DishCard(:dish_prop="side_dish" :side_dish="true")
+                v-col.center-items(cols="12" md="4")
+                  DishCard(:dish="selected_dish" fixed :card_width="'25vw'")
+                v-col.center-items(cols="12" md="8")
+                  v-card.center-items.pa-3(v-if="selected_dish.side_dishes.length == 0" color="grey")
+                    h3.my-0 No suggested side dishes
+                  .d-flex.flex-wrap(v-else)
+                    DishCard(:dish="side_dish" :side_dish="true" :card_width="'15vw'" v-for="side_dish in selected_dish.side_dishes" :key="side_dish.dish.name")
 </template>
 
 <script>
@@ -239,11 +238,9 @@ export default {
     },
   },
   mounted() {
-    // TODO: exchange with getRecommendations
-    //this.getOneRecommendation();
     this.getRecommendations();
     this.getUserRatings();
-    this.initializeRatings();
+    // this.initializeRatings();
     this.getUserData();
   },
 };
