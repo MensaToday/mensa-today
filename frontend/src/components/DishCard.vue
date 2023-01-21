@@ -45,15 +45,14 @@ v-card.ma-1(light)
 </template>
 
 <script>
+/* eslint-disable */
 export default {
     name: "DishCard",
-    props: ["dish_prop", "side_dish"],
-    data() {
-        return {
-            dish: this.dish_prop,
-            card_width: "40vw",
-        };
-    },
+    props: ["dish_prop", "side_dish", "card_width_prop"],
+    data: () => ({
+        dish: this.dish_prop,
+        card_width: this.card_width_prop ? this.card_width_prop : "40vw",
+    }),
     methods: {
         getGoogleMapsUrl(mensaName) {
             const url = new URL("https://www.google.com/maps/dir/?api=1");

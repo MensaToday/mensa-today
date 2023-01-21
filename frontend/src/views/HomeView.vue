@@ -90,7 +90,7 @@ div
                   v-card.center-items(v-if="selected_dish.side_dishes.length == 0" light width="100%")
                     h3 No suggested side dishes
                   v-row(v-else no-gutters)
-                    v-col(cols="12" md="6" v-for="side_dish in selected_dish.side_dishes")
+                    v-col(cols="12" md="6" v-for="side_dish in selected_dish.side_dishes" :key="side_dish.dish.name")
                       DishCard(:dish_prop="side_dish" :side_dish="true")
 </template>
 
@@ -237,7 +237,6 @@ export default {
       });
       console.log(response);
     },
-    initializeRatings() { },
   },
   mounted() {
     // TODO: exchange with getRecommendations
