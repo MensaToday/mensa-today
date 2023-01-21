@@ -3,7 +3,7 @@ v-card.ma-1(light :width="dynamic_card_width")
     v-img(v-show="dish.dish.url != null" :alt="dish.dish.name" :height="img_height" :width="dynamic_card_width" cover :src="dish.dish.url")
     v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="dish.dish.url == null" :height="img_height" elevation="0")
         h1.text--secondary {{ dish.dish.name[0] }}
-    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;")
+    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; overflow: hidden; white-space: pre-line;")
         | {{ dish.dish.name }}
     v-divider
     v-container.mt-2
@@ -28,14 +28,6 @@ v-card.ma-1(light :width="dynamic_card_width")
                         span(v-else v-for="additive in dish.dish.additives" :key="additive.additive.name") 
                             span {{ additive.additive.name }}
                             span(v-show="additive != dish.dish.additives[dish.dish.additives.length-1]") , 
-        v-row(v-if="!side_dish") 
-            v-col.align-center.justify-center.d-flex.justify-space-between
-                v-btn(rounded :href="getGoogleMapsUrl(dish.mensa.name)" target="_blank" rel="noopener noreferrer")
-                    v-icon mdi-navigation-variant-outline
-                    | {{ (dish.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
-                div
-                    v-icon.mr-2 mdi-calendar
-                    span {{ new Date(dish.date).toLocaleDateString('de-DE') }}
         v-row 
             v-col.align-center.justify-center.d-flex.justify-space-between(v-if="!side_dish")
                 div

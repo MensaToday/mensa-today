@@ -78,19 +78,36 @@ div
                             @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item[0].dish.id, $event);")
 
           //- Overlay for Selected Dish
-          v-dialog(absolute :value="dish_overlay" opacity="90%")
+          v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" color="primary" width="95%")
             v-btn(fixed top right color="primary" fab small @click="dish_overlay = false")
               v-icon mdi-close
             //- only try to render if a dish is selected
-            v-container(v-if="dish_overlay")
+            v-card.center-items(v-if="dish_overlay")
+              v-row
+                v-col.align-center.justify-center.d-flex.justify-space-around
+                  v-card.center-items(color="transparent" flat)
+                    v-card-title 
+                      h2.my-3 Dish Combination
+                    v-card-text 
+                      v-row
+                        v-col.align-center.justify-center.d-flex.justify-space-around
+                          v-btn(rounded :href="getGoogleMapsUrl(selected_dish.mensa.name)" target="_blank" rel="noopener noreferrer")
+                            v-icon mdi-navigation-variant-outline
+                            | {{ (selected_dish.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
+                          div.ml-4
+                            v-icon.mr-2 mdi-calendar
+                            span {{ new Date(selected_dish.date).toLocaleDateString('de-DE') }}
               v-row(no-gutters)
-                v-col.center-items(cols="12" md="4")
-                  DishCard(:dish="selected_dish" fixed :card_width="'25vw'")
+                v-col.align-center.justify-center(cols="12" md="4")
+                  h3.text-center.my-3 Main Dishes
+                  DishCard(:dish="selected_dish" fixed :card_width="'20vw'")
                 v-col.center-items(cols="12" md="8")
                   v-card.center-items.pa-3(v-if="selected_dish.side_dishes.length == 0" color="grey")
                     h3.my-0 No suggested side dishes
-                  .d-flex.flex-wrap(v-else)
-                    DishCard(:dish="side_dish" :side_dish="true" :card_width="'15vw'" v-for="side_dish in selected_dish.side_dishes" :key="side_dish.dish.name")
+                  div.center-items(v-else)
+                    h3.my-3 Side Dishes
+                    .d-flex.flex-wrap
+                      DishCard(:dish="side_dish" :side_dish="true" :card_width="'15vw'" v-for="side_dish in selected_dish.side_dishes" :key="side_dish.dish.name")
 </template>
 
 <script>
