@@ -223,10 +223,7 @@ export default {
     },
     updateRating(key, index, value) {
       this.ratingItems[key][index].rating = value;
-      console.log(this.ratingItems);
-    },
-    print(msg) {
-      console.log(msg);
+      // console.log(this.ratingItems);
     },
     getGoogleMapsUrl(mensaName) {
       const url = new URL("https://www.google.com/maps/dir/?api=1");

@@ -71,7 +71,7 @@ export default new Vuex.Store({
     setRecommendationsDaily(state, recommendations) {
       state.dailyRecommendations = recommendations;
     },
-    setUserRatings(state, user_ratings){
+    setUserRatings(state, user_ratings) {
       state.user.user_ratings = user_ratings;
     },
     refreshToken() {
@@ -106,7 +106,7 @@ export default new Vuex.Store({
         setTimeout(() => {
           dispatch("GetBalance");
         }, 1);
-      } else console.log("access token not set");
+      } else console.log("Access token not set.");
     },
     async Register({ commit, dispatch }, User) {
       let response = await axios.post("user/register", User);
@@ -160,8 +160,8 @@ export default new Vuex.Store({
     },
     async GetUserRatings({ commit }) {
       let response = await axios.get("mensa/user_ratings");
-      var user_ratings = response.data
-      console.log(user_ratings)
+      var user_ratings = response.data;
+      // console.log(user_ratings)
       commit("setUserRatings", user_ratings);
     },
     async GetRecommendations({ commit }) {
