@@ -1,6 +1,6 @@
 <template lang="pug">
 v-container(fluid)
-  v-alert(dismissible transition="fade-transition" 
+  v-alert(dismissible transition="fade-transition" fixed top
     v-if="failed == false" :value="alert" type="success") 
     | {{ update_success_message }}
   v-alert(dismissible transition="fade-transition" 
@@ -66,7 +66,7 @@ v-container(fluid)
 
             v-list-item.justify-end
               v-btn(color="primary" 
-                @click="updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); updateSelectedCategories(); updateUserInfo(updatedInfo.mensa_card_id, selected_categories, selected_allergies);") 
+                @click="updateObject(allergies, selected_allergies); updateObject(additives, selected_additives); updateSelectedCategories(); updateUserInfo(updatedInfo.mensa_card_id, selected_categories, selected_allergies); $forceUpdate();") 
                 v-icon mdi-account-check
                 | Update Profile
 
