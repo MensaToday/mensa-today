@@ -51,14 +51,9 @@ class DishAllergySerializer(serializers.ModelSerializer):
 
 
 class DishSerializer(serializers.ModelSerializer):
-    categories = serializers.ListSerializer(
-        child=DishCategorySerializer(read_only=True),
-        source='dishcategory_set')
-    additives = serializers.ListSerializer(
-        child=DishAdditiveSerializer(read_only=True),
-        source='dishadditive_set')
-    allergies = serializers.ListSerializer(
-        child=DishAllergySerializer(read_only=True), source='dishallergy_set')
+    categories = CategorySerializer(read_only=True, many=True)
+    additives = AdditiveSerializer(read_only=True, many=True)
+    allergies = AllergySerializer(read_only=True, many=True)
 
     class Meta:
         fields = ["id", "categories", "additives",

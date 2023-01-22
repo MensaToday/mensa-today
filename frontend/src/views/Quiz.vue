@@ -74,8 +74,8 @@
                   v-row.my-0
                     v-col.align-center.justify-center.d-flex.justify-space-between.py-0
                       //h3.ma-0.text-right €{{ dish.priceStudent }} / {{ dish.priceEmployee }}
-                      v-img(:alt="dish.categories[0].category.nam" height="50" width="50" contain
-                        :src="require('@/assets/dish_icons/food_preferences/'+dish.categories[0].category.name+'.png')")
+                      v-img(:alt="dish.categories[0].name" height="50" width="50" contain
+                        :src="require('@/assets/dish_icons/food_preferences/'+dish.categories[0].name+'.png')")
                     v-img(:alt="dish.name" 
                       :src="dish.url", height='250')
                       v-btn(fab style="position: absolute; top: 45%; left: 4%" 
@@ -250,7 +250,7 @@ export default {
             // this.checkRelevance(this.food_preferences, dishes.categories, "category") &
             // this.checkRelevance(this.allergies, dishes.dish.allergies, "allergy") &
             // this.checkRelevance(this.additives, dishes.dish.additives, "additive")
-            this.food_preferences[dish.dish.categories[0].category.name]
+            this.food_preferences[dish.dish.categories[0].name]
           // & ! this.food_preferences[dish.dish.allergies[0].allergy.name]
           // & dish.dish.allergies.length > 0 ? !this.food_preferences[dish.dish.allergies[0].allergy.name] : true
           // & dish.dish.additives.length > 0 ? !this.food_preferences[dish.dish.additives[0].additive.name] : true

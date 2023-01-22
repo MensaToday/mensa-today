@@ -41,9 +41,9 @@ div
                             v-btn(fab small elevation="2" @click="selectCard(item[0]); dish_overlay = true")
                               v-icon(color="primary") mdi-information-outline
                           div.d-flex
-                            v-img(v-for="(category, index) in item[0].dish.categories.length" :alt="item[0].dish.categories[index].category.name" 
+                            v-img(v-for="(category, index) in item[0].dish.categories.length" :alt="item[0].dish.categories[index].name" 
                               height="50" max-width="50" contain :key="category"
-                              :src="require('@/assets/dish_icons/food_preferences/'+item[0].dish.categories[index].category.name+'.png')")
+                              :src="require('@/assets/dish_icons/food_preferences/'+item[0].dish.categories[index].name+'.png')")
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between
                           span
@@ -60,8 +60,8 @@ div
                             span
                               //- (:class="{ 'primary--text': sortBy === key }")
                               span(v-if="item[0].dish.additives.length == 0") None
-                              span(v-for="additive in item[0].dish.additives" :key="additive.additive.name") 
-                                span {{ additive.additive.name }}
+                              span(v-for="additive in item[0].dish.additives" :key="additive.name") 
+                                span {{ additive.name }}
                                 span(v-show="additive != item[0].dish.additives[item[0].dish.additives.length-1]") , 
                           div 
                             v-icon.mr-2 mdi-calendar
@@ -186,8 +186,10 @@ export default {
       let dd = date.slice(8, 10);
       let mm = date.slice(5, 7);
       let yyyy = date.slice(0, 4);
-      var old_date = new Date(date);
-      var weekday = this.days[old_date.getDay() - 1];
+      var str = mm + "/" + dd + "/" + yyyy;
+      var dateObject = new Date(str);
+      let weekday = this.days[dateObject.getDay() - 1];
+
       return weekday + ", " + dd + "." + mm + "." + yyyy;
     },
     prev() {
