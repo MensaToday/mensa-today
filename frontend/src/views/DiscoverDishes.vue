@@ -68,7 +68,7 @@ div
                     v-card-text.mt-2
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                          h3.ma-0(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
+                          h3.ma-0(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(item.priceStudent)+1) : false }")
                             | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
                           div.d-flex
                             v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 

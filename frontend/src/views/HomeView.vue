@@ -29,15 +29,13 @@ div
                     v-progress-linear(:height="6" :background-opacity=".5" :value="item[1]*100" )
 
                     v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item[0].dish.name }}
-                    //- v-card-subtitle.mt-1(:class="{'red--text': $store.state.card_balance <= (parseFloat(item[0].priceStudent)+1) }") €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }} 
 
                     v-divider
-                    //- v-card-subtitle.mt-1(:class="{'red--text': $store.state.card_balance <= (parseFloat(item[0].priceStudent)+1) }") €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
 
                     v-card-text.mt-2
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                          h3.ma-0(:class="{'red--text': $store.state.card_balance <= (parseFloat(item[0].priceStudent)+1) }")
+                          h3.ma-0(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(item.priceStudent)+1) : false }")
                             | €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
                           div
                             v-btn(fab small elevation="2" @click="selectCard(item[0]); dish_overlay = true")

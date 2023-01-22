@@ -9,7 +9,7 @@ v-card.ma-1(light :width="dynamic_card_width")
     v-container.mt-2
         v-row
             v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(dish.priceStudent)+1) }")
+                h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(dish.priceStudent)+1) : false }")
                     | €{{ dish.priceStudent.replace('.',',') }}/{{ dish.priceEmployee.replace('.',',') }}
                 div.d-flex
                     v-img(v-for="(category, index) in dish.dish.categories.length" :alt="dish.dish.categories[index].category.name" 
