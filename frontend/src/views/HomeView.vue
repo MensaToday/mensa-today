@@ -28,7 +28,8 @@ div
                       h1 {{ item.dish.name[0] }}
                     v-progress-linear(:height="6" :background-opacity=".5" :value="item[1]*100" )
 
-                    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item.dish.name }}
+                    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") 
+                    | {{ item.dish.name }}
 
                     v-divider
 
@@ -41,9 +42,9 @@ div
                             v-btn(fab small elevation="2" @click="selectCard(item); dish_overlay = true")
                               v-icon(color="primary") mdi-information-outline
                           div.d-flex
-                            v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
+                            v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].name" 
                               height="50" max-width="50" contain :key="category"
-                              :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
+                              :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].name+'.png')")
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between
                           span
@@ -58,7 +59,7 @@ div
                           div 
                             v-icon.mr-2 mdi-shield-plus-outline
                             span
-                              //- (:class="{ 'primary--text': sortBy === key }")
+                              (:class="{ 'primary--text': sortBy === key }")
                               span(v-if="item.dish.additives.length == 0") None
                               span(v-for="additive in item.dish.additives" :key="additive.name") 
                                 span {{ additive.name }}
@@ -72,11 +73,11 @@ div
                             v-icon.mr-2 mdi-thumbs-up-down-outline
                             span(v-if="item.ext_ratings.rating_count != 0") {{ item.ext_ratings.rating_avg }}
                             span(v-else) No ratings
-                          v-rating(v-model="ratingItems[Object.keys(items).indexOf(key)][index].rating" half-increments hover length="5" background-color="gray" size="24" 
-                            @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item.dish.id, $event);")
+                          //- v-rating(v-model="ratingItems[Object.keys(items).indexOf(key)][index].rating" half-increments hover length="5" background-color="gray" size="24" 
+                          //-   @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item.dish.id, $event);")
 
           //- Overlay for Selected Dish
-          //- v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" color="primary" width="95%")
+          v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" color="primary" width="95%")
             v-btn(fixed top right color="primary" fab small @click="dish_overlay = false")
               v-icon mdi-close
             //- only try to render if a dish is selected
@@ -262,10 +263,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.adjusted-padding-margin {
-  margin: 3px;
-  padding: 3px;
-}
-</style>
