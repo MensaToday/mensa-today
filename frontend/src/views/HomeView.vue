@@ -22,13 +22,13 @@ div
                 v-row.justify-center
                   v-card.ma-2(height="570px" width="350px" v-for="(item, index) in array" :key="index")
 
-                    v-img(style="border-top-left-radius: 1%; border-top-right-radius: 1%" v-show="item[0].dish.url != null" :alt="item[0].dish.name" height='250'
-                    :src='item[0].dish.url')
-                    v-card.center-items.light-green.lighten-2(style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" v-show="item[0].dish.url == null" height='250' elevation="0")
-                      h1 {{ item[0].dish.name[0] }}
+                    v-img(style="border-top-left-radius: 1%; border-top-right-radius: 1%" v-show="item.dish.url != null" :alt="item.dish.name" height='250'
+                    :src='item.dish.url')
+                    v-card.center-items.light-green.lighten-2(style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" v-show="item.dish.url == null" height='250' elevation="0")
+                      h1 {{ item.dish.name[0] }}
                     v-progress-linear(:height="6" :background-opacity=".5" :value="item[1]*100" )
 
-                    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item[0].dish.name }}
+                    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item.dish.name }}
 
                     v-divider
 
@@ -36,47 +36,47 @@ div
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
                           h3.ma-0(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(item.priceStudent)+1) : false }")
-                            | €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
+                            | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
                           div
-                            v-btn(fab small elevation="2" @click="selectCard(item[0]); dish_overlay = true")
+                            v-btn(fab small elevation="2" @click="selectCard(item); dish_overlay = true")
                               v-icon(color="primary") mdi-information-outline
                           div.d-flex
-                            v-img(v-for="(category, index) in item[0].dish.categories.length" :alt="item[0].dish.categories[index].category.name" 
+                            v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
                               height="50" max-width="50" contain :key="category"
-                              :src="require('@/assets/dish_icons/food_preferences/'+item[0].dish.categories[index].category.name+'.png')")
+                              :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between
                           span
                             v-icon.mr-2 mdi-food-apple 
-                            | {{ item[0].dish.main ? 'Main' : 'Side' }}
+                            | {{ item.dish.main ? 'Main' : 'Side' }}
                         v-col 
-                          v-btn(rounded :href="getGoogleMapsUrl(item[0].mensa.name)" target="_blank" rel="noopener noreferrer")
+                          v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
                             v-icon mdi-navigation-variant-outline
-                            | {{ (item[0].mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
+                            | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between
                           div 
                             v-icon.mr-2 mdi-shield-plus-outline
                             span
                               //- (:class="{ 'primary--text': sortBy === key }")
-                              span(v-if="item[0].dish.additives.length == 0") None
-                              span(v-for="additive in item[0].dish.additives" :key="additive.additive.name") 
-                                span {{ additive.additive.name }}
-                                span(v-show="additive != item[0].dish.additives[item[0].dish.additives.length-1]") , 
+                              span(v-if="item.dish.additives.length == 0") None
+                              span(v-for="additive in item.dish.additives" :key="additive.name") 
+                                span {{ additive.name }}
+                                span(v-show="additive != item.dish.additives[item.dish.additives.length-1]") , 
                           div 
                             v-icon.mr-2 mdi-calendar
-                            span {{ new Date(item[0].date).toLocaleDateString('de-DE') }}
+                            span {{ new Date(item.date).toLocaleDateString('de-DE') }}
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between
                           div
                             v-icon.mr-2 mdi-thumbs-up-down-outline
-                            span(v-if="item[0].ext_ratings.rating_count != 0") {{ item[0].ext_ratings.rating_avg }}
+                            span(v-if="item.ext_ratings.rating_count != 0") {{ item.ext_ratings.rating_avg }}
                             span(v-else) No ratings
                           v-rating(v-model="ratingItems[Object.keys(items).indexOf(key)][index].rating" half-increments hover length="5" background-color="gray" size="24" 
-                            @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item[0].dish.id, $event);")
+                            @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item.dish.id, $event);")
 
           //- Overlay for Selected Dish
-          v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" color="primary" width="95%")
+          //- v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" color="primary" width="95%")
             v-btn(fixed top right color="primary" fab small @click="dish_overlay = false")
               v-icon mdi-close
             //- only try to render if a dish is selected
