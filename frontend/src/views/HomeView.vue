@@ -31,7 +31,6 @@ div
                     v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item[0].dish.name }}
 
                     v-divider
-<<<<<<< HEAD
 
                     v-card-text.mt-2
                       v-row
@@ -107,36 +106,6 @@ div
                     h3.my-3 Side Dishes
                     .d-flex.flex-wrap
                       DishCard(:dish="side_dish" :side_dish="true" :card_width="'15vw'" v-for="side_dish in selected_dish.side_dishes" :key="side_dish.dish.name")
-=======
-                    v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                      h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
-                        //- (:class="{ 'primary--text': sortBy === key }")
-                        | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
-                      v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].name" 
-                        height="50" max-width="50" contain :key="category"
-                        :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].name+'.png')")
-                      v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
-                        v-icon mdi-navigation-variant-outline
-                        | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
-                    v-col.align-center.justify-center.d-flex.justify-space-between
-                      div
-                        span
-                          //- (:class="{ 'primary--text': sortBy === key }")
-                          v-icon mdi-food-apple
-                          | {{ item.dish.main ? 'Main Dish' : 'Side Dish' }}
-                      div 
-                        v-icon mdi-shield-plus-outline
-                        span
-                          //- (:class="{ 'primary--text': sortBy === key }")
-                          span(v-if="item.dish.additives.length == 0")  None
-                          span(v-for="additive in item.dish.additives" :key="additive.name")  {{ additive.name }}
-                    v-col.align-center.justify-center.d-flex.justify-space-between
-                      div 
-                        v-icon mdi-calendar
-                        span {{ new Date(item.date).toLocaleDateString('de-DE') }}
-                      v-rating(hover length="5" background-color="gray" readonly size="24" half-increments 
-                        v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0")
->>>>>>> development
 </template>
 
 <script>
@@ -221,9 +190,9 @@ export default {
       let yyyy = date.slice(0, 4);
       var str = mm + "/" + dd + "/" + yyyy;
       var dateObject = new Date(str);
-      let weekday = this.days[dateObject.getDay()-1]
+      let weekday = this.days[dateObject.getDay() - 1];
 
-      return(weekday + ", " + dd + "." + mm + "." + yyyy);
+      return weekday + ", " + dd + "." + mm + "." + yyyy;
     },
     prev() {
       if (this.currentTab === 0) return;
