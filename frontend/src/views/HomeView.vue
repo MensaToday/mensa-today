@@ -72,8 +72,10 @@ div
                             v-icon.mr-2 mdi-thumbs-up-down-outline
                             span(v-if="item[0].ext_ratings.rating_count != 0") {{ item[0].ext_ratings.rating_avg }}
                             span(v-else) No ratings
-                          v-rating(v-model="ratingItems[Object.keys(items).indexOf(key)][index].rating" half-increments hover length="5" background-color="gray" size="24" 
-                            @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item[0].dish.id, $event);")
+                          v-rating(v-if = "item[0].user_ratings.length > 0" :value = "item[0].user_ratings[0].rating*5" half-increments hover length="5" background-color="gray" size="24" 
+                            @input="setRating(item[0].dish.id, $event);")
+                          v-rating(v-else half-increments hover length="5" background-color="gray" size="24" 
+                            @input="setRating(item[0].dish.id, $event);")
 
           //- Overlay for Selected Dish
           v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" color="primary" width="95%")
@@ -117,45 +119,8 @@ export default {
   components: { DishCard },
   data() {
     return {
-      hover: false,
       currentTab: 0,
       tab: null,
-      ratingItems: [
-        [
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-        ],
-        [
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-        ],
-        [
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-        ],
-        [
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-        ],
-        [
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-        ],
-      ],
-      model: null,
-      recommendationItemsTest: null,
-      recommendationItems: this.$store.state.recommendations,
-      recommendationItemsDaily: this.$store.state.dailyRecommendations,
       days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       dish_overlay: false,
       selected_dish: null,
