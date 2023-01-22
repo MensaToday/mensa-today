@@ -96,9 +96,9 @@ div
                             div.d-flex.flex-row.center-items
                               p.ma-0.mr-3.text-right.subheading(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(side_dish.priceStudent)+1) : false }")
                                 | €{{ side_dish.priceStudent.replace('.',',') }}/{{ side_dish.priceEmployee.replace('.',',') }}
-                              v-img(v-for="(category, index) in side_dish.dish.categories.length" :alt="side_dish.dish.categories[index].category.name" 
+                              v-img(v-for="(category, index) in side_dish.dish.categories.length" :alt="side_dish.dish.categories[index].name" 
                                 :height="category_icon_height" :max-width="category_icon_height" contain :key="category"
-                                :src="require('@/assets/dish_icons/food_preferences/'+side_dish.dish.categories[index].category.name+'.png')")
+                                :src="require('@/assets/dish_icons/food_preferences/'+side_dish.dish.categories[index].name+'.png')")
               v-btn(color="primary" @click="dish_overlay = false")
                 v-icon.mr-2 mdi-check
                 | Save
