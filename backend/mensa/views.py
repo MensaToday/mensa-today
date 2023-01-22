@@ -80,7 +80,6 @@ def get_dishplan(request):
     """
 
     last_monday = get_last_monday()
-    t1 = time.time()
     dishplan_qs = DishPlan.objects.prefetch_related('mensa', 'dish', 'dish__categories', 'dish__allergies', 'dish__additives', 'dish__ext_ratings').filter(
         date__gte=last_monday)
 
