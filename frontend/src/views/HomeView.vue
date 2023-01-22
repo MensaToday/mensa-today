@@ -76,36 +76,32 @@ div
                             @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item[0].dish.id, $event);")
 
           //- Overlay for Selected Dish
-          v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" color="primary" width="95%")
-            v-btn(fixed top right color="primary" fab small @click="dish_overlay = false")
-              v-icon mdi-close
+          v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" color="primary" :width="$vuetify.breakpoint.mdAndUp ? '40vw' : '90vw'")
             //- only try to render if a dish is selected
-            v-card.center-items(v-if="dish_overlay")
-              v-row
-                v-col.align-center.justify-center.d-flex.justify-space-around
-                  v-card.center-items(color="transparent" flat)
-                    v-card-title 
-                      h2.my-3 Dish Combination
-                    v-card-text 
-                      v-row
-                        v-col.align-center.justify-center.d-flex.justify-space-around
-                          v-btn(rounded :href="getGoogleMapsUrl(selected_dish.mensa.name)" target="_blank" rel="noopener noreferrer")
-                            v-icon mdi-navigation-variant-outline
-                            | {{ (selected_dish.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
-                          div.ml-4
-                            v-icon.mr-2 mdi-calendar
-                            span {{ new Date(selected_dish.date).toLocaleDateString('de-DE') }}
-              v-row(no-gutters)
-                v-col.align-center.justify-center(cols="12" md="4")
-                  h3.text-center.my-3 Main Dishes
-                  DishCard(:dish="selected_dish" fixed :card_width="'20vw'")
-                v-col.center-items(cols="12" md="8")
-                  v-card.center-items.pa-3(v-if="selected_dish.side_dishes.length == 0" color="grey")
-                    h3.my-0 No suggested side dishes
-                  div.center-items(v-else)
-                    h3.my-3 Side Dishes
-                    .d-flex.flex-wrap
-                      DishCard(:dish="side_dish" :side_dish="true" :card_width="'15vw'" v-for="side_dish in selected_dish.side_dishes" :key="side_dish.dish.name")
+            v-card.center-items.pb-3(v-if="dish_overlay")
+              h3.my-3(v-if="selected_dish.side_dishes.length == 0") No suggested side dishes
+              template.center-items(v-else)
+                v-list(shaped)
+                  v-list-item-group(v-model='selected_side_dishes' multiple)
+                    h3.my-3.text-center Side Dishes
+                    template(v-for='(side_dish, i) in selected_dish.side_dishes')
+                      v-divider(v-if='!side_dish' :key='`divider-${i}`')
+                      v-list-item(v-else :key='`item-${i}`' :value='side_dish' active-class='deep-purple--text text--accent-4')
+                        template(v-slot:default='{ active }')
+                          v-list-item-action
+                            v-checkbox(:input-value='active' color='deep-purple accent-4')  
+                          v-list-item-content
+                            v-list-item-title 
+                              h4.my-1 {{ side_dish.dish.name }}
+                            div.d-flex.flex-row.center-items
+                              p.ma-0.mr-3.text-right.subheading(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(side_dish.priceStudent)+1) : false }")
+                                | €{{ side_dish.priceStudent.replace('.',',') }}/{{ side_dish.priceEmployee.replace('.',',') }}
+                              v-img(v-for="(category, index) in side_dish.dish.categories.length" :alt="side_dish.dish.categories[index].category.name" 
+                                :height="category_icon_height" :max-width="category_icon_height" contain :key="category"
+                                :src="require('@/assets/dish_icons/food_preferences/'+side_dish.dish.categories[index].category.name+'.png')")
+              v-btn(color="primary" @click="dish_overlay = false")
+                v-icon.mr-2 mdi-check
+                | Save
 </template>
 
 <script>
@@ -159,6 +155,8 @@ export default {
       days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       dish_overlay: false,
       selected_dish: null,
+      selected_side_dishes: [],
+      category_icon_height: "20px",
     };
   },
   computed: {
