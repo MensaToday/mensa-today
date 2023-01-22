@@ -20,6 +20,7 @@ export default new Vuex.Store({
       avatar: null,
       food_categories: [],
       food_allergies: [],
+      user_ratings: [],
     },
     card_balance: null,
     dishplan: null,
@@ -70,6 +71,9 @@ export default new Vuex.Store({
     setRecommendationsDaily(state, recommendations) {
       state.dailyRecommendations = recommendations;
     },
+    setUserRatings(state, user_ratings) {
+      state.user.user_ratings = user_ratings;
+    },
     refreshToken() {
       // If the user has a refresh token the access token can be refreshed
       if (this.state.refresh_token != null) {
@@ -102,7 +106,7 @@ export default new Vuex.Store({
         setTimeout(() => {
           dispatch("GetBalance");
         }, 1);
-      } else console.log("access token not set");
+      } else console.log("Access token not set.");
     },
     async Register({ commit, dispatch }, User) {
       let response = await axios.post("user/register", User);
@@ -154,6 +158,12 @@ export default new Vuex.Store({
       var user_data = response.data;
       commit("setUserData", user_data);
     },
+    async GetUserRatings({ commit }) {
+      let response = await axios.get("mensa/user_ratings");
+      var user_ratings = response.data;
+      // console.log(user_ratings)
+      commit("setUserRatings", user_ratings);
+    },
     async GetRecommendations({ commit }) {
       var today = new Date();
       var dd = String(today.getDate()).padStart(2, "0");
@@ -164,7 +174,7 @@ export default new Vuex.Store({
       let response = await axios.post("mensa/get_recommendations", {
         day: today,
         entire_week: "True",
-        recommendations_per_day: 5,
+        recommendations_per_day: 4,
       });
 
       var recommendations = response.data;

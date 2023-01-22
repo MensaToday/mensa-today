@@ -62,14 +62,13 @@ div
                     v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250' elevation="0")
                       h1.text--secondary {{ item.dish.name[0] }}
 
-                    v-card-title.subheading(style="word-break: normal")
+                    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;")
                       | {{ item.dish.name }}
                     v-divider
-                    v-container.mt-2
+                    v-card-text.mt-2
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                          h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
-                            //- (:class="{ 'primary--text': sortBy === key }")
+                          h3.ma-0(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(item.priceStudent)+1) : false }")
                             | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
                           div.d-flex
                             v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].name" 
@@ -78,15 +77,14 @@ div
                       v-row.align-center.justify-center.d-flex.justify-space-between
                         v-col
                           span
-                            //- (:class="{ 'primary--text': sortBy === key }")
                             v-icon.mr-2 mdi-food-apple
                             | {{ item.dish.main ? 'Main Dish' : 'Side Dish' }}
                         v-col 
                           v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
                             v-icon mdi-navigation-variant-outline
                             | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
-                      v-row 
-                        v-col    
+                      v-row
+                        v-col.align-center.justify-center.d-flex.justify-space-between
                           div 
                             v-icon.mr-2 mdi-shield-plus-outline
                             span
@@ -95,13 +93,17 @@ div
                               span(v-for="additive in item.dish.additives" :key="additive.name") 
                                 span {{ additive.name }}
                                 span(v-show="additive != item.dish.additives[item.dish.additives.length-1]") , 
-                      v-row 
-                        v-col.align-center.justify-center.d-flex.justify-space-between
                           div 
                             v-icon.mr-2 mdi-calendar
                             span {{ new Date(item.date).toLocaleDateString('de-DE') }}
-                          v-rating(hover length="5" background-color="gray" readonly size="24" half-increments 
-                            v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0")
+                      v-row 
+                        v-col.align-center.justify-center.d-flex.justify-space-between
+                          div
+                            v-icon.mr-2 mdi-thumbs-up-down-outline
+                            span(v-if="item.ext_ratings.rating_count != 0") {{ item.ext_ratings.rating_avg }}
+                            span(v-else) No ratings
+                          v-rating(hover length="5" background-color="gray" readonly size="24" half-increments)
+                          //- v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0"
 
             template(v-slot:footer)
               v-row.mt-2(align='center' justify='center')
