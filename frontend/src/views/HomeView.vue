@@ -35,7 +35,8 @@ div
                     v-card-text.mt-2
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                          h3.ma-0(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(item.priceStudent)+1) : false }")
+                          h3.ma-0(
+                            :class="coveredByBalance(parseFloat(item.priceStudent))")
                             | €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
                           div
                             v-btn(fab small elevation="2" @click="selectCard(item[0]); dish_overlay = true")
@@ -86,15 +87,16 @@ div
                     h3.my-3.text-center Side Dishes
                     template(v-for='(side_dish, i) in selected_dish.side_dishes')
                       v-divider(v-if='!side_dish' :key='`divider-${i}`')
-                      v-list-item(v-else :key='`item-${i}`' :value='side_dish' active-class='deep-purple--text text--accent-4')
+                      v-list-item(v-else :key='`item-${i}`' :value='side_dish' active-class='primary--text text--accent-4')
                         template(v-slot:default='{ active }')
                           v-list-item-action
-                            v-checkbox(:input-value='active' color='deep-purple accent-4')  
+                            v-checkbox(:input-value='active' color='primary accent-4')  
                           v-list-item-content
                             v-list-item-title 
                               h4.my-1 {{ side_dish.dish.name }}
                             div.d-flex.flex-row.center-items
-                              p.ma-0.mr-3.text-right.subheading(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(side_dish.priceStudent)+1) : false }")
+                              p.ma-0.mr-3.text-right.subheading(
+                                :class="coveredByBalance(parseFloat(side_dish.priceStudent)+parseFloat(selected_dish.priceStudent))")
                                 | €{{ side_dish.priceStudent.replace('.',',') }}/{{ side_dish.priceEmployee.replace('.',',') }}
                               v-img(v-for="(category, index) in side_dish.dish.categories.length" :alt="side_dish.dish.categories[index].name" 
                                 :height="category_icon_height" :max-width="category_icon_height" contain :key="category"
@@ -166,11 +168,7 @@ export default {
     items() {
       return this.$store.state.recommendations;
     },
-    itemLabels() {
-      return Object.keys(this.$store.state.recommendations);
-    },
     loaded() {
-      // if (typeof this.items !== 'undefined') return true
       if (this.items != null) return true;
       else return false;
     },
@@ -191,6 +189,10 @@ export default {
       let weekday = this.days[dateObject.getDay() - 1];
 
       return weekday + ", " + dd + "." + mm + "." + yyyy;
+    },
+    coveredByBalance(price) {
+      if (!this.$store.state.card_balance) return null;
+      if (this.$store.state.card_balance <= price) return "red--text";
     },
     prev() {
       if (this.currentTab === 0) return;
