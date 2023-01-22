@@ -188,9 +188,11 @@ export default {
       let dd = date.slice(8, 10);
       let mm = date.slice(5, 7);
       let yyyy = date.slice(0, 4);
-      var old_date = new Date(date);
-      var weekday = this.days[old_date.getDay() - 1];
-      return weekday + ", " + dd + "." + mm + "." + yyyy;
+      var str = mm + "/" + dd + "/" + yyyy;
+      var dateObject = new Date(str);
+      let weekday = this.days[dateObject.getDay()-1]
+
+      return(weekday + ", " + dd + "." + mm + "." + yyyy);
     },
     prev() {
       if (this.currentTab === 0) return;
