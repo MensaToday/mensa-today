@@ -128,7 +128,7 @@ def user_ratings(request):
                     "main": bool,
                     "name": str
                 },
-                "rating": float between 0-1
+                "rating": int between 1-5
             }
         ]
     """
@@ -155,10 +155,11 @@ def user_ratings(request):
                 rating = transform_rating(rating)
 
                 # If rating is valid
-                if rating:
+                if rating is not None:
 
-                    # Save the rating
-                    UserDishRating(dish=dish, user=user, rating=rating).save()
+                    # Save the rating or update if it already exists
+                    UserDishRating.objects.update_or_create(
+                        dish=dish, user=user, defaults={"rating": rating})
 
                     return Response(status=status.HTTP_200_OK)
                 else:
@@ -401,14 +402,14 @@ def get_recommendations(request):
     return Response(res, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def get_quiz_dishes(request):
     """Get random dishes for the initial quiz based on the user preferences
 
         Route: api/v1/mensa/get_quiz_dishes
         Authorization: Any
-        Methods: Get
+        Methods: Post
 
 
         Input

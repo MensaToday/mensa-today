@@ -9,7 +9,6 @@ div
 
 <script>
 export default {
-    name: "SettingsNavigation",
+  name: "SettingsNavigation",
 };
 </script>
-

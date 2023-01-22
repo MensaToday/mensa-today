@@ -67,13 +67,12 @@ REST_FRAMEWORK = {
     ),
 }
 
-JWT_AUTH = {
+SIMPLE_JWT = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LEEWAY': 0,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=int(os.getenv("JWT_EXPIRATION_DETLA", 86400))),
-    'JWT_ALLOW_REFRESH': True,
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(seconds=int(os.getenv("JWT_EXPIRATION_DELTA", 86400))),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=7),
 }
 
 CORS_ORIGIN_WHITELIST = (

@@ -49,7 +49,7 @@ To deploy the django app use the `docker-compose-prod.yaml` file. This file requ
 ```
 SECRET_KEY = foo
 DEBUG = False
-JWT_EXPIRATION_DETLA = 10800
+JWT_EXPIRATION_DELTA = 10800
 PRODUCTION = True
 GOOGLE_API_KEY = YOUR_API_KEY             # currently not required
 GOOGLE_PROJECT_CX = YOUR_PROJECT_CX_KEY   # currently not required

@@ -1,7 +1,8 @@
 import axios from "axios";
 import Vue from "vue";
-import Vuex from "vuex";
-import { mapState } from "vuex";
+import Vuex, { mapState } from "vuex";
+import createPersistedState from "vuex-persistedstate";
+import router from "../router";
 
 Vue.use(Vuex);
 
@@ -18,7 +19,7 @@ export default new Vuex.Store({
       mensa_card_id: null,
       avatar: null,
       food_categories: [],
-      food_allergies: []
+      food_allergies: [],
     },
     card_balance: null,
     dishplan: null,
@@ -26,16 +27,21 @@ export default new Vuex.Store({
     dailyRecommendations: null,
   },
   computed: {
-    ...mapState(['user'])
+    ...mapState(["user"]),
   },
   getters: {
     isLoggedIn: (state) => state.access_token != null,
-    userData: (state) => {return state.user}
+    userData: (state) => {
+      return state.user;
+    },
   },
   mutations: {
     setTokens(state, [access_token, refresh_token]) {
       state.access_token = access_token;
       state.refresh_token = refresh_token;
+    },
+    setToken(state, access_token) {
+      state.access_token = access_token;
     },
     rmTokens(state) {
       state.access_token = null;
@@ -64,18 +70,35 @@ export default new Vuex.Store({
     setRecommendationsDaily(state, recommendations) {
       state.dailyRecommendations = recommendations;
     },
+    refreshToken() {
+      // If the user has a refresh token the access token can be refreshed
+      if (this.state.refresh_token != null) {
+        axios
+          .post("user/refresh/", {
+            refresh: this.state.refresh_token,
+          })
+          .then((response) => {
+            this.dispatch("initializeSession", [
+              response.data.access,
+              this.state.refresh_token,
+            ]);
+          })
+          .catch((err) => {
+            // If a 401 is returned the token cannot be refreshed and the user will get logged out
+            if (err.response.status === 401) {
+              this.commit("rmTokens");
+              router.push("/login");
+            }
+          });
+      }
+    },
   },
   actions: {
     initializeSession({ commit, dispatch }, [access_token, refresh_token]) {
-      window.localStorage.setItem("access_token", access_token);
-      window.localStorage.setItem("refresh_token", refresh_token);
       // var user =  response.data.user
       commit("setTokens", [access_token, refresh_token]);
 
       if (access_token) {
-        axios.defaults.headers.common["Authorization"] =
-          "Bearer " + access_token;
-
         setTimeout(() => {
           dispatch("GetBalance");
         }, 1);
@@ -107,13 +130,16 @@ export default new Vuex.Store({
       // setTimeout(() => dispatch('AutoRefreshToken'), 2000)
     },
     async Logout({ state, commit }) {
-      let response = await axios.post("user/logout", {
+      await axios.post("user/logout", {
         refresh_token: state.refresh_token,
       });
-      console.log(response);
+      // catch aborted navigation
+      router.push("/login").catch(() => {});
       commit("rmTokens");
     },
-    async GetBalance({ commit }) {
+    async GetBalance({ state, commit }) {
+      // if the mensa card is not specified, you cannot make the API CALL
+      if (!state.user.mensa_card_id) return;
       let response = await axios.get("user/get_balance");
       var card_balance = response.data.toFixed(2);
       commit("setBalance", card_balance);
@@ -134,14 +160,13 @@ export default new Vuex.Store({
       var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
       var yyyy = today.getFullYear();
       today = yyyy + "." + mm + "." + dd;
-      
+
       let response = await axios.post("mensa/get_recommendations", {
         day: today,
         entire_week: "True",
         recommendations_per_day: 5,
       });
 
-      //console.log(response.data);
       var recommendations = response.data;
       commit("setRecommendations", recommendations);
     },
@@ -152,4 +177,5 @@ export default new Vuex.Store({
       commit("setRecommendationsDaily", recommendations);
     },
   },
+  plugins: [createPersistedState()],
 });

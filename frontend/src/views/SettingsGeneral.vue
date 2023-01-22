@@ -1,7 +1,11 @@
 <template lang="pug">
 v-container(fluid)
-  v-alert(dismissible transition="fade-transition" v-if="failed == false" :value="alert" type="success") {{ update_success_message }}
-  v-alert(dismissible transition="fade-transition" v-if="failed == true" :value="alert" type="error") {{ update_error_message }}
+  v-alert(dismissible transition="fade-transition" 
+    v-if="failed == false" :value="alert" type="success") 
+    | {{ update_success_message }}
+  v-alert(dismissible transition="fade-transition" 
+    v-if="failed == true" :value="alert" type="error") 
+    | {{ update_error_message }}
 
   div.center-items
     v-row
@@ -75,12 +79,11 @@ import SettingsNavigation from "../components/SettingsNavigation.vue";
 export default {
   name: "SettingsGeneral",
   components: {
-    SettingsNavigation
+    SettingsNavigation,
   },
   data: () => ({
-
     updatedInfo: {
-      mensa_card_id: ""
+      mensa_card_id: "",
     },
     failed: false,
     alert: false,
@@ -142,20 +145,18 @@ export default {
     selected_categories: [],
     selected_allergies: [],
     selected_additives: [],
-
   }),
   watch: {
     alert(new_val) {
       if (new_val) {
-        setTimeout(() => { this.alert = false }, 3000);
+        setTimeout(() => {
+          this.alert = false;
+        }, 3000);
       }
-    }
+    },
   },
   methods: {
-    ...mapActions([
-      'GetUserData',
-      'GetBalance'
-    ]),
+    ...mapActions(["GetUserData", "GetBalance"]),
     reloadPage() {
       window.location.reload();
     },
@@ -168,24 +169,28 @@ export default {
       }
     },
     setPreferenceData() {
-
-      for (const [a, b] of Object.entries(this.$store.state.user.food_categories)) {
+      for (const [, b] of Object.entries(
+        this.$store.state.user.food_categories
+      )) {
         this.food_preferences[b.category.name] = true;
       }
-      for (const [a, b] of Object.entries(this.$store.state.user.food_allergies)) {
+      for (const [, b] of Object.entries(
+        this.$store.state.user.food_allergies
+      )) {
         this.allergies[b.allergy.name] = true;
         this.selected_allergies.push(b.allergy.name);
         this.updateObject(this.allergies, b.allergy.name);
       }
       this.updateSelectedCategories();
-
     },
     updateObject(obj, values) {
       for (let idx = 0; idx < values.length; idx++) {
         obj[values[idx]] = true;
       }
     },
-    print(msg) { console.log(msg) },
+    print(msg) {
+      console.log(msg);
+    },
     async getUserData() {
       try {
         await this.GetUserData();
@@ -201,39 +206,38 @@ export default {
       }
     },
     async deleteAccount(message) {
-      if (message == 'DELETE') {
+      if (message == "DELETE") {
         try {
-          await axios.post('user/delete')
+          await axios.post("user/delete");
         } catch (error) {
-          console.error(error.message)
+          console.error(error.message);
         }
+      } else {
+        console.error("Wrong delete message!");
       }
-      else { console.error("Wrong delete message!") }
     },
     async updateUserInfo(card_id, categories, allergies) {
       if (card_id != null) {
         try {
           //Update Mensa Card ID
-          await axios.post('user/update_card_id', {
-            card_id: card_id
+          await axios.post("user/update_card_id", {
+            card_id: card_id,
           });
 
           //Update Categories and Allergies
-          await axios.post('user/update_preferences', {
+          await axios.post("user/update_preferences", {
             categories: categories,
-            allergies: allergies
+            allergies: allergies,
           });
 
           this.failed = false;
           this.alert = true;
           this.getBalance();
-
         } catch (error) {
-          console.error(error.message)
+          console.error(error.message);
           this.failed = true;
           this.alert = true;
         }
-
       }
       this.selected_categories = [];
       this.selected_allergies = [];
@@ -262,10 +266,9 @@ export default {
         return false;
       },
     },
-    user_data() { return this.$store.state.user; },
-  },
-  mounted() {
-    //this.getUserData();
+    user_data() {
+      return this.$store.state.user;
+    },
   },
   created() {
     this.setPreferenceData();
@@ -273,4 +276,3 @@ export default {
   },
 };
 </script>
-
