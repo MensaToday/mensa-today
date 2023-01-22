@@ -147,7 +147,6 @@ export default {
       "GetRecommendations",
       "GetOneRecommendation",
       "GetUserData",
-      "GetUserRatings",
     ]),
     convertDate(date) {
       let dd = date.slice(8, 10);
@@ -170,13 +169,6 @@ export default {
     selectCard(item) {
       this.dish_overlay = true;
       this.selected_dish = item;
-    },
-    async getUserRatings() {
-      try {
-        await this.GetUserRatings();
-      } catch (error) {
-        console.log(error);
-      }
     },
     async getUserData() {
       try {
@@ -221,8 +213,6 @@ export default {
   },
   mounted() {
     this.getRecommendations();
-    this.getUserRatings();
-    // this.initializeRatings();
     this.getUserData();
   },
 };
