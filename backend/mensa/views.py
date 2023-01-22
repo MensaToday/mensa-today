@@ -85,7 +85,6 @@ def get_dishplan(request):
 
     dish_serialized = DishPlanSerializer(dishplan_qs,
                                          many=True, context={'user': request.user}).data
-    print(time.time()-t1)
     return Response(dish_serialized)
 
 
