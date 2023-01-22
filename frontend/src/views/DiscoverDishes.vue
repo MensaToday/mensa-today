@@ -71,9 +71,9 @@ div
                           h3.ma-0(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(item.priceStudent)+1) : false }")
                             | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
                           div.d-flex
-                            v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
+                            v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].name" 
                               height="50" max-width="50" contain :key="category"
-                              :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
+                              :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].name+'.png')")
                       v-row.align-center.justify-center.d-flex.justify-space-between
                         v-col
                           span
@@ -89,9 +89,9 @@ div
                             v-icon.mr-2 mdi-shield-plus-outline
                             span
                               //- (:class="{ 'primary--text': sortBy === key }")
-                              span(v-if="item.dish.additives.length == 0") None
-                              span(v-for="additive in item.dish.additives" :key="additive.additive.name") 
-                                span {{ additive.additive.name }}
+                              span(v-if="item.dish.additives.length == 0")  None
+                              span(v-for="additive in item.dish.additives" :key="additive.name") 
+                                span {{ additive.name }}
                                 span(v-show="additive != item.dish.additives[item.dish.additives.length-1]") , 
                           div 
                             v-icon.mr-2 mdi-calendar
@@ -277,11 +277,7 @@ export default {
     checkCategory(dish) {
       if (dish.dish.categories != undefined) {
         for (let i = 0; i < dish.dish.categories.length; i++) {
-          if (
-            !this.selectedCategories.includes(
-              dish.dish.categories[i].category.name
-            )
-          )
+          if (!this.selectedCategories.includes(dish.dish.categories[i].name))
             return false;
         }
         // ! this.filters.food_preferences[dish.dish.categories[0].category.name]

@@ -17,7 +17,6 @@ def transform_rating(rating: int) -> Union[float, None]:
             Otherwise a rating between 0-1 will be the output.
 
     """
-
     if rating >= 1 and rating <= 5:
         return (rating-1)/4
     else:
