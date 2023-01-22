@@ -24,9 +24,9 @@ div
                       h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
                         //- (:class="{ 'primary--text': sortBy === key }")
                         | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
-                      v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
+                      v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].name" 
                         height="50" max-width="50" contain :key="category"
-                        :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
+                        :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].name+'.png')")
                       v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
                         v-icon mdi-navigation-variant-outline
                         | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
@@ -41,7 +41,7 @@ div
                         span
                           //- (:class="{ 'primary--text': sortBy === key }")
                           span(v-if="item.dish.additives.length == 0")  None
-                          span(v-for="additive in item.dish.additives" :key="additive.additive.name")  {{ additive.additive.name }}
+                          span(v-for="additive in item.dish.additives" :key="additive.name")  {{ additive.name }}
                     v-col.align-center.justify-center.d-flex.justify-space-between
                       div 
                         v-icon mdi-calendar

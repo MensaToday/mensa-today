@@ -1,70 +1,105 @@
 [ {
-    "id": 93,
+    "id": 74,
     "categories": [ {
-      "category": {
-        "id": 1,
-        "name": "Vegan"
-      }
+      "id": 1,
+      "name": "Vegan"
     } ],
     "additives": [],
     "allergies": [ {
-      "allergy": {
+        "id": 1,
+        "name": "Gluten"
+      },
+      {
+        "id": 2,
+        "name": "Spelt"
+      },
+      {
+        "id": 3,
+        "name": "Barley"
+      },
+      {
+        "id": 4,
+        "name": "Oats"
+      },
+      {
+        "id": 7,
+        "name": "Wheat"
+      },
+      {
+        "id": 12,
+        "name": "Soy"
+      },
+      {
+        "id": 14,
+        "name": "Nuts"
+      },
+      {
+        "id": 17,
+        "name": "Walnuts"
+      },
+      {
+        "id": 24,
+        "name": "Mustard"
+      },
+      {
+        "id": 25,
+        "name": "Sesame"
+      }
+    ],
+    "main": true,
+    "name": "Burger mit selbstgemachtem Champignon-Walnusspatty mit Limettenmayonnaise",
+    "url": "http://strato-editor.com/imageprocessor/processor.cls/STRATP/cm4all/com/widgets/CatalogSitesPortfolio/12/27/66/96/IMG_1293.JPG/donotenlarge/"
+  },
+  {
+    "id": 29,
+    "categories": [ {
+        "id": 1,
+        "name": "Vegan"
+      },
+      {
+        "id": 2,
+        "name": "Vegetarian"
+      }
+    ],
+    "additives": [],
+    "allergies": [ {
+        "id": 1,
+        "name": "Gluten"
+      },
+      {
+        "id": 7,
+        "name": "Wheat"
+      },
+      {
         "id": 23,
         "name": "Celery"
       }
-    } ],
-    "main": false,
-    "name": "Gemüsereis",
-    "url": "https://zitronenundolivenoel.files.wordpress.com/2013/09/gemuesereis-mit-tomate.jpg?w=820?w=300"
+    ],
+    "main": true,
+    "name": "Gemüse-Bratling mit Champignonsauce",
+    "url": "https://images.eatsmarter.de/sites/default/files/styles/576x432/public/rinder-carpaccio-mit-champignons-36563.jpg"
   },
   {
-    "id": 67,
+    "id": 64,
     "categories": [ {
-      "category": {
-        "id": 1,
-        "name": "Vegan"
-      }
+      "id": 1,
+      "name": "Vegan"
     } ],
     "additives": [ {
-      "additive": {
         "id": 1,
         "name": "Dyed"
-      }
-    } ],
-    "allergies": [ {
-      "allergy": {
-        "id": 12,
-        "name": "Soy"
-      }
-    } ],
-    "main": true,
-    "name": "Wildreis mit Champignons",
-    "url": "https://www.kochwiki.org/images/thumb/9/94/Gefuellte_Champignons-1-CTH.JPG/1200px-Gefuellte_Champignons-1-CTH.JPG"
-  },
-  {
-    "id": 172,
-    "categories": [ {
-      "category": {
-        "id": 1,
-        "name": "Vegan"
-      }
-    } ],
-    "additives": [],
-    "allergies": [ {
-        "allergy": {
-          "id": 1,
-          "name": "Gluten"
-        }
       },
       {
-        "allergy": {
-          "id": 4,
-          "name": "Oats"
-        }
+        "id": 5,
+        "name": "Sulphurated"
       }
     ],
-    "main": false,
-    "name": "Veganer Milchreis",
-    "url": "http://4.bp.blogspot.com/_dIeFZG-QVsQ/S9Cms8FyYzI/AAAAAAAABc0/uYwwG6x2-ms/w1200-h630-p-k-no-nu/Milchreis.jpg"
+    "allergies": [ {
+      "id": 23,
+      "name": "Celery"
+    } ],
+    "main": true,
+    "name": "Kartoffeleintopf",
+    "url": "https://www.kochwiki.org/images/thumb/5/51/Kartoffeleintopf_mit_Rosenkohl.jpg/1200px-Kartoffeleintopf_mit_Rosenkohl.jpg"
   }
 ]
