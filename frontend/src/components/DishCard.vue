@@ -12,9 +12,9 @@ v-card.ma-1(light :width="dynamic_card_width")
                 h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(dish.priceStudent)+1) : false }")
                     | €{{ dish.priceStudent.replace('.',',') }}/{{ dish.priceEmployee.replace('.',',') }}
                 div.d-flex
-                    v-img(v-for="(category, index) in dish.dish.categories.length" :alt="dish.dish.categories[index].category.name" 
+                    v-img(v-for="(category, index) in dish.dish.categories.length" :alt="dish.dish.categories[index].name" 
                         height="50" max-width="50" contain :key="category"
-                        :src="require('@/assets/dish_icons/food_preferences/'+dish.dish.categories[index].category.name+'.png')")
+                        :src="require('@/assets/dish_icons/food_preferences/'+dish.dish.categories[index].name+'.png')")
         v-row
             v-col.align-center.justify-center.d-flex.justify-space-between
                 //- currently redundant information if it is a side dish
@@ -25,8 +25,8 @@ v-card.ma-1(light :width="dynamic_card_width")
                     v-icon.mr-2 mdi-shield-plus-outline
                     span
                         span(v-if="dish.dish.additives.length == 0") None
-                        span(v-else v-for="additive in dish.dish.additives" :key="additive.additive.name") 
-                            span {{ additive.additive.name }}
+                        span(v-else v-for="additive in dish.dish.additives" :key="additive.name") 
+                            span {{ additive.name }}
                             span(v-show="additive != dish.dish.additives[dish.dish.additives.length-1]") , 
         v-row 
             v-col.align-center.justify-center.d-flex.justify-space-between(v-if="!side_dish")
