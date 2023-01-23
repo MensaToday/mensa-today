@@ -186,6 +186,37 @@ export default new Vuex.Store({
       var recommendations = response.data;
       commit("setRecommendationsDaily", recommendations);
     },
+    async UpdateSideDishSelection(
+      { state, dispatch },
+      [date, selected_main_dish, selected_side_dishes]
+    ) {
+      state.recommendations[date] = selected_side_dishes;
+      // console.log(state.recommendations[date]);
+      // extract IDs from side dishes
+      let sel_side_dishes_ids = [];
+      for (var side_dish_idx in selected_side_dishes) {
+        if (selected_side_dishes[side_dish_idx].side_selected) {
+          sel_side_dishes_ids.push(selected_side_dishes[side_dish_idx].dish.id);
+        }
+      }
+      let main_side_dish_selection = {
+        dishes: [
+          {
+            main: selected_main_dish.id,
+            side_dishes: sel_side_dishes_ids,
+          },
+        ],
+      };
+      let response = await axios.post(
+        "mensa/save_user_side_dishes",
+        main_side_dish_selection
+      );
+      console.log("response");
+      console.log(response);
+      sel_side_dishes_ids = [];
+      // update the recommendations
+      dispatch("GetRecommendations");
+    },
   },
   plugins: [createPersistedState()],
 });

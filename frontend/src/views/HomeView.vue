@@ -6,22 +6,21 @@ div
       v-col
         v-skeleton-loader(v-show="!loaded" :loading="!loaded" type="card")
         template(v-if="loaded")
-
           v-tabs(fixed-tabs v-model="tab")
             v-btn.elevation-0(tile style="border-bottom-left-radius: 25px; border-top-left-radius: 25px;" @click="prev();")
               v-icon mdi-chevron-left
-            v-btn.elevation-0(tile style ="text-transform: unset !important" width="150px") {{ this.convertDate(Object.keys(items)[currentTab])  }}
+            v-btn.elevation-0(tile style ="text-transform: unset !important" width="150px") {{ this.convertDate(Object.keys(items)[currentTab]) }}
             v-btn.elevation-0(tile style="border-bottom-right-radius: 25px; border-top-right-radius: 25px;" @click="next();")
               v-icon mdi-chevron-right
 
             v-tabs-slider(color="primary")
 
           v-tabs-items.align-center.justify-center.d-flex.py-2(v-model="tab") 
+            h3(v-show="items[Object.keys(items)[currentTab]] == []") There are no recommended dishes today {{ items[Object.keys(items)[currentTab]] }}
             template(v-for="(array, key) in items")
               template(v-if="currentTab === Object.keys(items).indexOf(key)")
                 v-row.justify-center
                   v-card.ma-2(height="570px" width="350px" v-for="(item, index) in array" :key="index")
-
                     v-img(style="border-top-left-radius: 1%; border-top-right-radius: 1%" v-show="item[0].dish.url != null" :alt="item[0].dish.name" height='250'
                     :src='item[0].dish.url')
                     v-card.center-items.light-green.lighten-2(style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" v-show="item[0].dish.url == null" height='250' elevation="0")
@@ -90,7 +89,7 @@ div
                       v-list-item(v-else :key='`item-${i}`' :value='side_dish' active-class='primary--text text--accent-4')
                         template(v-slot:default='{ active }')
                           v-list-item-action
-                            v-checkbox(:input-value='active' color='primary accent-4')  
+                            v-checkbox(:input-value='active' color='primary accent-4')
                           v-list-item-content
                             v-list-item-title 
                               h4.my-1 {{ side_dish.dish.name }}
@@ -101,7 +100,7 @@ div
                               v-img(v-for="(category, index) in side_dish.dish.categories.length" :alt="side_dish.dish.categories[index].name" 
                                 :height="category_icon_height" :max-width="category_icon_height" contain :key="category"
                                 :src="require('@/assets/dish_icons/food_preferences/'+side_dish.dish.categories[index].name+'.png')")
-              v-btn(color="primary" @click="dish_overlay = false")
+              v-btn(color="primary" @click="updateSelectedSideDishes(); dish_overlay = false")
                 v-icon.mr-2 mdi-check
                 | Save
 </template>
@@ -179,6 +178,7 @@ export default {
       "GetOneRecommendation",
       "GetUserData",
       "GetUserRatings",
+      "UpdateSideDishSelection",
     ]),
     convertDate(date) {
       let dd = date.slice(8, 10);
@@ -205,6 +205,39 @@ export default {
     selectCard(item) {
       this.dish_overlay = true;
       this.selected_dish = item;
+    },
+    async updateSelectedSideDishes() {
+      // loop through the side dishes of the selected dish
+      for (let idx = 0; idx < this.selected_dish.side_dishes.length; idx++) {
+        let cur_side_dish_id = this.selected_dish.side_dishes[idx].dish.id;
+        const selected_length = this.selected_side_dishes.length;
+        for (let idx_select = 0; idx_select < selected_length; idx_select++) {
+          let cur_selected_side_dish_id =
+            this.selected_side_dishes[idx_select].dish.id;
+          // if item matches any item from the temporary variable selected_side_dishes, it is updated as selected
+          if (cur_side_dish_id == cur_selected_side_dish_id) {
+            this.selected_dish.side_dishes[idx].side_selected = true;
+            break;
+          }
+          // else it is marked as not selected (=deselected)
+          else if ((idx_select += 1 == selected_length))
+            this.selected_dish.side_dishes[idx].side_selected = false;
+        }
+      }
+      this.updateSideDishSelection();
+    },
+    async updateSideDishSelection() {
+      try {
+        let date = Object.keys(this.items)[this.currentTab];
+        await this.UpdateSideDishSelection([
+          date,
+          this.selected_dish.dish,
+          this.selected_dish.side_dishes,
+        ]);
+      } catch (error) {
+        console.log(error);
+      }
+      this.selected_side_dishes = [];
     },
     async getUserRatings() {
       try {
