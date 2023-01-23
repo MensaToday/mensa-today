@@ -207,12 +207,7 @@ export default new Vuex.Store({
           },
         ],
       };
-      let response = await axios.post(
-        "mensa/save_user_side_dishes",
-        main_side_dish_selection
-      );
-      console.log("response");
-      console.log(response);
+      await axios.post("mensa/save_user_side_dishes", main_side_dish_selection);
       sel_side_dishes_ids = [];
       // update the recommendations
       dispatch("GetRecommendations");
