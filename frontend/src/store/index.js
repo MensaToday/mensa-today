@@ -71,6 +71,11 @@ export default new Vuex.Store({
     setRecommendationsDaily(state, recommendations) {
       state.dailyRecommendations = recommendations;
     },
+    UpdateRecommendations(state, [date, selected_side_dishes]) {
+      console.log(state.recommendations[date][0]);
+      state.recommendations[date][0] = selected_side_dishes;
+      console.log(state.recommendations[date][0]);
+    },
     setUserRatings(state, user_ratings) {
       state.user.user_ratings = user_ratings;
     },
@@ -187,10 +192,10 @@ export default new Vuex.Store({
       commit("setRecommendationsDaily", recommendations);
     },
     async UpdateSideDishSelection(
-      { state, dispatch },
+      { commit, dispatch },
       [date, selected_main_dish, selected_side_dishes]
     ) {
-      state.recommendations[date] = selected_side_dishes;
+      commit("UpdateRecommendations", [date, selected_side_dishes]);
       // console.log(state.recommendations[date]);
       // extract IDs from side dishes
       let sel_side_dishes_ids = [];

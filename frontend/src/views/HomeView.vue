@@ -7,10 +7,13 @@ div
         v-skeleton-loader(v-show="!loaded" :loading="!loaded" type="card")
         template(v-if="loaded")
           v-tabs(fixed-tabs v-model="tab")
-            v-btn.elevation-0(tile style="border-bottom-left-radius: 25px; border-top-left-radius: 25px;" @click="prev();")
+            v-btn.elevation-0(tile @click="prev();"
+              style="border-bottom-left-radius: 25px; border-top-left-radius: 25px;")
               v-icon mdi-chevron-left
-            v-btn.elevation-0(tile style ="text-transform: unset !important" width="150px") {{ this.convertDate(Object.keys(items)[currentTab]) }}
-            v-btn.elevation-0(tile style="border-bottom-right-radius: 25px; border-top-right-radius: 25px;" @click="next();")
+            v-btn.elevation-0(tile style ="text-transform: unset !important" width="150px") 
+              | {{ this.convertDate(Object.keys(items)[currentTab]) }}
+            v-btn.elevation-0(tile @click="next();"
+              style="border-bottom-right-radius: 25px; border-top-right-radius: 25px;")
               v-icon mdi-chevron-right
 
             v-tabs-slider(color="primary")
@@ -21,13 +24,18 @@ div
               template(v-if="currentTab === Object.keys(items).indexOf(key)")
                 v-row.justify-center
                   v-card.ma-2(height="570px" width="350px" v-for="(item, index) in array" :key="index")
-                    v-img(style="border-top-left-radius: 1%; border-top-right-radius: 1%" v-show="item[0].dish.url != null" :alt="item[0].dish.name" height='250'
-                    :src='item[0].dish.url')
-                    v-card.center-items.light-green.lighten-2(style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" v-show="item[0].dish.url == null" height='250' elevation="0")
+                    v-img(style="border-top-left-radius: 1%; border-top-right-radius: 1%" 
+                    v-show="item[0].dish.url != null" :alt="item[0].dish.name" 
+                    height='250' :src='item[0].dish.url')
+                    v-card.center-items.light-green.lighten-2(
+                      style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" 
+                      v-show="item[0].dish.url == null" height='250' elevation="0")
                       h1 {{ item[0].dish.name[0] }}
                     v-progress-linear(:height="6" :background-opacity=".5" :value="item[1]*100" )
 
-                    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item[0].dish.name }}
+                    v-card-title(height="90"
+                      style="line-height:1.2; font-size: 17px; word-break: normal;overflow: hidden; white-space: pre-line;") 
+                      | {{ item[0].dish.name }}
 
                     v-divider
 
@@ -41,7 +49,8 @@ div
                             v-btn(fab small elevation="2" @click="selectCard(item[0]); dish_overlay = true")
                               v-icon(color="primary") mdi-information-outline
                           div.d-flex
-                            v-img(v-for="(category, index) in item[0].dish.categories.length" :alt="item[0].dish.categories[index].name" 
+                            v-img(v-for="(category, index) in item[0].dish.categories.length" 
+                              :alt="item[0].dish.categories[index].name" 
                               height="50" max-width="50" contain :key="category"
                               :src="require('@/assets/dish_icons/food_preferences/'+item[0].dish.categories[index].name+'.png')")
                       v-row
@@ -50,9 +59,9 @@ div
                             v-icon.mr-2 mdi-food-apple 
                             | {{ item[0].dish.main ? 'Main' : 'Side' }}
                         v-col 
-                          v-btn(rounded :href="getGoogleMapsUrl(item[0].mensa.name)" target="_blank" rel="noopener noreferrer")
-                            v-icon mdi-navigation-variant-outline
-                            | {{ (item[0].mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
+                          //- v-btn(rounded :href="getGoogleMapsUrl(item[0].mensa.name)" target="_blank" rel="noopener noreferrer")
+                          //-   v-icon mdi-navigation-variant-outline
+                          //-   | {{ (item[0].mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between
                           div 
@@ -72,11 +81,13 @@ div
                             v-icon.mr-2 mdi-thumbs-up-down-outline
                             span(v-if="item[0].ext_ratings.rating_count != 0") {{ item[0].ext_ratings.rating_avg }}
                             span(v-else) No ratings
-                          v-rating(v-model="ratingItems[Object.keys(items).indexOf(key)][index].rating" half-increments hover length="5" background-color="gray" size="24" 
+                          v-rating(v-model="ratingItems[Object.keys(items).indexOf(key)][index].rating" 
+                            half-increments hover length="5" background-color="gray" size="24" 
                             @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item[0].dish.id, $event);")
 
           //- Overlay for Selected Dish
-          v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" color="primary" :width="$vuetify.breakpoint.mdAndUp ? '40vw' : '90vw'")
+          v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" 
+            color="primary" :width="$vuetify.breakpoint.mdAndUp ? '40vw' : '90vw'")
             //- only try to render if a dish is selected
             v-card.center-items.pb-3(v-if="dish_overlay")
               h3.my-3(v-if="selected_dish.side_dishes.length == 0") No suggested side dishes
