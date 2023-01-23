@@ -72,9 +72,9 @@ export default new Vuex.Store({
       state.dailyRecommendations = recommendations;
     },
     UpdateRecommendations(state, [date, selected_side_dishes]) {
-      console.log(state.recommendations[date][0]);
-      state.recommendations[date][0] = selected_side_dishes;
-      console.log(state.recommendations[date][0]);
+      console.log(state.recommendations[date]);
+      state.recommendations[date] = selected_side_dishes;
+      console.log(state.recommendations[date]);
     },
     setUserRatings(state, user_ratings) {
       state.user.user_ratings = user_ratings;
