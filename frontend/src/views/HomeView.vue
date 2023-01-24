@@ -23,7 +23,7 @@ div
             template(v-for="(array, key) in items")
               template(v-if="currentTab === Object.keys(items).indexOf(key)")
                 v-row.justify-center
-                  v-card.ma-2(height="570px" width="350px" v-for="(item, index) in array" :key="index")
+                  v-card.ma-2(width="350px" v-for="(item, index) in array" :key="index")
                     v-img(style="border-top-left-radius: 1%; border-top-right-radius: 1%" 
                     v-show="item[0].dish.url != null" :alt="item[0].dish.name" 
                     height='250' :src='item[0].dish.url')
@@ -41,20 +41,17 @@ div
 
                     v-card-text.mt-2
                       v-row
-                        v-col.align-center.justify-center.d-flex.justify-space-between.py-0
+                        v-col.align-center.d-flex.justify-space-between.py-0
                           h3.ma-0(
                             :class="coveredByBalance(parseFloat(item.priceStudent))")
                             | €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
-                          div
-                            v-btn(fab small elevation="2" @click="selectCard(item[0]); dish_overlay = true")
-                              v-icon(color="primary") mdi-information-outline
                           div.d-flex
                             v-img(v-for="(category, index) in item[0].dish.categories.length" 
                               :alt="item[0].dish.categories[index].name" 
                               height="50" max-width="50" contain :key="category"
                               :src="require('@/assets/dish_icons/food_preferences/'+item[0].dish.categories[index].name+'.png')")
                       v-row
-                        v-col.align-center.justify-center.d-flex.justify-space-between
+                        v-col.align-center.d-flex.justify-space-between
                           span
                             v-icon.mr-2 mdi-food-apple 
                             | {{ item[0].dish.main ? 'Main' : 'Side' }}
@@ -63,7 +60,7 @@ div
                             v-icon mdi-navigation-variant-outline
                             | {{ (item[0].mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
                       v-row
-                        v-col.align-center.justify-center.d-flex.justify-space-between
+                        v-col.align-center.d-flex.justify-space-between
                           div 
                             v-icon.mr-2 mdi-shield-plus-outline
                             span
@@ -76,7 +73,7 @@ div
                             v-icon.mr-2 mdi-calendar
                             span {{ new Date(item[0].date).toLocaleDateString('de-DE') }}
                       v-row
-                        v-col.align-center.justify-center.d-flex.justify-space-between
+                        v-col.align-center.d-flex.justify-space-between
                           div
                             v-icon.mr-2 mdi-thumbs-up-down-outline
                             span(v-if="item[0].ext_ratings.rating_count != 0") {{ item[0].ext_ratings.rating_avg }}
@@ -84,6 +81,27 @@ div
                           v-rating(v-model="ratingItems[Object.keys(items).indexOf(key)][index].rating" 
                             half-increments hover length="5" background-color="gray" size="24" 
                             @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item[0].dish.id, $event);")
+
+                      v-divider
+                      v-row
+                        v-col.d-flex.justify-space-between
+                          h4.my-3 Selected Side Dishes
+                          v-btn.mt-1(fab small elevation="2" outlined color="primary" :height="side_dish_icon_height" :width="side_dish_icon_height"
+                            @click="selectCard(item[0]); dish_overlay = true")
+                            v-icon(color="primary") mdi-plus
+                      v-row
+                        v-col
+                          template(v-for='(side_dish, i) in item[0].side_dishes')
+                            v-divider(v-if='!side_dish' :key='`divider-${i}`')
+                            div.d-flex.justify-space-between(v-else-if="side_dish.side_selected")
+                              div.d-flex.flex-row
+                                v-img.mr-1(v-for="(category, index) in side_dish.dish.categories.length" :alt="side_dish.dish.categories[index].name" 
+                                  :height="category_icon_height" :max-width="category_icon_height" contain :key="category"
+                                  :src="require('@/assets/dish_icons/food_preferences/'+side_dish.dish.categories[index].name+'.png')")
+                                p.mb-0(:key='`item-${i}`') {{ side_dish.dish.name }}
+                              p.ma-0.subheading(
+                                :class="coveredByBalance(parseFloat(side_dish.priceStudent)+parseFloat(item[0].priceStudent))")
+                                | €{{ side_dish.priceStudent.replace('.',',') }}/{{ side_dish.priceEmployee.replace('.',',') }}
 
           //- Overlay for Selected Dish
           v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" 
@@ -169,6 +187,7 @@ export default {
       selected_dish: null,
       selected_side_dishes: [],
       category_icon_height: "20px",
+      side_dish_icon_height: "36px",
     };
   },
   computed: {
