@@ -260,7 +260,7 @@ export default {
         let date = Object.keys(this.items)[this.currentTab];
         await this.SaveUserSideDishes([
           date,
-          this.selected_dish.dish,
+          this.selected_dish.id,
           this.selected_dish.side_dishes,
         ]);
       } catch (error) {
