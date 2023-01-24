@@ -189,7 +189,7 @@ export default {
       "GetOneRecommendation",
       "GetUserData",
       "GetUserRatings",
-      "UpdateSideDishSelection",
+      "SaveUserSideDishes",
     ]),
     convertDate(date) {
       let dd = date.slice(8, 10);
@@ -219,6 +219,8 @@ export default {
     },
     async updateSelectedSideDishes() {
       // loop through the side dishes of the selected dish
+      // this.selected_dish.side_dishes = side dishes of selected card presented in v-dialog
+      // this.selected_side_dishes = array of side dishes that are selected; subset of this.selected_dish.side_dishes
       for (let idx = 0; idx < this.selected_dish.side_dishes.length; idx++) {
         let cur_side_dish_id = this.selected_dish.side_dishes[idx].dish.id;
         const selected_length = this.selected_side_dishes.length;
@@ -235,12 +237,11 @@ export default {
             this.selected_dish.side_dishes[idx].side_selected = false;
         }
       }
-      this.updateSideDishSelection();
-    },
-    async updateSideDishSelection() {
+      console.log(this.selected_side_dishes);
+      console.log("end local");
       try {
         let date = Object.keys(this.items)[this.currentTab];
-        await this.UpdateSideDishSelection([
+        await this.SaveUserSideDishes([
           date,
           this.selected_dish.dish,
           this.selected_dish.side_dishes,
