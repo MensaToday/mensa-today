@@ -56,7 +56,7 @@ div
                             v-icon.mr-2 mdi-food-apple 
                             | {{ item[0].dish.main ? 'Main' : 'Side' }}
                         v-col 
-                          v-btn(rounded :href="getGoogleMapsUrl(item[0].mensa.name)" target="_blank" rel="noopener noreferrer")
+                          v-btn.text-none(rounded :href="getGoogleMapsUrl(item[0].mensa.name)" target="_blank" rel="noopener noreferrer")
                             v-icon mdi-navigation-variant-outline
                             | {{ (item[0].mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
                       v-row
@@ -64,7 +64,6 @@ div
                           div 
                             v-icon.mr-2 mdi-shield-plus-outline
                             span
-                              //- (:class="{ 'primary--text': sortBy === key }")
                               span(v-if="item[0].dish.additives.length == 0") None
                               span(v-for="additive in item[0].dish.additives" :key="additive.name") 
                                 span {{ additive.name }}
@@ -84,13 +83,13 @@ div
 
                       v-divider
                       v-row
-                        v-col.d-flex.justify-space-between
+                        v-col.d-flex.justify-space-between.pb-0
                           h4.my-3 Selected Side Dishes
                           v-btn.mt-1(fab small elevation="2" outlined color="primary" :height="side_dish_icon_height" :width="side_dish_icon_height"
                             @click="selectCard(item[0]); dish_overlay = true")
                             v-icon(color="primary") mdi-plus
                       v-row
-                        v-col
+                        v-col.pt-0
                           template(v-for='(side_dish, i) in item[0].side_dishes')
                             v-divider(v-if='!side_dish' :key='`divider-${i}`')
                             div.d-flex.justify-space-between(v-else-if="side_dish.side_selected")
@@ -105,9 +104,10 @@ div
 
           //- Overlay for Selected Dish
           v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" 
-            color="primary" :width="$vuetify.breakpoint.mdAndUp ? '40vw' : '90vw'")
+            color="primary" :width="$vuetify.breakpoint.mdAndUp ? '40vw' : '90vw'" 
+            @click:outside="resetSelection();")
             //- only try to render if a dish is selected
-            v-card.center-items.pb-3(v-if="dish_overlay")
+            v-card(v-if="dish_overlay" width="100%")
               h3.my-3(v-if="selected_dish.side_dishes.length == 0") No suggested side dishes
               template.center-items(v-else)
                 v-list(shaped)
@@ -129,9 +129,15 @@ div
                               v-img(v-for="(category, index) in side_dish.dish.categories.length" :alt="side_dish.dish.categories[index].name" 
                                 :height="category_icon_height" :max-width="category_icon_height" contain :key="category"
                                 :src="require('@/assets/dish_icons/food_preferences/'+side_dish.dish.categories[index].name+'.png')")
-              v-btn(color="primary" @click="updateSelectedSideDishes(); dish_overlay = false")
-                v-icon.mr-2 mdi-check
-                | Save
+              v-card-actions
+                v-btn(@click="resetSelection(); dish_overlay = false")
+                  v-icon.mr-2 mdi-close
+                  | Cancel
+                v-spacer
+                v-btn(color="primary" @click="updateSelectedSideDishes(); dish_overlay = false"
+                  v-show="selected_dish.side_dishes.length != 0")
+                  v-icon.mr-2 mdi-check
+                  | Save
 </template>
 
 <script>
@@ -236,6 +242,11 @@ export default {
       this.dish_overlay = true;
       this.selected_dish = item;
     },
+    resetSelection() {
+      this.selected_dish = null;
+      this.dish_overlay = false;
+      this.selected_side_dishes = [];
+    },
     async updateSelectedSideDishes() {
       // loop through the side dishes of the selected dish
       // this.selected_dish.side_dishes = side dishes of selected card presented in v-dialog
@@ -266,7 +277,7 @@ export default {
       } catch (error) {
         console.log(error);
       }
-      this.selected_side_dishes = [];
+      this.resetSelection();
     },
     async getUserRatings() {
       try {
