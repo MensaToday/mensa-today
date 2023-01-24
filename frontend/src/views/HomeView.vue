@@ -59,9 +59,9 @@ div
                             v-icon.mr-2 mdi-food-apple 
                             | {{ item[0].dish.main ? 'Main' : 'Side' }}
                         v-col 
-                          //- v-btn(rounded :href="getGoogleMapsUrl(item[0].mensa.name)" target="_blank" rel="noopener noreferrer")
-                          //-   v-icon mdi-navigation-variant-outline
-                          //-   | {{ (item[0].mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
+                          v-btn(rounded :href="getGoogleMapsUrl(item[0].mensa.name)" target="_blank" rel="noopener noreferrer")
+                            v-icon mdi-navigation-variant-outline
+                            | {{ (item[0].mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between
                           div 
@@ -237,8 +237,6 @@ export default {
             this.selected_dish.side_dishes[idx].side_selected = false;
         }
       }
-      console.log(this.selected_side_dishes);
-      console.log("end local");
       try {
         let date = Object.keys(this.items)[this.currentTab];
         await this.SaveUserSideDishes([
