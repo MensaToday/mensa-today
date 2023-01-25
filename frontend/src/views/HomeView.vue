@@ -26,7 +26,10 @@ div
                     :src='item[0].dish.url')
                     v-card.center-items.light-green.lighten-2(style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" v-show="item[0].dish.url == null" height='250' elevation="0")
                       h1 {{ item[0].dish.name[0] }}
-                    v-progress-linear(:height="6" :background-opacity=".5" :value="item[1]*100" )
+                    v-tooltip(bottom)
+                      template(v-slot:activator="{ on, attrs }")
+                        v-progress-linear(v-bind="attrs" v-on="on" :height="6" :background-opacity=".5" :value="item[1]*100" )
+                      span Recommendation: {{(item[1]*100).toFixed(0) }}%
 
                     v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item[0].dish.name }}
 
@@ -74,7 +77,7 @@ div
                             span(v-else) No ratings
                           v-rating(v-if = "item[0].user_ratings.length > 0" :value = "item[0].user_ratings[0].rating*5" hover length="5" background-color="gray" size="24" 
                             @input="setRating(item[0].dish.id, $event);")
-                          v-rating(v-else hover length="5" background-color="gray" size="24" 
+                          v-rating(v-else half-increments hover length="5" background-color="gray" size="24" 
                             @input="setRating(item[0].dish.id, $event);")
 
           //- Overlay for Selected Dish
