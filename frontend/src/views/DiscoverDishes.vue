@@ -102,8 +102,11 @@ div
                             v-icon.mr-2 mdi-thumbs-up-down-outline
                             span(v-if="item.ext_ratings.rating_count != 0") {{ item.ext_ratings.rating_avg }}
                             span(v-else) No ratings
-                          v-rating(hover length="5" background-color="gray" readonly size="24" half-increments)
                           //- v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0"
+                          v-rating(v-if = "item.user_ratings.length > 0" :value = "item.user_ratings[0].rating*5" hover length="5" background-color="gray" size="24" 
+                            @input="setRating(item.dish.id, $event);")
+                          v-rating(v-else hover length="5" background-color="gray" size="24" 
+                            @input="setRating(item.dish.id, $event);")
 
             template(v-slot:footer)
               v-row.mt-2(align='center' justify='center')
@@ -133,6 +136,7 @@ div
 
 <script>
 import { mapActions } from "vuex";
+import axios from "axios";
 export default {
   name: "DiscoverDishes",
   data() {
@@ -305,6 +309,13 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    async setRating(dish_id, rating) {
+      let response = await axios.post("mensa/user_ratings", {
+        dish_id: dish_id,
+        rating: rating,
+      });
+      console.log(response);
     },
     async getRecommendations() {
       try {
