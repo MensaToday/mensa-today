@@ -72,9 +72,9 @@ div
                             v-icon.mr-2 mdi-thumbs-up-down-outline
                             span(v-if="item[0].ext_ratings.rating_count != 0") {{ item[0].ext_ratings.rating_avg }}
                             span(v-else) No ratings
-                          v-rating(v-if = "item[0].user_ratings.length > 0" :value = "item[0].user_ratings[0].rating*5" half-increments hover length="5" background-color="gray" size="24" 
+                          v-rating(v-if = "item[0].user_ratings.length > 0" :value = "item[0].user_ratings[0].rating*5" hover length="5" background-color="gray" size="24" 
                             @input="setRating(item[0].dish.id, $event);")
-                          v-rating(v-else half-increments hover length="5" background-color="gray" size="24" 
+                          v-rating(v-else hover length="5" background-color="gray" size="24" 
                             @input="setRating(item[0].dish.id, $event);")
 
           //- Overlay for Selected Dish
@@ -190,13 +190,6 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    },
-    onCardClick(event) {
-      event.preventDefault();
-    },
-    updateRating(key, index, value) {
-      this.ratingItems[key][index].rating = value;
-      // console.log(this.ratingItems);
     },
     getGoogleMapsUrl(mensaName) {
       const url = new URL("https://www.google.com/maps/dir/?api=1");
