@@ -26,7 +26,10 @@ div
                     :src='item[0].dish.url')
                     v-card.center-items.light-green.lighten-2(style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" v-show="item[0].dish.url == null" height='250' elevation="0")
                       h1 {{ item[0].dish.name[0] }}
-                    v-progress-linear(:height="6" :background-opacity=".5" :value="item[1]*100" )
+                    v-tooltip(bottom)
+                      template(v-slot:activator="{ on, attrs }")
+                        v-progress-linear(v-bind="attrs" v-on="on" :height="6" :background-opacity=".5" :value="item[1]*100" )
+                      span Recommendation: {{(item[1]*100).toFixed(0) }}%
 
                     v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;") {{ item[0].dish.name }}
 
@@ -72,8 +75,10 @@ div
                             v-icon.mr-2 mdi-thumbs-up-down-outline
                             span(v-if="item[0].ext_ratings.rating_count != 0") {{ item[0].ext_ratings.rating_avg }}
                             span(v-else) No ratings
-                          v-rating(v-model="ratingItems[Object.keys(items).indexOf(key)][index].rating" half-increments hover length="5" background-color="gray" size="24" 
-                            @input="updateRating(Object.keys(items).indexOf(key), index, $event); setRating(item[0].dish.id, $event);")
+                          v-rating(v-if = "item[0].user_ratings.length > 0" :value = "item[0].user_ratings[0].rating*5" hover length="5" background-color="gray" size="24" 
+                            @input="setRating(item[0].dish.id, $event);")
+                          v-rating(v-else hover length="5" background-color="gray" size="24" 
+                            @input="setRating(item[0].dish.id, $event);")
 
           //- Overlay for Selected Dish
           v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" color="primary" width="95%")
@@ -117,45 +122,8 @@ export default {
   components: { DishCard },
   data() {
     return {
-      hover: false,
       currentTab: 0,
       tab: null,
-      ratingItems: [
-        [
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-        ],
-        [
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-        ],
-        [
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-        ],
-        [
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-        ],
-        [
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-          { id: null, rating: 0 },
-        ],
-      ],
-      model: null,
-      recommendationItemsTest: null,
-      recommendationItems: this.$store.state.recommendations,
-      recommendationItemsDaily: this.$store.state.dailyRecommendations,
       days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       dish_overlay: false,
       selected_dish: null,
@@ -182,7 +150,6 @@ export default {
       "GetRecommendations",
       "GetOneRecommendation",
       "GetUserData",
-      "GetUserRatings",
     ]),
     convertDate(date) {
       let dd = date.slice(8, 10);
@@ -206,13 +173,6 @@ export default {
       this.dish_overlay = true;
       this.selected_dish = item;
     },
-    async getUserRatings() {
-      try {
-        await this.GetUserRatings();
-      } catch (error) {
-        console.log(error);
-      }
-    },
     async getUserData() {
       try {
         await this.GetUserData();
@@ -234,30 +194,20 @@ export default {
         console.log(error);
       }
     },
-    onCardClick(event) {
-      event.preventDefault();
-    },
-    updateRating(key, index, value) {
-      this.ratingItems[key][index].rating = value;
-      // console.log(this.ratingItems);
-    },
     getGoogleMapsUrl(mensaName) {
       const url = new URL("https://www.google.com/maps/dir/?api=1");
       url.searchParams.set("destination", mensaName);
       return url.toString();
     },
     async setRating(dish_id, rating) {
-      let response = await axios.post("mensa/user_ratings", {
+      await axios.post("mensa/user_ratings", {
         dish_id: dish_id,
         rating: rating,
       });
-      console.log(response);
     },
   },
   mounted() {
     this.getRecommendations();
-    this.getUserRatings();
-    // this.initializeRatings();
     this.getUserData();
   },
 };
