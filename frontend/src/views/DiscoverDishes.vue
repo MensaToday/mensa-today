@@ -311,11 +311,10 @@ export default {
       }
     },
     async setRating(dish_id, rating) {
-      let response = await axios.post("mensa/user_ratings", {
+      await axios.post("mensa/user_ratings", {
         dish_id: dish_id,
         rating: rating,
       });
-      console.log(response);
     },
     async getRecommendations() {
       try {
