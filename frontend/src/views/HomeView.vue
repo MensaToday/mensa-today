@@ -129,7 +129,7 @@ div
                               v-img(v-for="(category, index) in side_dish.dish.categories.length" :alt="side_dish.dish.categories[index].name" 
                                 :height="category_icon_height" :max-width="category_icon_height" contain :key="category"
                                 :src="require('@/assets/dish_icons/food_preferences/'+side_dish.dish.categories[index].name+'.png')")
-                          v-list-item-icon(:right="true")
+                          v-list-item-icon(v-if='selected_dish.popular_side.id==side_dish.id' :right="true")
                             v-icon(color="#FFD700") mdi-star
               v-card-actions
                 v-btn(@click="resetSelection(); dish_overlay = false")
