@@ -119,6 +119,8 @@ div
                         template(v-slot:default='{ active }')
                           v-list-item-action
                             v-checkbox(:input-value='active' color='primary accent-4')
+                          v-list-item-icon(v-if='selected_dish.popular_side.id==side_dish.id' :right="true")
+                            v-icon(v-text="'mdi-star'" color="#FFD700")
                           v-list-item-content
                             v-list-item-title 
                               h4.my-1 {{ side_dish.dish.name }}
