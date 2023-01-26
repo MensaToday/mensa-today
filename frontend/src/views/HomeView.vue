@@ -241,6 +241,14 @@ export default {
     selectCard(item) {
       this.dish_overlay = true;
       this.selected_dish = item;
+      let selected_side_dishes_temp = [];
+      item.side_dishes.forEach((side_dish) => {
+        if (side_dish.side_selected == true) {
+          selected_side_dishes_temp.push(side_dish);
+        }
+      });
+
+      this.selected_side_dishes = selected_side_dishes_temp;
     },
     resetSelection() {
       this.selected_dish = null;
@@ -251,22 +259,29 @@ export default {
       // loop through the side dishes of the selected dish
       // this.selected_dish.side_dishes = side dishes of selected card presented in v-dialog
       // this.selected_side_dishes = array of side dishes that are selected; subset of this.selected_dish.side_dishes
-      for (let idx = 0; idx < this.selected_dish.side_dishes.length; idx++) {
-        let cur_side_dish_id = this.selected_dish.side_dishes[idx].dish.id;
-        const selected_length = this.selected_side_dishes.length;
-        for (let idx_select = 0; idx_select < selected_length; idx_select++) {
-          let cur_selected_side_dish_id =
-            this.selected_side_dishes[idx_select].dish.id;
-          // if item matches any item from the temporary variable selected_side_dishes, it is updated as selected
-          if (cur_side_dish_id == cur_selected_side_dish_id) {
-            this.selected_dish.side_dishes[idx].side_selected = true;
-            break;
+      if (this.selected_side_dishes.length != 0) {
+        for (let idx = 0; idx < this.selected_dish.side_dishes.length; idx++) {
+          let cur_side_dish_id = this.selected_dish.side_dishes[idx].dish.id;
+          const selected_length = this.selected_side_dishes.length;
+          for (let idx_select = 0; idx_select < selected_length; idx_select++) {
+            let cur_selected_side_dish_id =
+              this.selected_side_dishes[idx_select].dish.id;
+            // if item matches any item from the temporary variable selected_side_dishes, it is updated as selected
+            if (cur_side_dish_id == cur_selected_side_dish_id) {
+              this.selected_dish.side_dishes[idx].side_selected = true;
+              break;
+            }
+            // else it is marked as not selected (=deselected)
+            else if ((idx_select += 1 == selected_length))
+              this.selected_dish.side_dishes[idx].side_selected = false;
           }
-          // else it is marked as not selected (=deselected)
-          else if ((idx_select += 1 == selected_length))
-            this.selected_dish.side_dishes[idx].side_selected = false;
+        }
+      } else {
+        for (let idx = 0; idx < this.selected_dish.side_dishes.length; idx++) {
+          this.selected_dish.side_dishes[idx].side_selected = false;
         }
       }
+
       try {
         let date = Object.keys(this.items)[this.currentTab];
         await this.SaveUserSideDishes([
