@@ -89,7 +89,7 @@ class DishPlanSerializer(serializers.ModelSerializer):
         method_name="get_popular_side_dish")
 
     class Meta:
-        fields = ["dish", "ext_ratings", "user_ratings", "mensa", "date",
+        fields = ["id", "dish", "ext_ratings", "user_ratings", "mensa", "date",
                   "priceStudent", "priceEmployee", "side_dishes",
                   "side_selected", "popular_side"]
         model = mensa_model.DishPlan

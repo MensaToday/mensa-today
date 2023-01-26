@@ -71,6 +71,30 @@ export default new Vuex.Store({
     setRecommendationsDaily(state, recommendations) {
       state.dailyRecommendations = recommendations;
     },
+    UpdateRecommendations(
+      state,
+      [date, selected_main_dish_id, sel_side_dishes_ids]
+    ) {
+      // find the main dish to be updated
+      let main_dishes = state.recommendations[date];
+      // console.log("#main dishes: ", main_dishes.length);
+      for (let main_dish_idx in main_dishes) {
+        let cur_main_dish = main_dishes[main_dish_idx][0];
+        let cur_main_dish_id = cur_main_dish.id;
+        if (selected_main_dish_id != cur_main_dish_id) continue;
+        // update the selected value of the side dishes
+        let cur_side_dishes = main_dishes[main_dish_idx][0].side_dishes;
+        for (let side_dish_idx in cur_side_dishes) {
+          let cur_side_dish = cur_side_dishes[side_dish_idx];
+          let cur_side_dish_id = cur_side_dish.id;
+          if (sel_side_dishes_ids.includes(cur_side_dish_id)) {
+            cur_side_dish.side_selected = true;
+          } else cur_side_dish.side_selected = false;
+        }
+        // once the main dish is matched, there is no need to check the other main dishes
+        break;
+      }
+    },
     setUserRatings(state, user_ratings) {
       state.user.user_ratings = user_ratings;
     },
@@ -185,6 +209,33 @@ export default new Vuex.Store({
 
       var recommendations = response.data;
       commit("setRecommendationsDaily", recommendations);
+    },
+    async SaveUserSideDishes(
+      { commit },
+      [date, selected_main_dish_id, selected_side_dishes]
+    ) {
+      // extract IDs from side dishes
+      let sel_side_dishes_ids = [];
+      for (var side_dish_idx in selected_side_dishes) {
+        if (selected_side_dishes[side_dish_idx].side_selected) {
+          sel_side_dishes_ids.push(selected_side_dishes[side_dish_idx].id);
+        }
+      }
+      let main_side_dish_selection = {
+        dishes: [
+          {
+            main: selected_main_dish_id,
+            side_dishes: sel_side_dishes_ids,
+          },
+        ],
+      };
+      commit("UpdateRecommendations", [
+        date,
+        selected_main_dish_id,
+        sel_side_dishes_ids,
+      ]);
+      await axios.post("mensa/save_user_side_dishes", main_side_dish_selection);
+      // sel_side_dishes_ids = [];
     },
   },
   plugins: [createPersistedState()],
