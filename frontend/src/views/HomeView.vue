@@ -119,8 +119,6 @@ div
                         template(v-slot:default='{ active }')
                           v-list-item-action
                             v-checkbox(:input-value='active' color='primary accent-4')
-                          v-list-item-icon(v-if='selected_dish.popular_side.id==side_dish.id' :right="true")
-                            v-icon(v-text="'mdi-star'" color="#FFD700")
                           v-list-item-content
                             v-list-item-title 
                               h4.my-1 {{ side_dish.dish.name }}
@@ -131,6 +129,8 @@ div
                               v-img(v-for="(category, index) in side_dish.dish.categories.length" :alt="side_dish.dish.categories[index].name" 
                                 :height="category_icon_height" :max-width="category_icon_height" contain :key="category"
                                 :src="require('@/assets/dish_icons/food_preferences/'+side_dish.dish.categories[index].name+'.png')")
+                          v-list-item-icon(:right="true")
+                            v-icon(color="#FFD700") mdi-star
               v-card-actions
                 v-btn(@click="resetSelection(); dish_overlay = false")
                   v-icon.mr-2 mdi-close
