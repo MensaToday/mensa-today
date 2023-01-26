@@ -111,8 +111,8 @@ div
             color="primary" :width="$vuetify.breakpoint.mdAndUp ? '40vw' : '90vw'" 
             @click:outside="resetSelection();")
             //- only try to render if a dish is selected
-            v-card(v-if="dish_overlay" width="100%")
-              h3.my-3(v-if="selected_dish.side_dishes.length == 0") No suggested side dishes
+            v-card.pt-4(v-if="dish_overlay" width="100%")
+              h3.my-4.text-center(v-if="selected_dish.side_dishes.length == 0") No suggested side dishes
               template.center-items(v-else)
                 v-list(shaped)
                   v-list-item-group(v-model='selected_side_dishes' multiple)
