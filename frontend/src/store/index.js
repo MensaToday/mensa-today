@@ -102,7 +102,7 @@ export default new Vuex.Store({
       // If the user has a refresh token the access token can be refreshed
       if (this.state.refresh_token != null) {
         axios
-          .post("user/refresh/", {
+          .post("api/v1/user/refresh/", {
             refresh: this.state.refresh_token,
           })
           .then((response) => {
