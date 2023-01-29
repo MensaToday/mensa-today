@@ -283,7 +283,7 @@ export default {
     },
     initialize_dishes() {
       axios
-        .post("mensa/get_quiz_dishes", {
+        .post("api/v1/mensa/get_quiz_dishes", {
           categories: this.selected_categories,
           allergies: this.selected_allergies,
         })

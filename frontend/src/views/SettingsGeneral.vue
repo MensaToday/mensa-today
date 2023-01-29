@@ -208,7 +208,7 @@ export default {
     async deleteAccount(message) {
       if (message == "DELETE") {
         try {
-          await axios.post("user/delete");
+          await axios.post("api/v1/user/delete");
         } catch (error) {
           console.error(error.message);
         }
@@ -220,12 +220,12 @@ export default {
       if (card_id != null) {
         try {
           //Update Mensa Card ID
-          await axios.post("user/update_card_id", {
+          await axios.post("api/v1/user/update_card_id", {
             card_id: card_id,
           });
 
           //Update Categories and Allergies
-          await axios.post("user/update_preferences", {
+          await axios.post("api/v1/user/update_preferences", {
             categories: categories,
             allergies: allergies,
           });

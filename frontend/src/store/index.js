@@ -133,7 +133,7 @@ export default new Vuex.Store({
       } else console.log("Access token not set.");
     },
     async Register({ commit, dispatch }, User) {
-      let response = await axios.post("user/register", User);
+      let response = await axios.post("api/v1/user/register", User);
       var access_token = response.data.access;
       var refresh_token = response.data.refresh;
       commit("setUser", User);
@@ -158,7 +158,7 @@ export default new Vuex.Store({
       // setTimeout(() => dispatch('AutoRefreshToken'), 2000)
     },
     async Logout({ state, commit }) {
-      await axios.post("user/logout", {
+      await axios.post("api/v1/user/logout", {
         refresh_token: state.refresh_token,
       });
       // catch aborted navigation
@@ -168,22 +168,22 @@ export default new Vuex.Store({
     async GetBalance({ state, commit }) {
       // if the mensa card is not specified, you cannot make the API CALL
       if (!state.user.mensa_card_id) return;
-      let response = await axios.get("user/get_balance");
+      let response = await axios.get("api/v1/user/get_balance");
       var card_balance = response.data.toFixed(2);
       commit("setBalance", card_balance);
     },
     async GetDishplan({ commit }) {
-      let response = await axios.get("mensa/get_dishplan");
+      let response = await axios.get("api/v1/mensa/get_dishplan");
       var dishplan = response.data;
       commit("setDishplan", dishplan);
     },
     async GetUserData({ commit }) {
-      let response = await axios.get("user/get_user_data");
+      let response = await axios.get("api/v1/user/get_user_data");
       var user_data = response.data;
       commit("setUserData", user_data);
     },
     async GetUserRatings({ commit }) {
-      let response = await axios.get("mensa/user_ratings");
+      let response = await axios.get("api/v1/mensa/user_ratings");
       var user_ratings = response.data;
       // console.log(user_ratings)
       commit("setUserRatings", user_ratings);
@@ -195,7 +195,7 @@ export default new Vuex.Store({
       var yyyy = today.getFullYear();
       today = yyyy + "." + mm + "." + dd;
 
-      let response = await axios.post("mensa/get_recommendations", {
+      let response = await axios.post("api/v1/mensa/get_recommendations", {
         day: today,
         entire_week: "True",
         recommendations_per_day: 4,
@@ -205,7 +205,7 @@ export default new Vuex.Store({
       commit("setRecommendations", recommendations);
     },
     async GetOneRecommendation({ commit }) {
-      let response = await axios.get("mensa/get_week_recommendation");
+      let response = await axios.get("api/v1/mensa/get_week_recommendation");
 
       var recommendations = response.data;
       commit("setRecommendationsDaily", recommendations);
@@ -234,7 +234,10 @@ export default new Vuex.Store({
         selected_main_dish_id,
         sel_side_dishes_ids,
       ]);
-      await axios.post("mensa/save_user_side_dishes", main_side_dish_selection);
+      await axios.post(
+        "api/v1/mensa/save_user_side_dishes",
+        main_side_dish_selection
+      );
       // sel_side_dishes_ids = [];
     },
   },

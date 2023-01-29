@@ -311,7 +311,7 @@ export default {
       }
     },
     async setRating(dish_id, rating) {
-      await axios.post("mensa/user_ratings", {
+      await axios.post("api/v1/mensa/user_ratings", {
         dish_id: dish_id,
         rating: rating,
       });

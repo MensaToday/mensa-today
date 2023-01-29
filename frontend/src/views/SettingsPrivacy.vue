@@ -80,7 +80,7 @@ export default {
     async deleteAccount(message) {
       if (message == "DELETE") {
         try {
-          await axios.post("user/delete");
+          await axios.post("api/v1/user/delete");
           this.logout();
           this.$router.push("/login");
         } catch (error) {
