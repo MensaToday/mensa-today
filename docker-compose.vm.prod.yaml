@@ -45,7 +45,7 @@ services:
   celery:
     build:
       context: backend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.vm.prod
     command: celery -A mensa_recommend worker -l INFO
     volumes:
       - ./backend/:/app
