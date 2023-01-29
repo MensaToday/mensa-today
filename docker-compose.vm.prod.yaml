@@ -4,7 +4,7 @@ services:
     image: backend_prod:latest
     build:
       context: backend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.vm.prod
     volumes:
       - ./backend/:/app
     ports:

@@ -1,0 +1,16 @@
+FROM python:3.9-slim-buster
+ENV PYTHONUNBUFFERED=1
+WORKDIR /app
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
+RUN apt-get update
+RUN apt-get install -y cron
+
+COPY . .
+
+# At 03:00 on Sunday.
+RUN crontab -l | { cat; echo "0 3 * * 0 bash /app/cron/collect_dishes.sh >> /cron/django_cron.log 2>&1"; } | crontab -
+
+RUN mkdir /cron
+RUN touch /cron/django_cron.log
