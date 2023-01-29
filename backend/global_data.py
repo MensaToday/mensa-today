@@ -1,9 +1,9 @@
 import os
 
 
-production = os.getenv("PRODUCTION", "False") == "True"
+proxy = os.getenv("PROXY", "False") == "True"
 
-if production:
+if proxy:
     proxies = {
         'http': 'http://wwwproxy.uni-muenster.de:3128',
         'https': 'http://wwwproxy.uni-muenster.de:3128',

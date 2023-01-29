@@ -64,9 +64,9 @@ services:
     image: frontend_prod:latest
     build:
       context: frontend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.vm.prod
     ports:
-      - '8080:8080'
+      - '80:80'
     container_name: vue-ui
     env_file:
       - prod-variables.env

@@ -140,7 +140,7 @@ export default new Vuex.Store({
       dispatch("initializeSession", [access_token, refresh_token]);
     },
     async Login({ dispatch }, User_credentials) {
-      let response = await axios.post("user/login", User_credentials);
+      let response = await axios.post("api/v1/user/login", User_credentials);
       var access_token = response.data.access;
       var refresh_token = response.data.refresh;
       dispatch("initializeSession", [access_token, refresh_token]);

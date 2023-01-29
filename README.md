@@ -51,6 +51,7 @@ SECRET_KEY = foo
 DEBUG = False
 JWT_EXPIRATION_DELTA = 10800
 PRODUCTION = True
+PROXY = True
 GOOGLE_API_KEY = YOUR_API_KEY             # currently not required
 GOOGLE_PROJECT_CX = YOUR_PROJECT_CX_KEY   # currently not required
 PRIVATE_KEY = YOUR_PRIVATE_KEY
