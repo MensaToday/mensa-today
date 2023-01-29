@@ -73,7 +73,14 @@ services:
     volumes:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules/
-      - ./frontend/nginx:/etc/nginx/conf.d
+      - ./frontend/data/nginx:/etc/nginx/conf.d
+      - ./frontend/data/certbot/conf:/etc/letsencrypt
+      - ./frontend/data/certbot/www:/var/www/certbot
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./frontend/data/certbot/conf:/etc/letsencrypt
+      - ./frontend/data/certbot/www:/var/www/certbot
 
 volumes:
   postgres_data:
