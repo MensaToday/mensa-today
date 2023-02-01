@@ -3,6 +3,7 @@ from django.db import models
 
 class Dish(models.Model):
     name = models.CharField(max_length=200, unique=True)
+    translation = models.CharField(max_length=200)
     main = models.BooleanField()
     url = models.CharField(max_length=300, null=True)
     categories = models.ManyToManyField('Category', through='DishCategory')

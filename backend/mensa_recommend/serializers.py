@@ -51,6 +51,8 @@ class DishAllergySerializer(serializers.ModelSerializer):
 
 
 class DishSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(
+        method_name="get_translated_name")
     categories = CategorySerializer(read_only=True, many=True)
     additives = AdditiveSerializer(read_only=True, many=True)
     allergies = AllergySerializer(read_only=True, many=True)
@@ -59,6 +61,9 @@ class DishSerializer(serializers.ModelSerializer):
         fields = ["id", "categories", "additives",
                   "allergies", "main", "name", "url"]
         model = mensa_model.Dish
+
+    def get_translated_name(self, obj: mensa_model.Dish) -> str:
+        return obj.translation
 
 
 class MensaSerializer(serializers.ModelSerializer):
@@ -139,8 +144,8 @@ class DishPlanSerializer(serializers.ModelSerializer):
 
     def get_side_dishes(self, obj):
         side_dishes = mensa_model.DishPlan.objects.filter(
-            mensa=obj.mensa, date=obj.date, dish__main=False)\
-            .prefetch_related("user")\
+            mensa=obj.mensa, date=obj.date, dish__main=False) \
+            .prefetch_related("user") \
             .all()
 
         return DishPlanSerializer(side_dishes, read_only=True, many=True,
