@@ -246,10 +246,12 @@ export default {
     items: {
       get() {
         if (!this.$store.state.dishplan) return null;
+
+        let searchLower = this.search.toLowerCase()
         return this.$store.state.dishplan.filter(
           (dish) =>
             // filter by search term
-            dish.dish.name.includes(this.search) &
+            dish.dish.name.toLowerCase().includes(searchLower) &
             this.checkCategory(dish) &
             (this.filters.affordable
               ? this.$store.state.card_balance >= parseFloat(dish.priceStudent)
