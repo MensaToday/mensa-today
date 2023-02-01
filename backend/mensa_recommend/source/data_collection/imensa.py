@@ -83,8 +83,14 @@ def post_processing():
 
             # Set new image url, translated text and save the updated dish
             dish.url = image_url
-            dish.name = translated_text
             dish.save()
+
+            dish.name = translated_text
+
+            try:
+                dish.save()
+            except Dish.IntegrityError:
+                pass
 
             # One have to wait 0.2 seconds to not get a 403
             time.sleep(0.2)
