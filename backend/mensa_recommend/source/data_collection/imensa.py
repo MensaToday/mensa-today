@@ -379,8 +379,10 @@ class IMensaCollector(NoAuthURLCollector):
         price_for_non_students = price_for_students * 1.5
         price = (price_for_students, price_for_non_students)
 
-        attributes = meal.find(class_="small aw-meal-attributes")\
-            .span.text.replace("\xa0", "").split(" ")
+        attributes = []
+        att_obj = meal.find(class_="small aw-meal-attributes")
+        if att_obj is not None:
+            attributes = att_obj.span.text.replace("\xa0", "").split(" ")
 
         att_type = 0
         categories = []
