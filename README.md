@@ -17,6 +17,7 @@ POSTGRES_PORT = 5433
 
 PGADMIN_DEFAULT_EMAIL = YOUR_PGADMIN_EMAIL
 PGADMIN_DEFAULT_PASSWORD = YOUR_PGADMIN_PASSWORD
+SCRIPT_NAME=pg # when used behind nginx
 ```
 
 After creating the file start docker:
