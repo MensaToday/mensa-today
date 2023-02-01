@@ -1,9 +1,11 @@
 ## Contribution
 
+### Notebooks
+Jupyter notebooks for testing purposes can be created at the notbooks folder. Please follow the naming convetion: `initials-dd-mm-yyy-name_of_the_notebook`
+
 ### Code Documentation Template
 
 Every class/method documentation should consist of the following elements:
-
 - A short description of the class/method
 - A description of input parameters:
   - Parametername : Type
