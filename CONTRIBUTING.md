@@ -1,9 +1,9 @@
-## Contribution
+# Contribution
 
-### Notebooks
+## Notebooks
 Jupyter notebooks for testing purposes can be created at the notbooks folder. Please follow the naming convetion: `initials-dd-mm-yyy-name_of_the_notebook`
 
-### Code Documentation Template
+## Code Documentation Template
 
 Every class/method documentation should consist of the following elements:
 - A short description of the class/method
@@ -66,4 +66,62 @@ class DishRecommender:
             and date) and the prediction value (0 <= p <= 1).
         """
         pass
+```
+
+# Setup
+
+## Setup Postgres Database
+
+In order to be able to connect to the database inside of the docker container the environment variables have to be set correctly. Therefore create a `database-variables.env` file in the `mensa_recommend` directory. Copy the following environment variables into the .env file and change the variables respectively:
+
+```
+POSTGRES_DB = YOUR_DB_NAME
+POSTGRES_USER = YOUR_DB_USER
+POSTGRES_PASSWORD = YOUR_DB_PASSWORD
+POSTGRES_HOST = db
+POSTGRES_PORT = 5433
+
+PGADMIN_DEFAULT_EMAIL = YOUR_PGADMIN_EMAIL
+PGADMIN_DEFAULT_PASSWORD = YOUR_PGADMIN_PASSWORD
+```
+
+After creating the file start docker:
+
+1. `docker-compose up`
+2. In a seccond terminal connect to app container `docker exec -it mensa-today_app_1 bash`
+3. `python manage.py makemigrations`
+4. `python manage.py migrate`
+5. `python manage.py createsuperuser`
+
+Done now you can connect to your database.
+
+## Environment files
+
+To run the local as well as production environment specific environment files has to be created. For the local development create a `local-variables.env` file in the root directory that should contain the following:
+
+```
+VUE_APP_BASE_URL = YOUR_URL
+GOOGLE_API_KEY = YOUR_API_KEY             # currently not required
+GOOGLE_PROJECT_CX = YOUR_PROJECT_CX_KEY   # currently not required
+DEEPL_KEY = YOUR_API_KEY
+```
+
+For development the `VUE_APP_BASE_URL = http://localhost:9999/api/v1/` and for production `VUE_APP_BASE_URL = http://10.14.28.50:9999`
+For the Production see next section.
+
+## Production
+
+To deploy the django app use the `docker-compose-prod.yaml` file. This file requires a `prod-variables.env` file which have to be create:
+
+```
+SECRET_KEY = foo
+DEBUG = False
+JWT_EXPIRATION_DELTA = 10800
+PRODUCTION = True
+GOOGLE_API_KEY = YOUR_API_KEY             # currently not required
+GOOGLE_PROJECT_CX = YOUR_PROJECT_CX_KEY   # currently not required
+PRIVATE_KEY = YOUR_PRIVATE_KEY
+HTTP_PROXY=http://wwwproxy.uni-muenster.de:3128
+HTTPS_PROXY=http://wwwproxy.uni-muenster.de:3128
+DEEPL_KEY = YOUR_API_KEY
 ```
