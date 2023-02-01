@@ -62,46 +62,51 @@ div
                     v-card.center-items.light-green.lighten-2.rounded-b-0(v-show="item.dish.url == null" height='250' elevation="0")
                       h1.text--secondary {{ item.dish.name[0] }}
 
-                    v-card-title.subheading(style="word-break: normal")
+                    v-card-title(style="line-height:1.2; font-size: 17px; word-break: normal; height:90px; overflow: hidden; white-space: pre-line;")
                       | {{ item.dish.name }}
                     v-divider
-                    v-container.mt-2
+                    v-card-text.mt-2
                       v-row
                         v-col.align-center.justify-center.d-flex.justify-space-between.py-0
-                          h4.ma-0.text-right.subheading(:class="{'red--text': $store.state.card_balance <= (parseFloat(item.priceStudent)+1) }")
-                            //- (:class="{ 'primary--text': sortBy === key }")
+                          h3.ma-0(:class="{'red--text': $store.state.card_balance ? $store.state.card_balance <= (parseFloat(item.priceStudent)+1) : false }")
                             | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
                           div.d-flex
-                            v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].category.name" 
+                            v-img(v-for="(category, index) in item.dish.categories.length" :alt="item.dish.categories[index].name" 
                               height="50" max-width="50" contain :key="category"
-                              :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].category.name+'.png')")
+                              :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].name+'.png')")
                       v-row.align-center.justify-center.d-flex.justify-space-between
                         v-col
                           span
-                            //- (:class="{ 'primary--text': sortBy === key }")
                             v-icon.mr-2 mdi-food-apple
                             | {{ item.dish.main ? 'Main Dish' : 'Side Dish' }}
                         v-col 
                           v-btn(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
                             v-icon mdi-navigation-variant-outline
                             | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
-                      v-row 
-                        v-col    
+                      v-row
+                        v-col.align-center.justify-center.d-flex.justify-space-between
                           div 
                             v-icon.mr-2 mdi-shield-plus-outline
                             span
                               //- (:class="{ 'primary--text': sortBy === key }")
                               span(v-if="item.dish.additives.length == 0")  None
-                              span(v-for="additive in item.dish.additives" :key="additive.additive.name") 
-                                span {{ additive.additive.name }}
+                              span(v-for="additive in item.dish.additives" :key="additive.name") 
+                                span {{ additive.name }}
                                 span(v-show="additive != item.dish.additives[item.dish.additives.length-1]") , 
-                      v-row 
-                        v-col.align-center.justify-center.d-flex.justify-space-between
                           div 
                             v-icon.mr-2 mdi-calendar
                             span {{ new Date(item.date).toLocaleDateString('de-DE') }}
-                          v-rating(hover length="5" background-color="gray" readonly size="24" half-increments 
-                            v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0")
+                      v-row 
+                        v-col.align-center.justify-center.d-flex.justify-space-between
+                          div
+                            v-icon.mr-2 mdi-thumbs-up-down-outline
+                            span(v-if="item.ext_ratings.rating_count != 0") {{ item.ext_ratings.rating_avg }}
+                            span(v-else) No ratings
+                          //- v-model="parseFloat(item.ext_ratings.rating_avg) + 0.0"
+                          v-rating(v-if = "item.user_ratings.length > 0" :value = "item.user_ratings[0].rating*5" hover length="5" background-color="gray" size="24" 
+                            @input="setRating(item.dish.id, $event);")
+                          v-rating(v-else hover length="5" background-color="gray" size="24" 
+                            @input="setRating(item.dish.id, $event);")
 
             template(v-slot:footer)
               v-row.mt-2(align='center' justify='center')
@@ -131,6 +136,7 @@ div
 
 <script>
 import { mapActions } from "vuex";
+import axios from "axios";
 export default {
   name: "DiscoverDishes",
   data() {
@@ -275,11 +281,7 @@ export default {
     checkCategory(dish) {
       if (dish.dish.categories != undefined) {
         for (let i = 0; i < dish.dish.categories.length; i++) {
-          if (
-            !this.selectedCategories.includes(
-              dish.dish.categories[i].category.name
-            )
-          )
+          if (!this.selectedCategories.includes(dish.dish.categories[i].name))
             return false;
         }
         // ! this.filters.food_preferences[dish.dish.categories[0].category.name]
@@ -307,6 +309,12 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    async setRating(dish_id, rating) {
+      await axios.post("mensa/user_ratings", {
+        dish_id: dish_id,
+        rating: rating,
+      });
     },
     async getRecommendations() {
       try {

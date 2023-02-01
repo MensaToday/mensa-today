@@ -51,14 +51,9 @@ class DishAllergySerializer(serializers.ModelSerializer):
 
 
 class DishSerializer(serializers.ModelSerializer):
-    categories = serializers.ListSerializer(
-        child=DishCategorySerializer(read_only=True),
-        source='dishcategory_set')
-    additives = serializers.ListSerializer(
-        child=DishAdditiveSerializer(read_only=True),
-        source='dishadditive_set')
-    allergies = serializers.ListSerializer(
-        child=DishAllergySerializer(read_only=True), source='dishallergy_set')
+    categories = CategorySerializer(read_only=True, many=True)
+    additives = AdditiveSerializer(read_only=True, many=True)
+    allergies = AllergySerializer(read_only=True, many=True)
 
     class Meta:
         fields = ["id", "categories", "additives",
@@ -94,7 +89,7 @@ class DishPlanSerializer(serializers.ModelSerializer):
         method_name="get_popular_side_dish")
 
     class Meta:
-        fields = ["dish", "ext_ratings", "user_ratings", "mensa", "date",
+        fields = ["id", "dish", "ext_ratings", "user_ratings", "mensa", "date",
                   "priceStudent", "priceEmployee", "side_dishes",
                   "side_selected", "popular_side"]
         model = mensa_model.DishPlan
