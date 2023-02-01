@@ -79,21 +79,22 @@ def post_processing():
         if dish.url is None:
             # Get the image url
             image_url = _get_image_url(dish.name)
-            translated_text = _get_translation(dish.name)
 
-            # Set new image url, translated text and save the updated dish
+            # Set new image url and save the updated dish
             dish.url = image_url
             dish.save()
 
-            dish.name = translated_text
-
-            try:
-                dish.save()
-            except Exception:
-                pass
-
             # One have to wait 0.2 seconds to not get a 403
             time.sleep(0.2)
+
+        # DeepL api access
+        translated_text = _get_translation(dish.name)
+        dish.name = translated_text
+
+        try:
+            dish.save()
+        except Exception:
+            pass
 
 
 def _get_translation(name: str) -> str:
