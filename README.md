@@ -2,11 +2,12 @@
 
 # <img src="https://github.com/erikzimmermann/mensa-today/blob/development/frontend/src/assets/logo.png" height="24" style="margin-right:5px;"/><span>MensaToday - Your Dish Recommender System in Münster</span>
 
-Münster is a distributed University with various different canteens and bistros that serve different ranges of food which change every week. As a student who eats at those places frequently, you have to look through all of these dishes to find a meal you want to eat. The idea of our recommender system is to suggest meals based on various different factors: Your eating habits, location (based on semester schedule), weather,…).
+Münster is a distributed University with various different canteens and bistros that serve different ranges of food which change every week. As a student who eats at those places frequently, you have to look through all of these dishes to find a meal you want to eat. The idea of our recommender system is to suggest meals based on various different factors: Your eating habits, location (based on semester schedule), weather, ….
 
-## Setup Postgres Database
+![poster](https://user-images.githubusercontent.com/23747243/215994462-8a78929f-9b64-453e-92ed-09a7e42c4aaa.svg)
 
-In order to be able to connect to the database inside of the docker container the environment variables have to be set correctly. Therefore create a `database-variables.env` file in the `mensa_recommend` directory. Copy the following environment variables into the .env file and change the variables respectively:
+## Contributing
+See [our contributing guidelines](https://github.com/erikzimmermann/mensa-today/blob/development/CONTRIBUTING.md) for detailed information about testing, documentation and project setup.
 
 ```
 POSTGRES_DB = YOUR_DB_NAME
@@ -65,44 +66,8 @@ Jupyter notebooks for testing purposes can be created at the notbooks folder. Pl
 
 ## Celery
 
-Celery is an open source asynchronous task queue or job queue which is based on distributed message passing. While it supports scheduling, its focus is on operations in real time. Celery is used in combination with the message broker redis. Usage example:
+Celery is an open source asynchronous task queue or job queue which is based on distributed message passing. While it supports scheduling, its focus is on operations in real time. Celery is used in combination with the message broker redis. For more information, see [Celery docs](https://docs.celeryq.dev/en/stable/).
 
 ## Data Structure
-
+last updated on 30th December 2022
 ![erm](ERM.png)
-
-## Contribution
-
-### Code Documentation Template
-
-Every class/method documentation should consist of the following elements:
-
-- A short description of the method
-- A description of the input parameters:
-  - Parametername : Type - [optional]
-    - Short description [(default: Value)]
-- A description of the output parameters:
-  - Parametername : Type
-    - Short description
-
-```Python
-def create_vgg16(input_shape = (1024, 1024, 3)):
-    """Create a vgg16 pretrained network
-
-    Parameters
-    ----------
-    input_shape : tuple
-        Shape of the images (default : (1024, 1024, 3))
-
-    Return
-    ------
-    model : keras model
-        The resulting keras model
-    """
-
-    ....
-    your_custom_code
-    ....
-
-    return model
-```

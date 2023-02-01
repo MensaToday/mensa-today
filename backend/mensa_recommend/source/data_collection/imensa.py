@@ -8,6 +8,7 @@ import requests
 import json
 import re
 import time
+import os
 import threading
 from tqdm import tqdm
 from google_images_search import GoogleImagesSearch
@@ -61,9 +62,10 @@ def _get_dish(name: str, main_meal: bool) -> Dish:
         return d
 
 
-@shared_task(name='update_urls')
-def update_urls():
+@shared_task(name='post_processing')
+def post_processing():
     """Get all dishes from database and update with image url
+    Translate all dishes to english
 
     """
 
@@ -77,13 +79,47 @@ def update_urls():
         if dish.url is None:
             # Get the image url
             image_url = _get_image_url(dish.name)
+            translated_text = _get_translation(dish.name)
 
-            # Set new image url and save the updated dish
+            # Set new image url, translated text and save the updated dish
             dish.url = image_url
+            dish.name = translated_text
             dish.save()
 
             # One have to wait 0.2 seconds to not get a 403
             time.sleep(0.2)
+
+
+def _get_translation(name: str) -> str:
+    """ Get the english translation for the dish
+
+    Parameters
+    ----------
+    name : str
+        The name of a dish.
+
+    Return
+    ------
+    translation : str
+        Translated dish name
+    """
+
+    deepl_base_url = "https://api-free.deepl.com/v2/translate"
+
+    params = {
+        "auth_key": os.getenv("DEEPL_KEY", "test"),
+        "source_lang": "DE",
+        "target_lang": "EN",
+        "text": name
+    }
+
+    try:
+        res = requests.get(deepl_base_url, params=params,
+                           proxies=global_data.proxies)
+
+        return res.json()["translations"][0]["text"]
+    except:
+        return name
 
 
 def _get_image_url(name: str) -> str:
@@ -241,7 +277,7 @@ class IMensaCollector(NoAuthURLCollector):
             t.join()
 
         # Get image urls
-        update_urls.delay()
+        post_processing.delay()
 
     def prepare(self) -> None:
         # insert static categories, additives and allergies
