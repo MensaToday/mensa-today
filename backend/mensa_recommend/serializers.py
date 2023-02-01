@@ -63,7 +63,7 @@ class DishSerializer(serializers.ModelSerializer):
         model = mensa_model.Dish
 
     def get_translated_name(self, obj: mensa_model.Dish) -> str:
-        return obj.translation
+        return obj.name if obj.translation is None else obj.translation
 
 
 class MensaSerializer(serializers.ModelSerializer):
