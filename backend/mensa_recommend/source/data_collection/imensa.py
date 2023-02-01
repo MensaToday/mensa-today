@@ -148,20 +148,15 @@ def _search(keywords: str) -> List[dict]:
 
     url = 'https://duckduckgo.com/'
 
-    # Define parameter list
-    params = {
-        'q': keywords
-    }
+    # A special 'vqd' token has to be parsed from duckduckgo to be able to receive
+    # responses in upcoming requests
+    res = requests.post(url, data={'q': keywords})
+    search_res = re.search(r'vqd=([\d-]+)\&', res.text, re.M | re.I)
 
-    #  First make a request to above URL, and parse out the 'vqd'
-    #  This is a special token, which should be used in the subsequent request
-    res = requests.post(url, data=params)
-    searchObj = re.search(r'vqd=([\d-]+)\&', res.text, re.M | re.I)
-
-    if not searchObj:
+    if not search_res:
         return -1
 
-    # Define headers
+    # Required headers
     headers = {
         'authority': 'duckduckgo.com',
         'accept': 'application/json, text/javascript, */* q=0.01',
@@ -176,28 +171,28 @@ def _search(keywords: str) -> List[dict]:
         'accept-language': 'en-US,enq=0.9',
     }
 
-    # Define additional params
+    # Define search parameters
     params = (
         ('l', 'de-de'),
         ('o', 'json'),
         ('q', keywords),
-        ('vqd', searchObj.group(1)),
+        ('vqd', search_res.group(1)),
         ('f', ',,,,layaout:Wide,license:Share'),
         ('p', '1'),
         ('v7exp', 'a'),
     )
 
     # Build request url
-    requestUrl = url + "i.js"
+    base_image_url = url + "i.js"
 
     # make request to duckduckgo
     data = None
     try:
-        res = requests.get(requestUrl, headers=headers,
+        res = requests.get(base_image_url, headers=headers,
                            params=params, proxies=global_data.proxies)
         data = json.loads(res.text)
     except:
-        print("Failure: ", res.status_code, keywords)
+        pass
 
     return data
 
@@ -327,7 +322,7 @@ class IMensaCollector(NoAuthURLCollector):
                           rating_count=ratings_count))
 
     def __scrape_meal(self, meal: Tag, mensa: Mensa, day: str) -> Tuple[
-        str, Tuple[float, float], Tuple[list, list, list], Tuple[int, float]]:
+            str, Tuple[float, float], Tuple[list, list, list], Tuple[int, float]]:
         # load data of actual meal
         name = meal.find(class_="aw-meal-description").text
 

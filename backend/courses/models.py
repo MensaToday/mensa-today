@@ -3,8 +3,8 @@ from django.db import models
 
 class Course(models.Model):
     publishId = models.BigIntegerField(primary_key=True, unique=True)
-    name = models.CharField(max_length=100)
-    learnweb_abbr = models.CharField(max_length=50)
+    name = models.CharField(max_length=1000)
+    learnweb_abbr = models.CharField(max_length=100)
     users = models.ManyToManyField("users.User", through='UserCourse')
 
 
@@ -25,8 +25,8 @@ class Timeslot(models.Model):
 
 class Room(models.Model):
     id = models.BigIntegerField(primary_key=True, unique=True)
-    name = models.CharField(max_length=100)
-    address = models.CharField(max_length=80)
+    name = models.CharField(max_length=200)
+    address = models.CharField(max_length=300)
     seats = models.IntegerField(null=True)
     lon = models.DecimalField(max_digits=13, decimal_places=8, null=True)
     lat = models.DecimalField(max_digits=13, decimal_places=8, null=True)
