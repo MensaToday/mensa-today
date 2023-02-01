@@ -6,10 +6,13 @@ Münster is a distributed University with various different canteens and bistros
 
 ![poster](https://user-images.githubusercontent.com/23747243/215994462-8a78929f-9b64-453e-92ed-09a7e42c4aaa.svg)
 
+## Contributing
+See [our contributing guidelines](https://github.com/erikzimmermann/mensa-today/blob/development/CONTRIBUTING.md) for detailed information about testing, documentation and project setup.
+
 ## Celery
 
-Celery is an open source asynchronous task queue or job queue which is based on distributed message passing. While it supports scheduling, its focus is on operations in real time. Celery is used in combination with the message broker redis. Usage example:
+Celery is an open source asynchronous task queue or job queue which is based on distributed message passing. While it supports scheduling, its focus is on operations in real time. Celery is used in combination with the message broker redis.
 
 ## Data Structure
-
+last updated on 30th December 2022
 ![erm](ERM.png)
