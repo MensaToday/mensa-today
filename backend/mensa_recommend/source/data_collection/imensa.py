@@ -88,13 +88,16 @@ def post_processing():
             time.sleep(0.2)
 
         # DeepL api access
-        translated_text = _get_translation(dish.name)
-        dish.name = translated_text
+        if dish.translation is None:
+            translated_text = _get_translation(dish.name)
 
-        try:
-            dish.save()
-        except Exception:
-            pass
+            if translated_text is not None:
+                dish.translation = translated_text
+
+                try:
+                    dish.save()
+                except Exception:
+                    pass
 
 
 def _get_translation(name: str) -> str:
@@ -126,7 +129,7 @@ def _get_translation(name: str) -> str:
 
         return res.json()["translations"][0]["text"]
     except:
-        return name
+        return None
 
 
 def _get_image_url(name: str) -> str:
