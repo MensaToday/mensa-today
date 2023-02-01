@@ -70,7 +70,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["Logout"]),
+    ...mapActions(["DeleteStore"]),
     reloadPage() {
       window.location.reload();
     },
@@ -81,7 +81,7 @@ export default {
       if (message == "DELETE") {
         try {
           await axios.post("api/v1/user/delete");
-          this.logout();
+          await this.deleteStore();
           this.$router.push("/login");
         } catch (error) {
           console.error(error.message);
@@ -92,9 +92,9 @@ export default {
         console.error("Wrong delete message!");
       }
     },
-    async logout() {
+    async deleteStore() {
       try {
-        await this.Logout();
+        await this.DeleteStore();
       } catch (error) {
         console.error(error.message);
       }

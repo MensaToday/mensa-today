@@ -165,6 +165,11 @@ export default new Vuex.Store({
       router.push("/login").catch(() => {});
       commit("rmTokens");
     },
+    async DeleteStore({ commit }) {
+      // catch aborted navigation
+      router.push("/login").catch(() => {});
+      commit("rmTokens");
+    },
     async GetBalance({ state, commit }) {
       // if the mensa card is not specified, you cannot make the API CALL
       if (!state.user.mensa_card_id) return;
