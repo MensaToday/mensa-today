@@ -89,7 +89,7 @@ def post_processing():
 
             try:
                 dish.save()
-            except Dish.IntegrityError:
+            except Exception:
                 pass
 
             # One have to wait 0.2 seconds to not get a 403
