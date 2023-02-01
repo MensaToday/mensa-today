@@ -11,7 +11,7 @@ See [our contributing guidelines](https://github.com/erikzimmermann/mensa-today/
 
 ## Celery
 
-Celery is an open source asynchronous task queue or job queue which is based on distributed message passing. While it supports scheduling, its focus is on operations in real time. Celery is used in combination with the message broker redis.
+Celery is an open source asynchronous task queue or job queue which is based on distributed message passing. While it supports scheduling, its focus is on operations in real time. Celery is used in combination with the message broker redis. For more information, see [Celery docs](https://docs.celeryq.dev/en/stable/).
 
 ## Data Structure
 last updated on 30th December 2022
