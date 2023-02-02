@@ -3,6 +3,7 @@ from django.db import models
 
 class Dish(models.Model):
     name = models.CharField(max_length=200, unique=True)
+    translation = models.CharField(max_length=200, null=True)
     main = models.BooleanField()
     url = models.CharField(max_length=300, null=True)
     categories = models.ManyToManyField('Category', through='DishCategory')
@@ -142,7 +143,16 @@ class UserDishRating(models.Model):
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     rating = models.FloatField()  # range: 0.0 .. 1.0
 
+    class Meta:
+        unique_together = (('user', 'dish'),)
+
+
 class UserSideSelection(models.Model):
-    main = models.ForeignKey(DishPlan, on_delete=models.CASCADE, related_name="main")
+    class Meta:
+        unique_together = (('main', 'user', 'side'),)
+
+    main = models.ForeignKey(
+        DishPlan, on_delete=models.CASCADE, related_name="main")
     user = models.ForeignKey("users.User", on_delete=models.CASCADE)
-    side = models.ForeignKey(DishPlan, on_delete=models.CASCADE, related_name="side")
+    side = models.ForeignKey(
+        DishPlan, on_delete=models.CASCADE, related_name="side")

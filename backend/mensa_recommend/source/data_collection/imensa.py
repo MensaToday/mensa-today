@@ -8,6 +8,7 @@ import requests
 import json
 import re
 import time
+import os
 import threading
 from tqdm import tqdm
 from google_images_search import GoogleImagesSearch
@@ -61,9 +62,10 @@ def _get_dish(name: str, main_meal: bool) -> Dish:
         return d
 
 
-@shared_task(name='update_urls')
-def update_urls():
+@shared_task(name='post_processing')
+def post_processing():
     """Get all dishes from database and update with image url
+    Translate all dishes to english
 
     """
 
@@ -84,6 +86,50 @@ def update_urls():
 
             # One have to wait 0.2 seconds to not get a 403
             time.sleep(0.2)
+
+        # DeepL api access
+        if dish.translation is None:
+            translated_text = _get_translation(dish.name)
+
+            if translated_text is not None:
+                dish.translation = translated_text
+
+                try:
+                    dish.save()
+                except Exception:
+                    pass
+
+
+def _get_translation(name: str) -> str:
+    """ Get the english translation for the dish
+
+    Parameters
+    ----------
+    name : str
+        The name of a dish.
+
+    Return
+    ------
+    translation : str
+        Translated dish name
+    """
+
+    deepl_base_url = "https://api-free.deepl.com/v2/translate"
+
+    params = {
+        "auth_key": os.getenv("DEEPL_KEY", "test"),
+        "source_lang": "DE",
+        "target_lang": "EN",
+        "text": name
+    }
+
+    try:
+        res = requests.get(deepl_base_url, params=params,
+                           proxies=global_data.proxies)
+
+        return res.json()["translations"][0]["text"]
+    except:
+        return None
 
 
 def _get_image_url(name: str) -> str:
@@ -148,20 +194,15 @@ def _search(keywords: str) -> List[dict]:
 
     url = 'https://duckduckgo.com/'
 
-    # Define parameter list
-    params = {
-        'q': keywords
-    }
+    # A special 'vqd' token has to be parsed from duckduckgo to be able to receive
+    # responses in upcoming requests
+    res = requests.post(url, data={'q': keywords})
+    search_res = re.search(r'vqd=([\d-]+)\&', res.text, re.M | re.I)
 
-    #  First make a request to above URL, and parse out the 'vqd'
-    #  This is a special token, which should be used in the subsequent request
-    res = requests.post(url, data=params)
-    searchObj = re.search(r'vqd=([\d-]+)\&', res.text, re.M | re.I)
-
-    if not searchObj:
+    if not search_res:
         return -1
 
-    # Define headers
+    # Required headers
     headers = {
         'authority': 'duckduckgo.com',
         'accept': 'application/json, text/javascript, */* q=0.01',
@@ -176,28 +217,28 @@ def _search(keywords: str) -> List[dict]:
         'accept-language': 'en-US,enq=0.9',
     }
 
-    # Define additional params
+    # Define search parameters
     params = (
         ('l', 'de-de'),
         ('o', 'json'),
         ('q', keywords),
-        ('vqd', searchObj.group(1)),
+        ('vqd', search_res.group(1)),
         ('f', ',,,,layaout:Wide,license:Share'),
         ('p', '1'),
         ('v7exp', 'a'),
     )
 
     # Build request url
-    requestUrl = url + "i.js"
+    base_image_url = url + "i.js"
 
     # make request to duckduckgo
     data = None
     try:
-        res = requests.get(requestUrl, headers=headers,
+        res = requests.get(base_image_url, headers=headers,
                            params=params, proxies=global_data.proxies)
         data = json.loads(res.text)
     except:
-        print("Failure: ", res.status_code, keywords)
+        pass
 
     return data
 
@@ -246,7 +287,7 @@ class IMensaCollector(NoAuthURLCollector):
             t.join()
 
         # Get image urls
-        update_urls.delay()
+        post_processing.delay()
 
     def prepare(self) -> None:
         # insert static categories, additives and allergies
@@ -327,7 +368,7 @@ class IMensaCollector(NoAuthURLCollector):
                           rating_count=ratings_count))
 
     def __scrape_meal(self, meal: Tag, mensa: Mensa, day: str) -> Tuple[
-        str, Tuple[float, float], Tuple[list, list, list], Tuple[int, float]]:
+            str, Tuple[float, float], Tuple[list, list, list], Tuple[int, float]]:
         # load data of actual meal
         name = meal.find(class_="aw-meal-description").text
 
@@ -338,8 +379,10 @@ class IMensaCollector(NoAuthURLCollector):
         price_for_non_students = price_for_students * 1.5
         price = (price_for_students, price_for_non_students)
 
-        attributes = meal.find(class_="small aw-meal-attributes")\
-            .span.text.replace("\xa0", "").split(" ")
+        attributes = []
+        att_obj = meal.find(class_="small aw-meal-attributes")
+        if att_obj is not None:
+            attributes = att_obj.span.text.replace("\xa0", "").split(" ")
 
         att_type = 0
         categories = []

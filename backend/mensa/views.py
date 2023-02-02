@@ -1,21 +1,16 @@
 import datetime
-import datetime
 import random
 from datetime import datetime
-from datetime import datetime
+import time
 
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-import random
-
-import datetime
-from datetime import datetime
-
-from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy, UserSideSelection
-from mensa_recommend.serializers import DishPlanSerializer, UserDishRatingSerializer, DishSerializer
-
+from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy, \
+    UserSideSelection
+from mensa_recommend.serializers import DishPlanSerializer, \
+    UserDishRatingSerializer, DishSerializer
 from mensa_recommend.source.computations.date_computations import \
     get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
@@ -85,10 +80,12 @@ def get_dishplan(request):
     """
 
     last_monday = get_last_monday()
+    dishplan_qs = DishPlan.objects.prefetch_related('mensa', 'dish', 'dish__categories', 'dish__allergies', 'dish__additives', 'dish__ext_ratings').filter(
+        date__gte=last_monday)
 
-    return Response(
-        DishPlanSerializer(DishPlan.objects.filter(date__gte=last_monday),
-                           many=True, context={'user': request.user}).data)
+    dish_serialized = DishPlanSerializer(dishplan_qs,
+                                         many=True, context={'user': request.user}).data
+    return Response(dish_serialized)
 
 
 @api_view(['GET', 'POST'])
@@ -129,7 +126,7 @@ def user_ratings(request):
                     "main": bool,
                     "name": str
                 },
-                "rating": float between 0-1
+                "rating": int between 1-5
             }
         ]
     """
@@ -156,10 +153,11 @@ def user_ratings(request):
                 rating = transform_rating(rating)
 
                 # If rating is valid
-                if rating:
+                if rating is not None:
 
-                    # Save the rating
-                    UserDishRating(dish=dish, user=user, rating=rating).save()
+                    # Save the rating or update if it already exists
+                    UserDishRating.objects.update_or_create(
+                        dish=dish, user=user, defaults={"rating": rating})
 
                     return Response(status=status.HTTP_200_OK)
                 else:
@@ -399,21 +397,17 @@ def get_recommendations(request):
     r = recommender.DishRecommender(request.user, day, entire_week)
     res = r.predict(rec_per_day, serialize=True)
 
-    num_dishes = len(r.dishes)
-    num_filtered_dishes = len(r.filtered_dishes)
-    # TODO: Maybe add this information for front end?
-
     return Response(res, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def get_quiz_dishes(request):
     """Get random dishes for the initial quiz based on the user preferences
 
         Route: api/v1/mensa/get_quiz_dishes
         Authorization: Any
-        Methods: Get
+        Methods: Post
 
 
         Input
@@ -490,7 +484,8 @@ def get_quiz_dishes(request):
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def save_user_side_dishes(request):
-    """Save the user side dish to main dish allocation
+    """Save the user side dish to main dish allocation. Also use this function to update/delete
+    user side dishes. To delete them just post an empty side_dishes list.
 
         Route: api/v1/mensa/save_user_side_dishes
         Authorization: Authenticated
@@ -502,7 +497,7 @@ def save_user_side_dishes(request):
         {
             "dishes": [
                 {
-                    "main": 1,
+                    "main": 1,              # dishplan id
                     "side_dishes": [8, 9]
                 },
                 {
@@ -535,6 +530,13 @@ def save_user_side_dishes(request):
                     main_object = DishPlan.objects.get(id=main)
                 except DishPlan.DoesNotExist:
                     return Response("Main dish is not available in the database", status=status.HTTP_404_NOT_FOUND)
+
+                # Delete all current main_dish, side_dish assignment for this user
+                # This is the fastes way to ensure that the user side dishes are always up to date
+                # When a user deletes a side dish this function can be just called again and the coresponding
+                # dish will be deleted
+                UserSideSelection.objects.filter(
+                    user=request.user, main=main_object).delete()
 
                 # check if side dishes is a list
                 if type(side_dishes) == list:

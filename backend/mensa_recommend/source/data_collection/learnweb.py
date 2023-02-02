@@ -223,7 +223,7 @@ class LearnWebCollector(Collector):
                         reservation = Reservation.objects.get(course=course, timeslot=timeslot,
                                                               room=room)
 
-                    except Timeslot.DoesNotExist:
+                    except:
                         Reservation(course=course, timeslot=timeslot,
                                     room=room).save()
 
