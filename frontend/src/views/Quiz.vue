@@ -112,13 +112,13 @@
               v-card-text
                 v-form(@submit.prevent="submit")
                   v-text-field(
-                    label="ZIV Identifier"
+                    label="WWU ID"
                     prepend-icon="mdi-account"
                     v-model="form.email")
                   v-text-field(
                     prepend-icon="mdi-lock" 
                     v-model="form.password"
-                    label="Password" 
+                    label="WWU Password" 
                     :type="showPassword ? 'text' : 'password'"
                     :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" 
                     @click:append="showPassword = !showPassword")
