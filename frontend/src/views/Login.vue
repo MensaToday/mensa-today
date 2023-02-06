@@ -8,11 +8,11 @@ v-card.mx-auto.mt-12(max-width='400')
   v-card-text
     v-form(@submit.prevent="submit")
       v-text-field(
-        label="ZIV Identifier"
+        label="WWU ID"
         v-model="form.email")
       v-text-field(
         v-model="form.password"
-        label="Password" 
+        label="WWU Password" 
         :type="showPassword ? 'text' : 'password'"
         :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" 
         @click:append="showPassword = !showPassword"
