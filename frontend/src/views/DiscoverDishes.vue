@@ -11,46 +11,32 @@ div
             :sort-desc="sortDesc")
             //- Filters for Dishes in Discover Dishes
             template(v-slot:header)
-              v-toolbar.center-items.mb-2(color='primary' dark 
-                :min-height='$vuetify.breakpoint.mdAndUp ? "210px" : "420px"')
-                div.mt-5
-                  v-row
-                    v-col(cols='12' md='6')
-                      v-card(color="transparent" flat)
-                        v-row 
-                          v-col
-                            v-text-field(v-model='search' clearable flat solo-inverted hide-details 
-                              prepend-inner-icon='mdi-magnify' label='Search')
-                        v-row  
-                          v-col
-                            v-checkbox.mx-3.pt-3(
-                              v-model="filters.affordable"
-                              label="You can afford it")
-                            v-checkbox.mx-3.pt-3(
-                              v-model="filters.main_dish"
-                              label="Only Main Dishes")
-                    v-col(cols='12' md='6')
-                      v-card(color="transparent" flat)
-                        template
-                          v-row
-                            v-col
-                              v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
-                                prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple
-                                v-model='selectedCategories')
-                          v-row
-                            v-col.py-0
-                              v-select(flat solo-inverted hide-details :items='filters.mensa' width='100'
-                                prepend-inner-icon='mdi-filter-variant' label='Filter Mensa'
-                                v-model='filters.selectedMensa' transition="scale-transition" min-width="auto")
-                          v-row
-                            v-col.pb-0
-                              v-menu(v-model="date_menu" :close-on-content-click="false" width="100%")
-                                template(v-slot:activator="{ on, attrs }")
-                                  v-text-field(v-model="filters.date" flat solo-inverted prepend-inner-icon="mdi-calendar"
-                                  readonly, v-bind="attrs", v-on="on")
-                                v-date-picker(v-model="filters.date", @input="date_menu = false"
-                                  :min="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() + 6) % 7)).toISOString().substr(0, 10)"
-                                  :max="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() - 6) % 7)).toISOString().substr(0, 10) ")
+              v-toolbar.mb-2.pt-12(color='primary' :min-height='$vuetify.breakpoint.mdAndUp ? "160px" : "400px"')
+                v-card(color='primary' flat :class='$vuetify.breakpoint.mdAndUp ? "" : "mt-filter"')
+                  div.d-flex.flex-wrap
+                    v-text-field(v-model='search' clearable flat solo-inverted hide-details 
+                      prepend-inner-icon='mdi-magnify' label='Search')
+                    v-checkbox.mx-3.pt-3(
+                      v-model="filters.affordable"
+                      label="You can afford it")
+                    v-checkbox.mx-3.pt-3(
+                      v-model="filters.main_dish"
+                      label="Only main dishes")
+                    v-menu(v-model="date_menu" :close-on-content-click="false")
+                      template(v-slot:activator="{ on, attrs }")
+                        v-text-field(v-model="filters.date" flat solo-inverted prepend-inner-icon="mdi-calendar"
+                          readonly, v-bind="attrs", v-on="on")
+                      v-date-picker(v-model="filters.date", @input="date_menu = false"
+                        :min="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() + 6) % 7)).toISOString().substr(0, 10)"
+                        :max="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() - 6) % 7)).toISOString().substr(0, 10) ")
+                    template
+                      v-select(flat solo-inverted hide-details :items='filters.mensa' width='100'
+                        prepend-inner-icon='mdi-filter-variant' label='Filter Mensa'
+                        v-model='filters.selectedMensa' transition="scale-transition" min-width="auto"
+                        :class='$vuetify.breakpoint.mdAndUp ? "ml-3" : "mb-3"')
+                      v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
+                        prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple
+                        v-model='selectedCategories')
 
             //- Dishes in Discover Dishes
             template(v-slot:default='props')
@@ -109,24 +95,26 @@ div
                             @input="setRating(item.dish.id, $event);")
 
             template(v-slot:footer)
-              v-row.mt-2(align='center' justify='center')
-                span.grey--text Items Per Page
-                v-menu(offset-y)
-                  template(v-slot:activator='{ on, attrs }')
-                    v-btn.ml-2(dark text color='primary' v-bind='attrs' v-on='on')
-                      | {{ itemsPerPage }}
-                      v-icon mdi-chevron-down
-                  v-list
-                    v-list-item(v-for='(number, index) in itemsPerPageArray' :key='(number, index)' 
-                      @click='updateItemsPerPage(number)')
-                      v-list-item-title {{ number }}
-                v-spacer
-                span.mr-4.grey--text
-                  | Page {{ page }} of {{ numberOfPages }}
-                v-btn.mr-1(fab dark color='primary' @click='formerPage')
-                  v-icon mdi-chevron-left
-                v-btn.ml-1(fab dark color='primary' @click='nextPage')
-                  v-icon mdi-chevron-right
+              v-container 
+                v-row.mt-2.align-center.justify-center
+                  span.grey--text Items per page
+                  v-menu(offset-y)
+                    template(v-slot:activator='{ on, attrs }')
+                      v-btn.px-0(dark text color='primary' v-bind='attrs' v-on='on')
+                        | {{ itemsPerPage }}
+                        v-icon mdi-chevron-down
+                    v-list
+                      v-list-item(v-for='(number, index) in itemsPerPageArray' :key='(number, index)' 
+                        @click='updateItemsPerPage(number)')
+                        v-list-item-title {{ number }}
+                  v-spacer
+                  br
+                  span.mr-2.grey--text
+                    | Page {{ page }} of {{ numberOfPages }}
+                  v-btn.mr-1(fab dark color='primary' @click='formerPage' small)
+                    v-icon mdi-chevron-left
+                  v-btn.ml-1(fab dark color='primary' @click='nextPage' small)
+                    v-icon mdi-chevron-right
 
             //- info button with ingredients
             //- browse section for all dishes on all days 
@@ -135,8 +123,8 @@ div
 </template>
 
 <script>
-import { mapActions } from "vuex";
 import axios from "axios";
+import { mapActions } from "vuex";
 export default {
   name: "DiscoverDishes",
   data() {
@@ -247,7 +235,7 @@ export default {
       get() {
         if (!this.$store.state.dishplan) return null;
 
-        let searchLower = this.search.toLowerCase()
+        let searchLower = this.search.toLowerCase();
         return this.$store.state.dishplan.filter(
           (dish) =>
             // filter by search term
@@ -341,3 +329,8 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+.mt-filter {
+  margin-top: 250px;
+}
+</style>
