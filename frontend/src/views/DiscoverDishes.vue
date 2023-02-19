@@ -14,14 +14,9 @@ div
               v-toolbar.mb-2.pt-12(color='primary' :min-height='$vuetify.breakpoint.mdAndUp ? "160px" : "400px"')
                 v-card(color='primary' flat :class='$vuetify.breakpoint.mdAndUp ? "" : "mt-filter"')
                   div.d-flex.flex-wrap
-                    v-text-field.mr-3(v-model='search' clearable flat solo-inverted hide-details 
-                      prepend-inner-icon='mdi-magnify' label='Search')
-                    v-checkbox.mr-3.pt-3(
-                      v-model="filters.affordable"
-                      label="You can afford it")
-                    v-checkbox.mr-3.pt-3(
-                      v-model="filters.main_dish"
-                      label="Only main dishes")
+                    v-text-field(v-model='search' clearable flat solo-inverted hide-details 
+                      prepend-inner-icon='mdi-magnify' label='Search'
+                      :class='$vuetify.breakpoint.mdAndUp ? "mr-3" : "mb-3"')
                     v-menu(v-model="date_menu" :close-on-content-click="false")
                       template(v-slot:activator="{ on, attrs }")
                         v-text-field(v-model="filters.date" flat solo-inverted prepend-inner-icon="mdi-calendar"
@@ -29,6 +24,13 @@ div
                       v-date-picker(v-model="filters.date", @input="date_menu = false"
                         :min="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() + 6) % 7)).toISOString().substr(0, 10)"
                         :max="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() - 6) % 7)).toISOString().substr(0, 10) ")
+                    v-checkbox.pt-3(
+                      v-model="filters.affordable"
+                      label="You can afford it"
+                      :class='$vuetify.breakpoint.mdAndUp ? "mx-3" : "mr-3"')
+                    v-checkbox.pt-3(
+                      v-model="filters.main_dish"
+                      label="Only main dishes")
                     template
                       v-select(flat solo-inverted hide-details :items='filters.mensa' width='100'
                         prepend-inner-icon='mdi-filter-variant' label='Filter Mensa'
