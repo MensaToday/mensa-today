@@ -39,6 +39,9 @@ div
                       v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
                         prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple
                         v-model='selectedCategories')
+                      v-select(flat solo-inverted hide-details :items='Object.keys(filters.allergies)' width='100'
+                        prepend-inner-icon='mdi-filter-variant' label='Filter Allergies' multiple
+                        v-model='selectedAllergies')
 
             //- Dishes in Discover Dishes
             template(v-slot:default='props')
@@ -141,15 +144,8 @@ export default {
       itemsPerPage: 3,
       sortBy: "",
       date_menu: false,
-      selectedCategories: [
-        "Vegan",
-        "Vegetarian",
-        "Pork",
-        "Beef",
-        "Poultry",
-        "Alcohol",
-        "Fish",
-      ],
+      selectedCategories: [],
+      selectedAllergies: [],
       filters: {
         // date: {
         //   start_date: null,
@@ -242,7 +238,16 @@ export default {
           (dish) =>
             // filter by search term
             dish.dish.name.toLowerCase().includes(searchLower) &
-            this.checkCategory(dish) &
+            this.checkDishAttributes(
+              this.selectedCategories,
+              dish,
+              "categories"
+            ) &
+            this.checkDishAttributes(
+              this.selectedAllergies,
+              dish,
+              "allergies"
+            ) &
             (this.filters.affordable
               ? this.$store.state.card_balance >= parseFloat(dish.priceStudent)
               : true) &
@@ -270,16 +275,30 @@ export default {
   methods: {
     ...mapActions(["GetDishplan"]),
 
-    checkCategory(dish) {
-      if (dish.dish.categories != undefined) {
-        for (let i = 0; i < dish.dish.categories.length; i++) {
-          if (!this.selectedCategories.includes(dish.dish.categories[i].name))
-            return false;
+    checkDishAttributes(selectedElems, dish, to_be_checked) {
+      if (to_be_checked == "categories") {
+        if (dish.dish.categories != undefined) {
+          for (let i = 0; i < dish.dish.categories.length; i++) {
+            if (
+              selectedElems.length > 0 &&
+              !selectedElems.includes(dish.dish.categories[i].name)
+            )
+              return false;
+          }
         }
-        // ! this.filters.food_preferences[dish.dish.categories[0].category.name]
-      }
-      return true;
-      // this.filters.food_preferences[dish.dish.categories[0].category.name]
+        return true;
+      } else if (to_be_checked == "allergies") {
+        if (dish.dish.allergies != undefined) {
+          for (let i = 0; i < dish.dish.allergies.length; i++) {
+            if (
+              selectedElems.length > 0 &&
+              !selectedElems.includes(dish.dish.allergies[i].name)
+            )
+              return false;
+          }
+        }
+        return true;
+      } else return false;
     },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1;
