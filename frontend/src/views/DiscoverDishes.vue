@@ -17,7 +17,7 @@ div
                     v-text-field(dark v-model='search' clearable flat solo-inverted hide-details 
                       prepend-inner-icon='mdi-magnify' label='Search'
                       :class='$vuetify.breakpoint.mdAndUp ? "mr-3" : "mb-3"')
-                    v-menu(v-model="date_menu" :close-on-content-click="false")
+                    v-menu(v-model="date_menu" :close-on-content-click="false" max-width="100%")
                       template(v-slot:activator="{ on, attrs }")
                         v-text-field(dark v-model="filters.date" flat solo-inverted prepend-inner-icon="mdi-calendar"
                           readonly, v-bind="attrs", v-on="on")
