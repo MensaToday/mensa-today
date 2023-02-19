@@ -38,7 +38,8 @@ div
                         :class='$vuetify.breakpoint.mdAndUp ? "mr-3" : "mb-3"')
                       v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
                         prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple
-                        v-model='selectedCategories')
+                        v-model='selectedCategories'
+                        :class='$vuetify.breakpoint.mdAndUp ? "mr-3" : "mb-3"')
                       v-select(flat solo-inverted hide-details :items='Object.keys(filters.allergies)' width='100'
                         prepend-inner-icon='mdi-filter-variant' label='Filter Allergies' multiple
                         v-model='selectedAllergies')
