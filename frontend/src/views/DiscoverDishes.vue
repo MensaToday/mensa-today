@@ -14,33 +14,33 @@ div
               v-toolbar.mb-2.pt-12(color='primary' :min-height='$vuetify.breakpoint.mdAndUp ? "160px" : "400px"')
                 v-card(color='primary' flat :class='$vuetify.breakpoint.mdAndUp ? "" : "mt-filter"')
                   div.d-flex.flex-wrap
-                    v-text-field(v-model='search' clearable flat solo-inverted hide-details 
+                    v-text-field(dark v-model='search' clearable flat solo-inverted hide-details 
                       prepend-inner-icon='mdi-magnify' label='Search'
                       :class='$vuetify.breakpoint.mdAndUp ? "mr-3" : "mb-3"')
                     v-menu(v-model="date_menu" :close-on-content-click="false")
                       template(v-slot:activator="{ on, attrs }")
-                        v-text-field(v-model="filters.date" flat solo-inverted prepend-inner-icon="mdi-calendar"
+                        v-text-field(dark v-model="filters.date" flat solo-inverted prepend-inner-icon="mdi-calendar"
                           readonly, v-bind="attrs", v-on="on")
                       v-date-picker(v-model="filters.date", @input="date_menu = false"
                         :min="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() + 6) % 7)).toISOString().substr(0, 10)"
                         :max="new Date(new Date().setDate((new Date()).getDate() - ((new Date()).getDay() - 6) % 7)).toISOString().substr(0, 10) ")
-                    v-checkbox.pt-3(
+                    v-checkbox.pt-3(dark
                       v-model="filters.affordable"
                       label="You can afford it"
                       :class='$vuetify.breakpoint.mdAndUp ? "mx-3" : "mr-3"')
-                    v-checkbox.pt-3(
+                    v-checkbox.pt-3(dark
                       v-model="filters.main_dish"
                       label="Only main dishes")
                     template
-                      v-select(flat solo-inverted hide-details :items='filters.mensa' width='100'
+                      v-select(dark flat solo-inverted hide-details :items='filters.mensa' width='100'
                         prepend-inner-icon='mdi-filter-variant' label='Filter Mensa'
                         v-model='filters.selectedMensa' transition="scale-transition" min-width="auto"
                         :class='$vuetify.breakpoint.mdAndUp ? "mr-3" : "mb-3"')
-                      v-select(flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
+                      v-select(dark flat solo-inverted hide-details :items='Object.keys(filters.food_preferences)' width='100'
                         prepend-inner-icon='mdi-filter-variant' label='Filter Categories' multiple
                         v-model='selectedCategories'
                         :class='$vuetify.breakpoint.mdAndUp ? "mr-3" : "mb-3"')
-                      v-select(flat solo-inverted hide-details :items='Object.keys(filters.allergies)' width='100'
+                      v-select(dark flat solo-inverted hide-details :items='Object.keys(filters.allergies)' width='100'
                         prepend-inner-icon='mdi-filter-variant' label='Filter Allergies' multiple
                         v-model='selectedAllergies')
 
