@@ -211,7 +211,6 @@ export default new Vuex.Store({
     },
     async GetOneRecommendation({ commit }) {
       let response = await axios.get("mensa/get_week_recommendation");
-      console.log(response.data);
       var recommendations = response.data;
       commit("setRecommendationsDaily", recommendations);
     },

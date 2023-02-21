@@ -3,8 +3,12 @@ div
   v-container
     h1.text-center.my-6 Your Mensa Week
     div(:class="$vuetify.breakpoint.mdAndUp ? 'float-right' : 'd-flex mb-3 justify-center'")
-      v-btn(v-show="dayViewSelected==false" @click="dayViewSelected=true") Week View 
-      v-btn(v-show="dayViewSelected==true" @click="dayViewSelected=false") Day View 
+      v-btn(v-show="dayViewSelected==false" @click="dayViewSelected=true" rounded) 
+        v-icon mdi-view-week-outline
+        | Week View 
+      v-btn(v-show="dayViewSelected==true" @click="dayViewSelected=false" rounded) 
+        v-icon mdi-view-day-outline
+        | Day View 
     v-row 
       v-col
         v-skeleton-loader(v-show="!dailyRecommendationLoaded" :loading="!dailyRecommendationLoaded" type="card")
@@ -27,7 +31,7 @@ div
               template(v-if="currentTab === Object.keys(items).indexOf(key)")
                 v-row.justify-center
                   v-card.ma-2(width="350px" v-for="(item, index) in array" :key="index")
-                    v-img(style="border-top-left-radius: 1%; border-top-right-radius: 1%" 
+                    v-img(
                     v-show="item[0].dish.url != null" :alt="item[0].dish.name" 
                     height='250' :src='item[0].dish.url')
                     v-card.center-items.light-green.lighten-2(
@@ -149,19 +153,20 @@ div
                   | Save
 
         //- Week Recommendation Overview
-        //- template(v-if="weekRecommendationLoaded && !dayViewSelected")
-          p {{ weekRecommendation }}
-          //- h3(v-show="items[Object.keys(items)[currentTab]] == []") There are no recommended dishes today {{ items[Object.keys(items)[currentTab]] }}
-          template(v-for="(array, key) in weekRecommendation")
-            v-row.justify-center
-              v-card.ma-2(width="350px" v-for="(item, index) in array" :key="index")
-                v-img(style="border-top-left-radius: 1%; border-top-right-radius: 1%" 
-                v-show="item[0].dish.url != null" :alt="item[0].dish.name" 
-                height='250' :src='item[0].dish.url')
+        template(v-if="weekRecommendationLoaded && !dayViewSelected")
+          v-row.justify-center
+            v-card.ma-2(width="350px" v-for="(item, index) in weekRecommendation" :key="index")
+              v-card-title.my-0.text-center {{ days[index] }}
+              //- p {{ item.dish }}
+              h3.pa-3.text-center(v-if="Object.keys(item).length == 0") There are no recommended dishes today
+              div(v-else)
+                v-img(
+                v-show="item.dish.url != null" :alt="item.dish.name" 
+                height='250' :src='item.dish.url')
                 v-card.center-items.light-green.lighten-2(
                   style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" 
-                  v-show="item[0].dish.url == null" height='250' elevation="0")
-                  h1 {{ item[0].dish.name[0] }}
+                  v-show="item.dish.url == null" height='250' elevation="0")
+                  h1 {{ item.dish.name[0] }}
                 v-tooltip(bottom)
                   template(v-slot:activator="{ on, attrs }")
                     v-progress-linear(v-bind="attrs" v-on="on" :height="6" :background-opacity=".5" :value="item[1]*100" )
@@ -169,7 +174,7 @@ div
 
                 v-card-title(height="90"
                   style="line-height:1.2; font-size: 17px; word-break: normal;overflow: hidden; white-space: pre-line;") 
-                  | {{ item[0].dish.name }}
+                  | {{ item.dish.name }}
 
                 v-divider
 
@@ -178,54 +183,54 @@ div
                     v-col.align-center.d-flex.justify-space-between.py-0
                       h3.ma-0(
                         :class="coveredByBalance(parseFloat(item.priceStudent))")
-                        | €{{ item[0].priceStudent.replace('.',',') }}/{{ item[0].priceEmployee.replace('.',',') }}
+                        | €{{ item.priceStudent.replace('.',',') }}/{{ item.priceEmployee.replace('.',',') }}
                       div.d-flex
-                        v-img(v-for="(category, index) in item[0].dish.categories.length" 
-                          :alt="item[0].dish.categories[index].name" 
+                        v-img(v-for="(category, index) in item.dish.categories.length" 
+                          :alt="item.dish.categories[index].name" 
                           height="50" max-width="50" contain :key="category"
-                          :src="require('@/assets/dish_icons/food_preferences/'+item[0].dish.categories[index].name+'.png')")
+                          :src="require('@/assets/dish_icons/food_preferences/'+item.dish.categories[index].name+'.png')")
                   v-row
                     v-col.align-center.d-flex.justify-space-between
                       span
                         v-icon.mr-2 mdi-food-apple 
-                        | {{ item[0].dish.main ? 'Main' : 'Side' }}
+                        | {{ item.dish.main ? 'Main' : 'Side' }}
                     v-col 
-                      v-btn.text-none(rounded :href="getGoogleMapsUrl(item[0].mensa.name)" target="_blank" rel="noopener noreferrer")
+                      v-btn.text-none(rounded :href="getGoogleMapsUrl(item.mensa.name)" target="_blank" rel="noopener noreferrer")
                         v-icon mdi-navigation-variant-outline
-                        | {{ (item[0].mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
+                        | {{ (item.mensa.name).replace('Bistro Katholische Hochschule', 'Bistro Katho.').replace('Bistro Oeconomicum','Oeconomicum') }}
                   v-row
                     v-col.align-center.d-flex.justify-space-between
                       div 
                         v-icon.mr-2 mdi-shield-plus-outline
                         span
-                          span(v-if="item[0].dish.additives.length == 0") None
-                          span(v-for="additive in item[0].dish.additives" :key="additive.name") 
+                          span(v-if="item.dish.additives.length == 0") None
+                          span(v-for="additive in item.dish.additives" :key="additive.name") 
                             span {{ additive.name }}
-                            span(v-show="additive != item[0].dish.additives[item[0].dish.additives.length-1]") , 
+                            span(v-show="additive != item.dish.additives[item.dish.additives.length-1]") , 
                       div 
                         v-icon.mr-2 mdi-calendar
-                        span {{ new Date(item[0].date).toLocaleDateString('de-DE') }}
+                        span {{ new Date(item.date).toLocaleDateString('de-DE') }}
                   v-row
                     v-col.align-center.d-flex.justify-space-between
                       div
                         v-icon.mr-2 mdi-thumbs-up-down-outline
-                        span(v-if="item[0].ext_ratings.rating_count != 0") {{ item[0].ext_ratings.rating_avg }}
+                        span(v-if="item.ext_ratings.rating_count != 0") {{ item.ext_ratings.rating_avg }}
                         span(v-else) No ratings
-                      v-rating(v-if = "item[0].user_ratings.length > 0" :value = "item[0].user_ratings[0].rating*5" hover length="5" background-color="gray" size="24" 
-                        @input="setRating(item[0].dish.id, $event);")
+                      v-rating(v-if = "item.user_ratings.length > 0" :value = "item.user_ratings[0].rating*5" hover length="5" background-color="gray" size="24" 
+                        @input="setRating(item.dish.id, $event);")
                       v-rating(v-else hover length="5" background-color="gray" size="24" 
-                        @input="setRating(item[0].dish.id, $event);")
+                        @input="setRating(item.dish.id, $event);")
 
                   v-divider
                   v-row
                     v-col.d-flex.justify-space-between.pb-0
                       h4.my-3 Selected Side Dishes
                       v-btn.mt-1(fab small elevation="2" outlined color="primary" :height="side_dish_icon_height" :width="side_dish_icon_height"
-                        @click="selectCard(item[0]); dish_overlay = true")
+                        @click="selectCard(item); dish_overlay = true")
                         v-icon(color="primary") mdi-plus
                   v-row
                     v-col.pt-0
-                      template(v-for='(side_dish, i) in item[0].side_dishes')
+                      template(v-for='(side_dish, i) in item.side_dishes')
                         v-divider(v-if='!side_dish' :key='`divider-${i}`')
                         div.d-flex.justify-space-between(v-else-if="side_dish.side_selected")
                           div.d-flex.flex-row
@@ -234,7 +239,7 @@ div
                               :src="require('@/assets/dish_icons/food_preferences/'+side_dish.dish.categories[index].name+'.png')")
                             p.mb-0(:key='`item-${i}`') {{ side_dish.dish.name }}
                           p.ma-0.subheading(
-                            :class="coveredByBalance(parseFloat(side_dish.priceStudent)+parseFloat(item[0].priceStudent))")
+                            :class="coveredByBalance(parseFloat(side_dish.priceStudent)+parseFloat(item.priceStudent))")
                             | €{{ side_dish.priceStudent.replace('.',',') }}/{{ side_dish.priceEmployee.replace('.',',') }}
 </template>
 
@@ -247,7 +252,7 @@ export default {
   components: { DishCard },
   data() {
     return {
-      dayViewSelected: true,
+      dayViewSelected: false,
       currentTab: 0,
       tab: null,
       days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
