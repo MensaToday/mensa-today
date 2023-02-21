@@ -22,7 +22,7 @@ div
             v-tabs-slider(color="primary")
 
           v-tabs-items.align-center.justify-center.d-flex.py-2(v-model="tab") 
-            h3(v-show="items[Object.keys(items)[currentTab]] == []") There are no recommended dishes today {{ items[Object.keys(items)[currentTab]] }}
+            h3(v-show="items[Object.keys(items)[currentTab]].length == 0") There are no recommended dishes today. The mensa might be closed.
             template(v-for="(array, key) in items")
               template(v-if="currentTab === Object.keys(items).indexOf(key)")
                 v-row.justify-center
@@ -398,6 +398,7 @@ export default {
     },
   },
   mounted() {
+    this.getOneRecommendation();
     this.getRecommendations();
     this.getOneRecommendation();
     this.getUserData();
