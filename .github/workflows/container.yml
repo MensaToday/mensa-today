@@ -14,10 +14,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - dockerfile: Dockerfile.prod
+          - dockerfile: ./backend/Dockerfile.prod
             context: ./backend/
             image: mensatoday/mensatoday/backend
-          - dockerfile: Dockerfile.prod
+          - dockerfile: ./frontend/Dockerfile.prod
             context: ./frontend/
             image: mensatoday/mensatoday/frontend
     permissions:
