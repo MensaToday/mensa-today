@@ -2,7 +2,7 @@
 
 # <img src="https://github.com/erikzimmermann/mensa-today/blob/development/frontend/src/assets/logo.png" height="24" style="margin-right:5px;"/><span>MensaToday - your dish recommender in Münster</span>
 
-Münster is a distributed University with various different canteens and bistros that serve different ranges of food which change every week. As a student who eats at those places frequently, you have to look through all of these dishes to find a meal you want to eat. The idea of our recommender system is to suggest meals based on various different factors: Your eating habits, location (based on semester schedule), weather, ….
+The University of Münster (Westfälische Wilhelms-Universität Münster) is a distributed across the city with various canteens and bistros that serve different ranges of food which change weekly. As a student who eats at those places frequently, you have to look through all dishes of every canteen to find a meal that serves your needs. The idea this recommender system is to suggest mensa meals based on various different factors, such as your eating habits, location (based on semester schedule), weather and many more.
 
 ![Poster](poster.svg)
 ## Contributing
@@ -10,7 +10,7 @@ See [our contributing guidelines](https://github.com/erikzimmermann/mensa-today/
 
 ## Celery
 
-Celery is an open source asynchronous task queue or job queue which is based on distributed message passing. While it supports scheduling, its focus is on operations in real time. Celery is used in combination with the message broker redis. For more information, see [Celery docs](https://docs.celeryq.dev/en/stable/).
+Celery is an open source asynchronous task queue or job queue, which is based on distributed message passing. While it supports scheduling, its focus lies on operations in real time. Celery is used in combination with the message broker redis. For more information, please refer to  [Celery docs](https://docs.celeryq.dev/en/stable/).
 
 ## Data Structure
 last updated on 30th December 2022
