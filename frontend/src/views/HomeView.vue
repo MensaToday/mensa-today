@@ -243,6 +243,7 @@ div
                             :class="coveredByBalance(parseFloat(side_dish.priceStudent)+parseFloat(item.priceStudent))")
                             | €{{ side_dish.priceStudent.replace('.',',') }}/{{ side_dish.priceEmployee.replace('.',',') }}
 
+          //- TODO: make code cleaner by extracting dialog into separate component
           //- Overlay for Selected Dish
           v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" 
             color="primary" :width="$vuetify.breakpoint.mdAndUp ? '40vw' : '90vw'" 
