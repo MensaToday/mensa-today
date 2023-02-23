@@ -11,6 +11,7 @@ div
         | Day View 
     v-row 
       v-col
+        //- Day View
         v-skeleton-loader(v-show="!dailyRecommendationLoaded" :loading="!dailyRecommendationLoaded" type="card")
         template(v-if="dailyRecommendationLoaded && dayViewSelected")
           v-tabs(fixed-tabs v-model="tab")
@@ -152,7 +153,7 @@ div
                   v-icon.mr-2 mdi-check
                   | Save
 
-        //- Week Recommendation Overview
+        //- Week Overview
         template(v-if="weekRecommendationLoaded && !dayViewSelected")
           v-row.justify-center
             v-card.ma-2(width="350px" v-for="(item, index) in weekRecommendation" :key="index")
@@ -164,7 +165,7 @@ div
                 v-show="item.dish.url != null" :alt="item.dish.name" 
                 height='250' :src='item.dish.url')
                 v-card.center-items.light-green.lighten-2(
-                  style="border-bottom-left-radius: 0%; border-bottom-right-radius: 0%" 
+                  style="border-radius: 0%;" 
                   v-show="item.dish.url == null" height='250' elevation="0")
                   h1 {{ item.dish.name[0] }}
                 v-tooltip(bottom)
@@ -241,6 +242,45 @@ div
                           p.ma-0.subheading(
                             :class="coveredByBalance(parseFloat(side_dish.priceStudent)+parseFloat(item.priceStudent))")
                             | €{{ side_dish.priceStudent.replace('.',',') }}/{{ side_dish.priceEmployee.replace('.',',') }}
+
+          //- Overlay for Selected Dish
+          v-dialog(absolute :value="dish_overlay" transition="dialog-bottom-transition" 
+            color="primary" :width="$vuetify.breakpoint.mdAndUp ? '40vw' : '90vw'" 
+            @click:outside="resetSelection();")
+            //- only try to render if a dish is selected
+            v-card.pt-4(v-if="dish_overlay" width="100%")
+              h3.my-4.text-center(v-if="selected_dish.side_dishes.length == 0") No suggested side dishes
+              template.center-items(v-else)
+                v-list(shaped)
+                  v-list-item-group(v-model='selected_side_dishes' multiple)
+                    h3.my-3.text-center Side Dishes
+                    template(v-for='(side_dish, i) in selected_dish.side_dishes')
+                      v-divider(v-if='!side_dish' :key='`divider-${i}`')
+                      v-list-item(v-else :key='`item-${i}`' :value='side_dish' active-class='primary--text text--accent-4')
+                        template(v-slot:default='{ active }')
+                          v-list-item-action
+                            v-checkbox(:input-value='active' color='primary accent-4')
+                          v-list-item-content
+                            v-list-item-title 
+                              h4.my-1 {{ side_dish.dish.name }}
+                            div.d-flex.flex-row.center-items
+                              p.ma-0.mr-3.text-right.subheading(
+                                :class="coveredByBalance(parseFloat(side_dish.priceStudent)+parseFloat(selected_dish.priceStudent))")
+                                | €{{ side_dish.priceStudent.replace('.',',') }}/{{ side_dish.priceEmployee.replace('.',',') }}
+                              v-img(v-for="(category, index) in side_dish.dish.categories.length" :alt="side_dish.dish.categories[index].name" 
+                                :height="category_icon_height" :max-width="category_icon_height" contain :key="category"
+                                :src="require('@/assets/dish_icons/food_preferences/'+side_dish.dish.categories[index].name+'.png')")
+                          v-list-item-icon(v-if='selected_dish.popular_side.id==side_dish.id' :right="true")
+                            v-icon(color="#FFD700") mdi-star
+              v-card-actions
+                v-btn(@click="resetSelection(); dish_overlay = false")
+                  v-icon.mr-2 mdi-close
+                  | Cancel
+                v-spacer
+                v-btn(color="primary" @click="updateSelectedSideDishes(); dish_overlay = false"
+                  v-show="selected_dish.side_dishes.length != 0")
+                  v-icon.mr-2 mdi-check
+                  | Save      
 </template>
 
 <script>
