@@ -14,9 +14,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - dockerfile: ./backend/Dockerfile.prod
+          - dockerfile: Dockerfile.prod
+            context: ./backend/
             image: mensatoday/mensatoday/backend
-          - dockerfile: ./frontend/Dockerfile.prod
+          - dockerfile: Dockerfile.prod
+            context: ./frontend/
             image: mensatoday/mensatoday/frontend
     permissions:
       contents: read
@@ -41,7 +43,7 @@ jobs:
     - name: Build the Docker image
       uses: docker/build-push-action@v4.0.0
       with:
-          context: .
+          context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
