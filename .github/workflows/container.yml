@@ -16,10 +16,10 @@ jobs:
         include:
           - dockerfile: ./backend/Dockerfile.prod
             context: ./backend/
-            image: mensatoday/mensatoday
+            image: mensatoday/backend
           - dockerfile: ./frontend/Dockerfile.prod
             context: ./frontend/
-            image: mensatoday/mensatoday
+            image: mensatoday/frontend
     permissions:
       contents: read
       packages: write
