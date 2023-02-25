@@ -1,5 +1,5 @@
 import django.db.models as Model
-from mensa.models import Dish
+from mensa.models import Dish, DishPlan
 from django.db.models.query import QuerySet
 from datasketch import MinHash, MinHashLSH
 from abc import ABC, abstractmethod
@@ -71,7 +71,7 @@ class LSH(ABC):
         pass
 
     @abstractmethod
-    def fuse_duplicates(self, duplicates: set[Tuple[int]], model: Model):
+    def fuse_duplicates(self, duplicates: set[Tuple[int]]):
         """Abstract method to fuse objects together based on a set of duplicate tuples with ids.
         Because the fuse process is handle individually for each database table this method has to be
         overwritten.
@@ -80,8 +80,6 @@ class LSH(ABC):
         ----------
         duplicates : set[Tuple[int]]
             A set of tuples with the ids of duplicate objects
-        model : django model
-            A model where the duplicates should be fused
         """
         pass
 
@@ -110,7 +108,7 @@ class LSH(ABC):
 
             min_hashes.append((id, m))
 
-            lsh.insert(str(id), m)
+            lsh.insert(id, m)
 
         return (min_hashes, lsh)
 
@@ -128,5 +126,21 @@ class DishLSH(LSH):
 
         return set_list
 
-    def fuse_duplicates(self, duplicates: set[Tuple[int]], model: Dish):
-        pass
+    def fuse_duplicates(self, duplicates: set[Tuple[int]]):
+        # This function only replaces the ids in the dishplan but does not delete the dishes
+        # in the Dish table
+        for duplicate in duplicates:
+
+            # When only one element is in the tuple jump to next element
+            if len(duplicate) == 1:
+                continue
+
+            reference_index = duplicate[0]
+            dish = Dish.objects.get(id=reference_index)
+
+            for i in range(1, len(duplicate)):
+                dishplans = DishPlan.objects.filter(dish=duplicate[i]).all()
+
+                for dishplan in dishplans:
+                    dishplan.dish = dish
+                    dishplan.save()

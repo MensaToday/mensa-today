@@ -73,10 +73,11 @@ def post_processing():
     # Get all dishes
     dishes = Dish.objects.all()
 
-    # Get duplicate dishes
+    # Get duplicate dishes and fuse them
     dish_lsh = DishLSH(queryset=dishes)
-    print(dish_lsh.get_duplicates())
-    return 0
+    duplicates = dish_lsh.get_duplicates()
+    dish_lsh.fuse_duplicates(duplicates)
+
     # Iteratate over each dish
     for dish in tqdm(dishes):
 
