@@ -69,7 +69,7 @@ class DishSerializer(serializers.ModelSerializer):
 class MensaSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ["id", "name", "city", "street",
-                  "houseNumber", "zipCode", "startTime", "endTime"]
+                  "houseNumber", "zipCode", "startTime", "endTime", "lat", "lon"]
         model = mensa_model.Mensa
 
 

@@ -8,9 +8,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from mensa.models import Dish, DishPlan, UserDishRating, Category, Allergy, \
-    UserSideSelection
+    UserSideSelection, Mensa
 from mensa_recommend.serializers import DishPlanSerializer, \
-    UserDishRatingSerializer, DishSerializer
+    UserDishRatingSerializer, DishSerializer, MensaSerializer
 from mensa_recommend.source.computations.date_computations import \
     get_last_monday
 from mensa_recommend.source.computations.transformer import transform_rating
@@ -560,3 +560,25 @@ def save_user_side_dishes(request):
     else:
         return Response("Not all fields provided",
                         status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+@api_view(['GET'])
+@permission_classes((permissions.AllowAny,))
+def get_mensa_data(request):
+    """Get all relevant information about each mensa in the system
+
+        Route: api/v1/mensa/mensa_data
+        Authorization: Authenticated
+        Methods: Get
+
+        Output
+        -------
+        If Side dish successfully saved: 200
+        If not all fields were provided: 406
+        If side dishes is not a list: 406
+        If side or main dish is not in database: 404
+    """
+
+    mensa_qs = Mensa.objects.all()
+    mensa_serialized = MensaSerializer(mensa_qs, many=True).data
+    return Response(mensa_serialized)
