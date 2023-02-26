@@ -1,7 +1,7 @@
 <template lang="pug">
 div  
-  div(id="container")
-    div(id="mapContainer")
+  div#container
+    div#mapContainer
 
 </template>
 
