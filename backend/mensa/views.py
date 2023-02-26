@@ -568,15 +568,26 @@ def get_mensa_data(request):
     """Get all relevant information about each mensa in the system
 
         Route: api/v1/mensa/mensa_data
-        Authorization: Authenticated
+        Authorization: AllowAny
         Methods: Get
 
         Output
         -------
-        If Side dish successfully saved: 200
-        If not all fields were provided: 406
-        If side dishes is not a list: 406
-        If side or main dish is not in database: 404
+        [
+            {
+                "id": 1,
+                "name": "Bistro Denkpause",
+                "city": "Münster",
+                "street": "Corrensstr.",
+                "houseNumber": "25",
+                "zipCode": 48149,
+                "startTime": "11:30:00",
+                "endTime": "14:15:00",
+                "lat": "51.96836000",
+                "lon": "7.59485300"
+            },
+            ...
+        ]
     """
 
     mensa_qs = Mensa.objects.all()
