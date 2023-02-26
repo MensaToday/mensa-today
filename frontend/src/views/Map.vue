@@ -11,6 +11,7 @@ import * as L from "leaflet";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "leaflet.markercluster";
+import axios from "axios";
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
@@ -22,6 +23,7 @@ export default {
   data() {
     return {
       center: [51.961563, 7.628202],
+      mensa_data: null,
     };
   },
 
@@ -34,38 +36,49 @@ export default {
         maxZoom: 18,
       }).addTo(map);
 
+      // Get all canteens and bistros
+      axios
+        .get("mensa/mensa_data")
+        .then(
+          (response) => (
+            (this.mensa_data = response.data), this.displayMarker(map)
+          )
+        );
+    },
+    displayMarker: function (map) {
       var cluster = L.markerClusterGroup({
         spiderfyOnMaxZoom: false,
         disableClusteringAtZoom: 17,
       }).addTo(map);
 
-      new L.circleMarker(new L.LatLng(51.96836, 7.594853))
-        .setStyle({
-          color: "#43a047",
-          stroke: true,
-          fill: true,
-          fillOpacity: 0.8,
-        })
-        .addTo(cluster);
+      this.mensa_data.forEach((mensa) => {
+        new L.circleMarker(new L.LatLng(mensa.lat, mensa.lon))
+          .setStyle({
+            color: this.calculateOpeningHour(mensa),
+            stroke: true,
+            fill: true,
+            fillOpacity: 0.8,
+          })
+          .addTo(cluster)
+          .bindPopup(mensa.name)
+          .openPopup();
+      });
+    },
+    calculateOpeningHour: function (mensa) {
+      var startTimeString = mensa.startTime;
+      var endtimeSring = mensa.endTime;
 
-      new L.circleMarker(new L.LatLng(51.975033, 7.602068))
-        .setStyle({
-          color: "#ff8a65",
-          stroke: true,
-          fill: true,
-          fillOpacity: 0.8,
-        })
-        .addTo(cluster)
-        .bindPopup("Mensa DaVinci")
-        .openPopup();
-      new L.circleMarker(new L.LatLng(51.963451, 7.594432)).addTo(cluster);
-      new L.circleMarker(new L.LatLng(51.9507932, 7.6079902)).addTo(cluster);
-      new L.circleMarker(new L.LatLng(51.962632, 7.625869)).addTo(cluster);
-      new L.circleMarker(new L.LatLng(51.9622951, 7.6209285)).addTo(cluster);
-      new L.circleMarker(new L.LatLng(51.95554, 7.616978)).addTo(cluster);
-      new L.circleMarker(new L.LatLng(51.95559, 7.617199)).addTo(cluster);
-      new L.circleMarker(new L.LatLng(51.965806, 7.600138)).addTo(cluster);
-      new L.circleMarker(new L.LatLng(51.960372, 7.619707)).addTo(cluster);
+      var now = new Date();
+      var nowDateTime = now.toISOString();
+      var nowDate = nowDateTime.split("T")[0];
+      var startTime = new Date(nowDate + "T" + startTimeString);
+      var endTime = new Date(nowDate + "T" + endtimeSring);
+
+      if (now >= startTime && now < endTime) {
+        return "#43a047";
+      } else {
+        return "#ff8a65";
+      }
     },
   },
   mounted() {
