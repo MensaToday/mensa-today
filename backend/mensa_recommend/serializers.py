@@ -124,10 +124,13 @@ class DishPlanSerializer(serializers.ModelSerializer):
             del self.fields['side_selected']
 
     def get_ext_ratings(self, obj):
-        ext_ratings = mensa_model.ExtDishRating.objects.filter(
-            mensa=obj.mensa, dish=obj.dish).latest("date")
+        try:
+            ext_ratings = mensa_model.ExtDishRating.objects.filter(
+                mensa=obj.mensa, dish=obj.dish).latest("date")
 
-        return ExtRatingsSerializer(ext_ratings, read_only=True).data
+            return ExtRatingsSerializer(ext_ratings, read_only=True).data
+        except mensa_model.ExtDishRating.DoesNotExist:
+            return None
 
     def get_popular_side_dish(self, obj):
         popular_side = side_dish_recommender.predict(obj)
