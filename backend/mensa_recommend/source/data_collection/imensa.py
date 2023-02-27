@@ -75,6 +75,7 @@ def post_processing():
 
     # Get duplicate dishes and fuse them
     # @TODO further investigate the quality of duplicate detection
+    # @TODO further investigate the quality of duplicate detection
     # For now it should not be applied
 
     #dish_lsh = DishLSH(queryset=dishes)
