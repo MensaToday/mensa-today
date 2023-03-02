@@ -3,8 +3,9 @@ v-app
   NavigationBar
 
   v-main.mb-12
-    router-view
-    template
+    keep-alive
+      router-view
+      template
 
   Footer
 </template>
