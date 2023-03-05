@@ -102,6 +102,11 @@ export default {
         to: { name: "DiscoverDishes" },
         icon: "magnify",
       },
+      {
+        tag: "Mensa Map",
+        to: { name: "MensaMap" },
+        icon: "map",
+      },
     ],
   }),
   methods: {

@@ -46,6 +46,13 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/map",
+    name: "MensaMap",
+    component: () =>
+      import(/* webpackChunkName: "discover" */ "../views/Map.vue"),
+    meta: { requiresAuth: false },
+  },
+  {
     path: "/settings/general",
     name: "SettingsGeneral",
     component: () =>
