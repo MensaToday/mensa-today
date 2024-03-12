@@ -17,6 +17,7 @@ import global_data
 from mensa.models import Category, Allergy, Additive, Dish, DishCategory, \
     DishAllergy, DishAdditive, DishPlan, Mensa, \
     ExtDishRating
+from mensa_recommend.source.computations.lsh import DishLSH
 from . import static_data
 from . import utils
 from .utils import NoAuthURLCollector
@@ -71,6 +72,14 @@ def post_processing():
 
     # Get all dishes
     dishes = Dish.objects.all()
+
+    # Get duplicate dishes and fuse them
+    # @TODO further investigate the quality of duplicate detection
+    # For now it should not be applied
+
+    #dish_lsh = DishLSH(queryset=dishes)
+    #duplicates = dish_lsh.get_duplicates()
+    # dish_lsh.fuse_duplicates(duplicates)
 
     # Iteratate over each dish
     for dish in tqdm(dishes):
