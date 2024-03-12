@@ -1,8 +1,8 @@
 [![Python 3.9.7](https://img.shields.io/badge/python-3.9-orange.svg)](https://www.python.org/downloads/release/python-390/) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![GitHub version](https://img.shields.io/github/v/release/erikzimmermann/mensa-today?color=green&include_prereleases)
+<img align="right" height="72px" src="https://raw.githubusercontent.com/MensaToday/mensa-today/development/frontend/src/assets/logo.png" />
+# MensaToday - Your Dish Recommender in Münster
 
-# <img src="https://github.com/erikzimmermann/mensa-today/blob/development/frontend/src/assets/logo.png" height="24" style="margin-right:5px;"/><span>MensaToday - your dish recommender in Münster</span>
-
-The University of Münster (Westfälische Wilhelms-Universität Münster) is a distributed across the city with various canteens and bistros that serve different ranges of food which change weekly. As a student who eats at those places frequently, you have to look through all dishes of every canteen to find a meal that serves your needs. The idea this recommender system is to suggest mensa meals based on various different factors, such as your eating habits, location (based on semester schedule), weather and many more.
+The University of Münster is a distributed across the city with various canteens and bistros that serve different ranges of food which change weekly. As a student who eats at those places frequently, you have to look through all dishes of every canteen to find a meal that serves your needs. The idea this recommender system is to suggest mensa meals based on various different factors, such as your eating habits, location (based on semester schedule), weather and many more. You can get a demo [here](http://localhost:8080/projects/MensaToday/MensaToday-Demo-2023-02-23.mp4) from February 23, 2023.
 
 ![Poster](poster.svg)
 ## Contributing
