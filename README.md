@@ -2,7 +2,7 @@
 <img align="right" height="72px" src="https://raw.githubusercontent.com/MensaToday/mensa-today/development/frontend/src/assets/logo.png" />
 # MensaToday - Your Dish Recommender in Münster
 
-The University of Münster is a distributed across the city with various canteens and bistros that serve different ranges of food which change weekly. As a student who eats at those places frequently, you have to look through all dishes of every canteen to find a meal that serves your needs. The idea this recommender system is to suggest mensa meals based on various different factors, such as your eating habits, location (based on semester schedule), weather and many more. You can get a demo [here](http://localhost:8080/projects/MensaToday/MensaToday-Demo-2023-02-23.mp4) from February 23, 2023.
+The University of Münster is a distributed across the city with various canteens and bistros that serve different ranges of food which change weekly. As a student who eats at those places frequently, you have to look through all dishes of every canteen to find a meal that serves your needs. The idea this recommender system is to suggest mensa meals based on various different factors, such as your eating habits, location (based on semester schedule), weather and many more. You can get a demo [here](https://leogiesen.de/projects/MensaToday/MensaToday-Demo-2023-02-23.mp4) from February 23, 2023.
 
 ![Poster](poster.svg)
 ## Contributing
